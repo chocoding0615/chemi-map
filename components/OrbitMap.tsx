@@ -15,19 +15,33 @@ interface OrbitMapProps {
 const MIN_SCORE = 60;
 const MAX_SCORE = 99;
 const GOLDEN_ANGLE = 2.399963; // radians (~137.5°) — even organic spread, no library needed
+const CENTER = 50;
+const MIN_DIST = 16; // % of container — closest orbit, just outside the center circle
+const MAX_DIST = 36; // % of container — leaves margin so labels never clip the edge
+const RINGS = [16, 26, 36]; // radar-style distance guides, same units as MIN_DIST/MAX_DIST
 
-function layoutPositions(entries: EntryDoc[], size: number) {
-  const center = size / 2;
-  const minDist = size * 0.2;
-  const maxDist = size * 0.44;
-  return entries.map((entry, i) => {
+// 0-100 coordinate space so the whole canvas scales with its container via the
+// SVG viewBox — no JS size measurement needed, and it always matches the width
+// of the cards around it (which was the "안 맞다" sizing bug: the old version
+// used a hardcoded pixel size instead of filling its parent).
+//
+// Angle is assigned by score RANK, not array order: two people with close
+// scores end up close in distance too, so giving them adjacent ranks
+// guarantees a full golden-angle (~137.5°) gap between them and avoids the
+// circles overlapping. Entries far apart in score (and therefore in distance)
+// can share a similar angle safely since a different ring keeps them apart.
+function layoutPositions(entries: EntryDoc[]) {
+  const rankOrder = [...entries].sort((a, b) => b.affinityScore - a.affinityScore);
+  const rankById = new Map(rankOrder.map((entry, i) => [entry.id, i]));
+
+  return entries.map((entry) => {
     const norm = Math.min(1, Math.max(0, (entry.affinityScore - MIN_SCORE) / (MAX_SCORE - MIN_SCORE)));
-    const distance = maxDist - norm * (maxDist - minDist);
-    const angle = i * GOLDEN_ANGLE;
+    const distance = MAX_DIST - norm * (MAX_DIST - MIN_DIST);
+    const angle = rankById.get(entry.id)! * GOLDEN_ANGLE;
     return {
       entry,
-      x: center + distance * Math.cos(angle),
-      y: center + distance * Math.sin(angle),
+      x: CENTER + distance * Math.cos(angle),
+      y: CENTER + distance * Math.sin(angle),
     };
   });
 }
@@ -36,48 +50,35 @@ function MapCanvas({
   ownerName,
   ownerElement,
   entries,
-  size,
 }: {
   ownerName: string;
   ownerElement: ElementKey;
   entries: EntryDoc[];
-  size: number;
 }) {
-  const center = size / 2;
-  const positions = layoutPositions(entries, size);
-  const satelliteSize = Math.max(34, size * 0.13);
+  const positions = layoutPositions(entries);
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl ring-1 ring-amber-900/10"
+      className="relative aspect-square w-full overflow-hidden rounded-2xl ring-1 ring-amber-900/10"
       style={{
-        width: size,
-        height: size,
-        backgroundImage:
-          "radial-gradient(circle at 50% 42%, #fff7e6 0%, #fed7aa 55%, #fb923c 100%), radial-gradient(rgba(120,53,15,0.12) 1px, transparent 1px)",
-        backgroundSize: "100% 100%, 18px 18px",
+        backgroundImage: "radial-gradient(circle at 50% 45%, #fffaf0 0%, #ffe8c2 45%, #fdba74 100%)",
       }}
     >
-      <svg width={size} height={size} className="absolute inset-0">
+      <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" preserveAspectRatio="none">
+        {RINGS.map((r) => (
+          <circle key={r} cx={CENTER} cy={CENTER} r={r} fill="none" stroke="rgba(154,52,18,0.14)" strokeWidth={0.3} />
+        ))}
         {positions.map(({ entry, x, y }) => (
-          <line
-            key={entry.id}
-            x1={center}
-            y1={center}
-            x2={x}
-            y2={y}
-            stroke="rgba(120,53,15,0.25)"
-            strokeWidth={1}
-          />
+          <line key={entry.id} x1={CENTER} y1={CENTER} x2={x} y2={y} stroke="rgba(154,52,18,0.22)" strokeWidth={0.3} />
         ))}
       </svg>
 
       <div
         className="absolute flex flex-col items-center"
-        style={{ left: center, top: center, transform: "translate(-50%, -50%)" }}
+        style={{ left: `${CENTER}%`, top: `${CENTER}%`, transform: "translate(-50%, -50%)" }}
       >
-        <ElementIcon element={ownerElement} size={Math.max(48, size * 0.18)} variant="filled" />
-        <span className="mt-1 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-bold text-amber-950 shadow-sm">
+        <ElementIcon element={ownerElement} size={56} variant="filled" />
+        <span className="mt-1 whitespace-nowrap rounded-full bg-white/95 px-2 py-0.5 text-[11px] font-bold text-amber-950 shadow-sm">
           {ownerName} (나)
         </span>
       </div>
@@ -86,13 +87,10 @@ function MapCanvas({
         <div
           key={entry.id}
           className="absolute flex flex-col items-center"
-          style={{ left: x, top: y, transform: "translate(-50%, -50%)" }}
+          style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%, -50%)" }}
         >
-          <ElementIcon element={entry.visitorElement} size={satelliteSize} variant="filled" />
-          <span
-            className="mt-0.5 max-w-[64px] truncate rounded-full bg-white/90 px-1.5 font-semibold text-amber-950 shadow-sm"
-            style={{ fontSize: size < 250 ? 9 : 10 }}
-          >
+          <ElementIcon element={entry.visitorElement} size={40} variant="filled" />
+          <span className="mt-0.5 max-w-[64px] truncate rounded-full bg-white/95 px-1.5 text-[10px] font-semibold text-amber-950 shadow-sm">
             {entry.visitorName}
           </span>
         </div>
@@ -127,7 +125,7 @@ export default function OrbitMap({ ownerName, ownerElement, entries }: OrbitMapP
         className="block w-full"
         aria-label="지도 크게 보기"
       >
-        <MapCanvas ownerName={ownerName} ownerElement={ownerElement} entries={entries} size={288} />
+        <MapCanvas ownerName={ownerName} ownerElement={ownerElement} entries={entries} />
       </button>
       <p className="mt-1.5 text-center text-xs text-amber-900/40">지도를 누르면 크게 볼 수 있어요</p>
 
@@ -153,8 +151,8 @@ export default function OrbitMap({ ownerName, ownerElement, entries }: OrbitMapP
           className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-black/70 p-6"
           onClick={() => setExpanded(false)}
         >
-          <div onClick={(e) => e.stopPropagation()}>
-            <MapCanvas ownerName={ownerName} ownerElement={ownerElement} entries={entries} size={340} />
+          <div className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <MapCanvas ownerName={ownerName} ownerElement={ownerElement} entries={entries} />
           </div>
           <button
             type="button"
