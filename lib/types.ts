@@ -1,12 +1,12 @@
 import type { Temperament } from "./result-engine/temperament";
-import type { ZodiacKey } from "./result-engine/animals";
+import type { ElementKey } from "./result-engine/elements";
 
 export interface MapDoc {
   slug: string;
   ownerName: string;
   ownerMbti: string;
   ownerBirthdate: string;
-  ownerZodiac: ZodiacKey;
+  ownerElement: ElementKey;
   ownerTemperament: Temperament;
   entryCount: number;
   createdAt: string;
@@ -18,10 +18,10 @@ export interface EntryDoc {
   visitorName: string;
   visitorMbti: string;
   visitorBirthdate: string;
-  visitorZodiac: ZodiacKey;
+  visitorElement: ElementKey;
   visitorTemperament: Temperament;
   resultTitle: string;
-  resultAnimalBlurb: string;
+  resultElementBlurb: string;
   resultRelationshipBlurb: string;
   createdAt: string;
 }

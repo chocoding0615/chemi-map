@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/firebaseAdmin";
 import { generateUniqueSlug } from "@/lib/slug";
 import { MBTI_TYPES, mbtiToTemperament } from "@/lib/result-engine/temperament";
-import { zodiacFromYear } from "@/lib/result-engine/animals";
+import { elementFromBirthdate } from "@/lib/result-engine/elements";
 import { FieldValue } from "firebase-admin/firestore";
 
 const BIRTHDATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       ownerName: name,
       ownerMbti: mbti,
       ownerBirthdate: birthdate,
-      ownerZodiac: zodiacFromYear(year),
+      ownerElement: elementFromBirthdate(birthdate),
       ownerTemperament: mbtiToTemperament(mbti),
       entryCount: 0,
       createdAt: now,

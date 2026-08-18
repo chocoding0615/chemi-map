@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import MbtiSelect from "./MbtiSelect";
 import ResultCard from "./ResultCard";
+import type { ElementKey } from "@/lib/result-engine/elements";
 
 interface EntryFormProps {
   slug: string;
@@ -13,7 +14,8 @@ interface EntryFormProps {
 
 interface Result {
   title: string;
-  animalBlurb: string;
+  visitorElement: ElementKey;
+  elementBlurb: string;
   relationshipBlurb: string;
 }
 
@@ -61,7 +63,8 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
       <div className="w-full space-y-5">
         <ResultCard
           title={result.title}
-          animalBlurb={result.animalBlurb}
+          element={result.visitorElement}
+          elementBlurb={result.elementBlurb}
           relationshipBlurb={result.relationshipBlurb}
         />
         <Link

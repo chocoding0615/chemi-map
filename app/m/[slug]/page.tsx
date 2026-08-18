@@ -39,10 +39,10 @@ async function getMapData(slug: string) {
       visitorName: data.visitorName,
       visitorMbti: data.visitorMbti,
       visitorBirthdate: data.visitorBirthdate,
-      visitorZodiac: data.visitorZodiac,
+      visitorElement: data.visitorElement,
       visitorTemperament: data.visitorTemperament,
       resultTitle: data.resultTitle,
-      resultAnimalBlurb: data.resultAnimalBlurb,
+      resultElementBlurb: data.resultElementBlurb,
       resultRelationshipBlurb: data.resultRelationshipBlurb,
       createdAt: toIso(data.createdAt),
     };

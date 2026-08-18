@@ -1,4 +1,4 @@
-import { ANIMAL_BANK, zodiacFromYear, type ZodiacKey } from "./animals";
+import { ELEMENT_BANK, elementFromBirthdate, type ElementKey } from "./elements";
 import { RELATIONSHIP_BANK, TEMPERAMENT_LABEL, mbtiToTemperament, type Temperament } from "./temperament";
 
 export interface ComputeResultInput {
@@ -6,37 +6,38 @@ export interface ComputeResultInput {
   ownerMbti: string;
   visitorName: string;
   visitorMbti: string;
-  visitorBirthdate: string; // ISO yyyy-mm-dd, only the year is used
+  visitorBirthdate: string; // ISO yyyy-mm-dd
 }
 
 export interface ComputeResultOutput {
-  visitorZodiac: ZodiacKey;
+  visitorElement: ElementKey;
   visitorTemperament: Temperament;
   ownerTemperament: Temperament;
   title: string;
-  animalBlurb: string;
+  elementBlurb: string;
   relationshipBlurb: string;
 }
 
-// Pure, deterministic — no network/AI calls. Combines the 12-animal bank and
-// the 4x4 temperament bank so ~28 hand-written blurbs cover every input combo.
+// Pure, deterministic — no network/AI calls. The element comes from a real
+// day-pillar (일주) calculation (see elements.ts), and the relationship line
+// comes from the 4x4 temperament bank, so a small set of hand-written blurbs
+// covers every input combo.
 export function computeResult(input: ComputeResultInput): ComputeResultOutput {
   const ownerTemperament = mbtiToTemperament(input.ownerMbti);
   const visitorTemperament = mbtiToTemperament(input.visitorMbti);
-  const visitorYear = Number(input.visitorBirthdate.slice(0, 4));
-  const visitorZodiac = zodiacFromYear(visitorYear);
+  const visitorElement = elementFromBirthdate(input.visitorBirthdate);
 
-  const animal = ANIMAL_BANK[visitorZodiac];
+  const element = ELEMENT_BANK[visitorElement];
   const relationshipBlurb = RELATIONSHIP_BANK[ownerTemperament][visitorTemperament];
 
-  const title = `${input.visitorName}님은 ${input.ownerName}님에게 ${animal.emoji} ${animal.label} 같은 ${TEMPERAMENT_LABEL[visitorTemperament]}예요`;
+  const title = `${input.visitorName}님은 ${input.ownerName}님에게 ${element.label}(${element.hanja}) 같은 ${TEMPERAMENT_LABEL[visitorTemperament]}예요`;
 
   return {
-    visitorZodiac,
+    visitorElement,
     visitorTemperament,
     ownerTemperament,
     title,
-    animalBlurb: animal.blurb,
+    elementBlurb: element.blurb,
     relationshipBlurb,
   };
 }

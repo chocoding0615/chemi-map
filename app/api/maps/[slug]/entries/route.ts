@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/firebaseAdmin";
 import { MBTI_TYPES, mbtiToTemperament } from "@/lib/result-engine/temperament";
-import { zodiacFromYear } from "@/lib/result-engine/animals";
 import { computeResult } from "@/lib/result-engine/compute";
 import { FieldValue } from "firebase-admin/firestore";
 
@@ -49,10 +48,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     visitorName: name,
     visitorMbti: mbti,
     visitorBirthdate: birthdate,
-    visitorZodiac: zodiacFromYear(year),
+    visitorElement: result.visitorElement,
     visitorTemperament: mbtiToTemperament(mbti),
     resultTitle: result.title,
-    resultAnimalBlurb: result.animalBlurb,
+    resultElementBlurb: result.elementBlurb,
     resultRelationshipBlurb: result.relationshipBlurb,
     createdAt: now,
   });
