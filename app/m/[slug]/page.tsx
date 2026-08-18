@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getDb } from "@/lib/firebaseAdmin";
 import EntryForm from "@/components/EntryForm";
-import OrbitMap from "@/components/OrbitMap";
+import NeighborhoodMap from "@/components/NeighborhoodMap";
 import ChemiRankList from "@/components/ChemiRankList";
 import ShareBanner from "@/components/ShareBanner";
 import type { EntryDoc } from "@/lib/types";
@@ -97,7 +97,7 @@ export default async function MapPage({ params, searchParams }: MapPageProps) {
         <p className="mt-1 text-sm font-semibold text-amber-900/50">{data.entryCount}명이 다녀갔어요</p>
       </div>
 
-      <OrbitMap ownerName={data.ownerName} ownerElement={data.ownerElement} entries={data.entries} />
+      <NeighborhoodMap ownerName={data.ownerName} ownerElement={data.ownerElement} entries={data.entries} />
 
       <div
         id="entry-form"
