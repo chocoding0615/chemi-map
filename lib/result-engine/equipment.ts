@@ -3,7 +3,11 @@ import type { Temperament } from "./temperament";
 
 export type EquipmentSlot = "head" | "leftHand" | "rightHand" | "leftFoot" | "rightFoot";
 
-// 케미 순위 1등이 머리, 2~3등이 양손(무기), 4~5등이 양발(신발)을 차지한다.
+// 먼저 등록한 5명이 순서대로 머리 -> 양손(무기) -> 양발(신발)을 차지한다. 제출
+// 시점에 딱 한 번 배정하고 Firestore에 영구 저장 — 나중에 케미 점수가 더 높은
+// 사람이 와도 이미 배정된 사람의 슬롯은 절대 바뀌지 않는다(점수는 랭킹 리스트와
+// 배지 숫자에만 쓰인다). 점수 기준으로 매번 다시 정렬해서 배정했더니 새 방문자가
+// 등록될 때마다 기존 사람 슬롯이 흔들리는 문제가 있어서 이렇게 고정함.
 export const SLOT_ORDER: EquipmentSlot[] = ["head", "leftHand", "rightHand", "leftFoot", "rightFoot"];
 
 export const SLOT_LABEL: Record<EquipmentSlot, string> = {
@@ -64,12 +68,9 @@ export function getEquipmentItem(slot: EquipmentSlot, element: ElementKey, tempe
   return { name: shoe.name, emoji: shoe.emoji };
 }
 
-// 케미 점수순으로 정렬된 목록을 5개 슬롯에 순서대로 배정한다. 6등부터는 슬롯을
-// 못 받고 랭킹 리스트에만 남는다 — "장비창"은 상위 5명만 보여주는 전시대다.
-export function assignSlots<T>(rankedEntries: T[]): Partial<Record<EquipmentSlot, T>> {
-  const result: Partial<Record<EquipmentSlot, T>> = {};
-  SLOT_ORDER.forEach((slot, i) => {
-    if (rankedEntries[i]) result[slot] = rankedEntries[i];
-  });
-  return result;
+// 이미 영구 배정된 슬롯 집합을 보고 다음으로 비어있는 슬롯을 알려준다.
+// 5자리가 다 찼으면 null — 6번째부터는 슬롯 없이 랭킹 리스트에만 남는다.
+export function getNextOpenSlot(takenSlots: Iterable<EquipmentSlot>): EquipmentSlot | null {
+  const taken = new Set(takenSlots);
+  return SLOT_ORDER.find((slot) => !taken.has(slot)) ?? null;
 }

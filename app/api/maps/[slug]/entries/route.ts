@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/firebaseAdmin";
 import { MBTI_TYPES, mbtiToTemperament } from "@/lib/result-engine/temperament";
 import { computeResult } from "@/lib/result-engine/compute";
+import { getNextOpenSlot, type EquipmentSlot } from "@/lib/result-engine/equipment";
 import { FieldValue } from "firebase-admin/firestore";
 
 const BIRTHDATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -50,6 +51,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     visitorBirthTime: birthTime,
   });
 
+  // 슬롯은 "먼저 등록한 사람 순"으로 딱 한 번만 정해서 저장한다 — 나중에 케미
+  // 점수가 더 높은 사람이 와도 이미 배정된 사람의 슬롯은 바뀌지 않는다.
+  const existingEntriesSnap = await mapRef.collection("entries").get();
+  const takenSlots = existingEntriesSnap.docs
+    .map((doc) => doc.data().equipmentSlot as EquipmentSlot | null)
+    .filter((slot): slot is EquipmentSlot => slot !== null);
+  const equipmentSlot = getNextOpenSlot(takenSlots);
+
   const now = FieldValue.serverTimestamp();
   const entryRef = await mapRef.collection("entries").add({
     visitorName: name,
@@ -62,6 +71,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     visitorTemperament: mbtiToTemperament(mbti),
     affinityCategory: result.affinityCategory,
     affinityScore: result.affinityScore,
+    equipmentSlot,
     seasonType: result.seasonType,
     resultTitle: result.title,
     resultElementBlurb: result.elementBlurb,

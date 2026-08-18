@@ -1,6 +1,7 @@
 import type { Temperament } from "./result-engine/temperament";
 import type { ElementKey } from "./result-engine/elements";
 import type { AffinityCategory } from "./result-engine/affinity";
+import type { EquipmentSlot } from "./result-engine/equipment";
 
 export type Gender = "male" | "female";
 
@@ -32,6 +33,7 @@ export interface EntryDoc {
   visitorTemperament: Temperament;
   affinityCategory: AffinityCategory;
   affinityScore: number;
+  equipmentSlot: EquipmentSlot | null;
   seasonType: string;
   resultTitle: string;
   resultElementBlurb: string;

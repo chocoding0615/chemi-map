@@ -49,6 +49,7 @@ async function getMapData(slug: string) {
       visitorTemperament: data.visitorTemperament,
       affinityCategory: data.affinityCategory,
       affinityScore: data.affinityScore,
+      equipmentSlot: data.equipmentSlot ?? null,
       seasonType: data.seasonType,
       resultTitle: data.resultTitle,
       resultElementBlurb: data.resultElementBlurb,
