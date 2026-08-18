@@ -4,6 +4,7 @@ import { getDb } from "@/lib/firebaseAdmin";
 import EntryForm from "@/components/EntryForm";
 import EntryGallery from "@/components/EntryGallery";
 import ShareBanner from "@/components/ShareBanner";
+import ElementCollectionTracker from "@/components/ElementCollectionTracker";
 import type { EntryDoc } from "@/lib/types";
 
 interface MapPageProps {
@@ -39,11 +40,16 @@ async function getMapData(slug: string) {
       visitorName: data.visitorName,
       visitorMbti: data.visitorMbti,
       visitorBirthdate: data.visitorBirthdate,
+      visitorBirthTime: data.visitorBirthTime ?? null,
       visitorElement: data.visitorElement,
+      visitorElementDistribution: data.visitorElementDistribution,
+      visitorHasTimeInput: data.visitorHasTimeInput,
       visitorTemperament: data.visitorTemperament,
       resultTitle: data.resultTitle,
       resultElementBlurb: data.resultElementBlurb,
       resultRelationshipBlurb: data.resultRelationshipBlurb,
+      resultDistributionBlurb: data.resultDistributionBlurb,
+      resultPillarText: data.resultPillarText,
       createdAt: toIso(data.createdAt),
     };
   });
@@ -68,6 +74,8 @@ export default async function MapPage({ params, searchParams }: MapPageProps) {
   const data = await getMapData(slug);
   if (!data) notFound();
 
+  const unlockedKeys = [...new Set(data.entries.map((entry) => entry.visitorElement))];
+
   return (
     <div className="flex flex-1 flex-col items-center gap-6 px-6 py-16">
       {created === "1" && <ShareBanner slug={slug} />}
@@ -84,6 +92,8 @@ export default async function MapPage({ params, searchParams }: MapPageProps) {
       <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-xl shadow-amber-900/5 ring-1 ring-amber-900/5 sm:p-8">
         <EntryForm slug={slug} ownerName={data.ownerName} />
       </div>
+
+      <ElementCollectionTracker unlockedKeys={unlockedKeys} />
 
       <div className="w-full max-w-md">
         <h2 className="text-center text-sm font-semibold text-amber-900/50">

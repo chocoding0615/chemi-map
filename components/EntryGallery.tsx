@@ -17,7 +17,13 @@ export default function EntryGallery({ entries }: { entries: EntryDoc[] }) {
   }
 
   return (
-    <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <div
+      className="mt-4 grid grid-cols-2 gap-3 rounded-2xl p-3 sm:grid-cols-3"
+      style={{
+        backgroundImage: "radial-gradient(circle, rgba(180,83,9,0.1) 1px, transparent 1px)",
+        backgroundSize: "16px 16px",
+      }}
+    >
       {entries.map((entry) => {
         const element = ELEMENT_BANK[entry.visitorElement];
         return (

@@ -17,6 +17,10 @@ interface Result {
   visitorElement: ElementKey;
   elementBlurb: string;
   relationshipBlurb: string;
+  distribution: Record<ElementKey, number>;
+  distributionBlurb: string;
+  pillarText: string;
+  hasTimeInput: boolean;
 }
 
 export default function EntryForm({ slug, ownerName }: EntryFormProps) {
@@ -24,6 +28,7 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
   const [name, setName] = useState("");
   const [mbti, setMbti] = useState("");
   const [birthdate, setBirthdate] = useState("");
+  const [birthTime, setBirthTime] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
@@ -42,7 +47,7 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
       const res = await fetch(`/api/maps/${slug}/entries`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, mbti, birthdate }),
+        body: JSON.stringify({ name, mbti, birthdate, birthTime: birthTime || undefined }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -66,6 +71,10 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
           element={result.visitorElement}
           elementBlurb={result.elementBlurb}
           relationshipBlurb={result.relationshipBlurb}
+          distribution={result.distribution}
+          distributionBlurb={result.distributionBlurb}
+          pillarText={result.pillarText}
+          hasTimeInput={result.hasTimeInput}
         />
         <Link
           href="/"
@@ -102,6 +111,17 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
           type="date"
           value={birthdate}
           onChange={(e) => setBirthdate(e.target.value)}
+          className="w-full rounded-xl border border-amber-900/10 bg-amber-50/60 px-4 py-2.5 text-sm text-amber-950 focus:border-amber-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-200"
+        />
+      </div>
+      <div>
+        <label className="mb-1.5 block text-sm font-semibold text-amber-950">
+          출생 시간 <span className="font-normal text-amber-900/40">(선택, 모르면 비워두세요)</span>
+        </label>
+        <input
+          type="time"
+          value={birthTime}
+          onChange={(e) => setBirthTime(e.target.value)}
           className="w-full rounded-xl border border-amber-900/10 bg-amber-50/60 px-4 py-2.5 text-sm text-amber-950 focus:border-amber-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-200"
         />
       </div>
