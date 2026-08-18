@@ -2,9 +2,11 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getDb } from "@/lib/firebaseAdmin";
 import EntryForm from "@/components/EntryForm";
-import StampMap from "@/components/StampMap";
+import OrbitMap from "@/components/OrbitMap";
+import ChemiRankList from "@/components/ChemiRankList";
 import ShareBanner from "@/components/ShareBanner";
 import type { EntryDoc } from "@/lib/types";
+import type { ElementKey } from "@/lib/result-engine/elements";
 
 interface MapPageProps {
   params: Promise<{ slug: string }>;
@@ -44,16 +46,24 @@ async function getMapData(slug: string) {
       visitorElementDistribution: data.visitorElementDistribution,
       visitorHasTimeInput: data.visitorHasTimeInput,
       visitorTemperament: data.visitorTemperament,
+      affinityCategory: data.affinityCategory,
+      affinityScore: data.affinityScore,
+      seasonType: data.seasonType,
       resultTitle: data.resultTitle,
       resultElementBlurb: data.resultElementBlurb,
-      resultRelationshipBlurb: data.resultRelationshipBlurb,
+      resultAffinityBlurb: data.resultAffinityBlurb,
       resultDistributionBlurb: data.resultDistributionBlurb,
       resultPillarText: data.resultPillarText,
       createdAt: toIso(data.createdAt),
     };
   });
 
-  return { ownerName: mapData.ownerName as string, entryCount: (mapData.entryCount as number) ?? 0, entries };
+  return {
+    ownerName: mapData.ownerName as string,
+    ownerElement: mapData.ownerElement as ElementKey,
+    entryCount: (mapData.entryCount as number) ?? 0,
+    entries,
+  };
 }
 
 export async function generateMetadata({ params }: MapPageProps): Promise<Metadata> {
@@ -84,13 +94,19 @@ export default async function MapPage({ params, searchParams }: MapPageProps) {
         <h1 className="mt-5 text-2xl font-extrabold tracking-tight text-amber-950">
           {data.ownerName}님의 케미 지도
         </h1>
+        <p className="mt-1 text-sm font-semibold text-amber-900/50">{data.entryCount}명이 다녀갔어요</p>
       </div>
 
-      <StampMap entries={data.entries} entryCount={data.entryCount} />
+      <OrbitMap ownerName={data.ownerName} ownerElement={data.ownerElement} entries={data.entries} />
 
-      <div id="entry-form" className="w-full max-w-sm scroll-mt-8 rounded-3xl bg-white p-6 shadow-xl shadow-amber-900/5 ring-1 ring-amber-900/5 sm:p-8">
+      <div
+        id="entry-form"
+        className="w-full max-w-sm scroll-mt-8 rounded-3xl bg-white p-6 shadow-xl shadow-amber-900/5 ring-1 ring-amber-900/5 sm:p-8"
+      >
         <EntryForm slug={slug} ownerName={data.ownerName} />
       </div>
+
+      <ChemiRankList entries={data.entries} />
     </div>
   );
 }

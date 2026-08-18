@@ -16,7 +16,11 @@ interface Result {
   title: string;
   visitorElement: ElementKey;
   elementBlurb: string;
-  relationshipBlurb: string;
+  affinityLabel: string;
+  affinityEmoji: string;
+  affinityScore: number;
+  affinityBlurb: string;
+  seasonType: string;
   distribution: Record<ElementKey, number>;
   distributionBlurb: string;
   pillarText: string;
@@ -70,7 +74,11 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
           title={result.title}
           element={result.visitorElement}
           elementBlurb={result.elementBlurb}
-          relationshipBlurb={result.relationshipBlurb}
+          affinityLabel={result.affinityLabel}
+          affinityEmoji={result.affinityEmoji}
+          affinityScore={result.affinityScore}
+          affinityBlurb={result.affinityBlurb}
+          seasonType={result.seasonType}
           distribution={result.distribution}
           distributionBlurb={result.distributionBlurb}
           pillarText={result.pillarText}

@@ -9,7 +9,11 @@ interface ResultCardProps {
   title: string;
   element: ElementKey;
   elementBlurb: string;
-  relationshipBlurb: string;
+  affinityLabel: string;
+  affinityEmoji: string;
+  affinityScore: number;
+  affinityBlurb: string;
+  seasonType: string;
   distribution: Record<ElementKey, number>;
   distributionBlurb: string;
   pillarText: string;
@@ -20,7 +24,11 @@ export default function ResultCard({
   title,
   element,
   elementBlurb,
-  relationshipBlurb,
+  affinityLabel,
+  affinityEmoji,
+  affinityScore,
+  affinityBlurb,
+  seasonType,
   distribution,
   distributionBlurb,
   pillarText,
@@ -44,9 +52,20 @@ export default function ResultCard({
       <div className="flex justify-center">
         <ElementIcon element={element} size={64} />
       </div>
-      <p className="mt-3 text-lg font-extrabold leading-snug text-amber-950">{title}</p>
-      <p className="mt-4 text-sm leading-relaxed text-amber-900/70">{elementBlurb}</p>
-      <p className="mt-2 text-sm leading-relaxed text-amber-900/70">{relationshipBlurb}</p>
+      <p className="mt-2 text-xs font-semibold text-amber-900/50">{seasonType}</p>
+      <p className="mt-1 text-lg font-extrabold leading-snug text-amber-950">{title}</p>
+
+      <div className="mt-3 flex items-center justify-center gap-2">
+        <span className="inline-flex items-center gap-1 rounded-full bg-white/70 px-3 py-1 text-xs font-bold text-amber-900">
+          {affinityEmoji} {affinityLabel}
+        </span>
+        <span className="inline-flex items-center rounded-full bg-amber-900 px-3 py-1 text-xs font-bold text-white">
+          케미 {affinityScore}
+        </span>
+      </div>
+
+      <p className="mt-4 text-sm leading-relaxed text-amber-900/70">{affinityBlurb}</p>
+      <p className="mt-2 text-sm leading-relaxed text-amber-900/70">{elementBlurb}</p>
 
       {unlocked ? (
         <div className="mt-5 space-y-3 rounded-xl bg-white/60 p-4 text-left">

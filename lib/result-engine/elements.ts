@@ -156,3 +156,31 @@ export const ELEMENT_BANK: Record<ElementKey, ElementEntry> = {
     ],
   },
 };
+
+export type Season = "spring" | "summer" | "fall" | "winter";
+
+function seasonFromMonth(month: number): Season {
+  if (month >= 3 && month <= 5) return "spring";
+  if (month >= 6 && month <= 8) return "summer";
+  if (month >= 9 && month <= 11) return "fall";
+  return "winter";
+}
+
+const SEASON_LABEL: Record<Season, string> = { spring: "봄", summer: "여름", fall: "가을", winter: "겨울" };
+
+// 오행 x 계절 조합 유형명(20가지). "여름 밤비형"처럼 계절 라벨과 합쳐서 쓴다.
+const SEASON_NOUN: Record<ElementKey, Record<Season, string>> = {
+  wood: { spring: "들풀", summer: "신록", fall: "단풍", winter: "큰나무" },
+  fire: { spring: "봄볕", summer: "태양", fall: "화롯불", winter: "난로" },
+  earth: { spring: "새순밭", summer: "황토", fall: "곡창", winter: "언덕" },
+  metal: { spring: "무쇠", summer: "보석", fall: "서리", winter: "칼날" },
+  water: { spring: "이슬", summer: "밤비", fall: "가을비", winter: "바다" },
+};
+
+// "여름 밤비형" 형태의 유형명. 생년월일의 월(月)만으로 계절을 정하는 단순화된 규칙
+// (정확한 절기 기준 아님 — 유형명은 재미 요소라 이 정도면 충분하다).
+export function getSeasonType(element: ElementKey, birthdate: string): string {
+  const month = Number(birthdate.split("-")[1]);
+  const season = seasonFromMonth(month);
+  return `${SEASON_LABEL[season]} ${SEASON_NOUN[element][season]}형`;
+}

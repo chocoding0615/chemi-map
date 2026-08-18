@@ -1,5 +1,6 @@
 import type { Temperament } from "./result-engine/temperament";
 import type { ElementKey } from "./result-engine/elements";
+import type { AffinityCategory } from "./result-engine/affinity";
 
 export interface MapDoc {
   slug: string;
@@ -26,9 +27,12 @@ export interface EntryDoc {
   visitorElementDistribution: Record<ElementKey, number>;
   visitorHasTimeInput: boolean;
   visitorTemperament: Temperament;
+  affinityCategory: AffinityCategory;
+  affinityScore: number;
+  seasonType: string;
   resultTitle: string;
   resultElementBlurb: string;
-  resultRelationshipBlurb: string;
+  resultAffinityBlurb: string;
   resultDistributionBlurb: string;
   resultPillarText: string;
   createdAt: string;
