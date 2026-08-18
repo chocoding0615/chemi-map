@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { EntryDoc } from "@/lib/types";
-import { ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
+import { ELEMENT_BANK, ELEMENT_ORDER, type ElementKey } from "@/lib/result-engine/elements";
 import { AFFINITY_BANK, AFFINITY_ORDER, type AffinityCategory } from "@/lib/result-engine/affinity";
 import ElementIcon from "./ElementIcon";
 
@@ -57,6 +57,14 @@ function layoutPositions(entries: EntryDoc[]) {
   });
 }
 
+// 집→사람 직선 대신 살짝 휘어진 오솔길처럼 보이도록, 중점을 접선 방향으로 밀어
+// 2차 베지어 곡선을 그린다.
+function roadPath(x: number, y: number) {
+  const mx = CENTER + (x - CENTER) * 0.5 - (y - CENTER) * 0.12;
+  const my = CENTER + (y - CENTER) * 0.5 + (x - CENTER) * 0.12;
+  return `M ${CENTER} ${CENTER} Q ${mx} ${my} ${x} ${y}`;
+}
+
 const ZONE_GRADIENT = `conic-gradient(from -36deg, ${ZONES.map(
   (z) => `${ELEMENT_BANK[z.element].color}26 0deg 72deg`
 ).join(", ")})`;
@@ -65,13 +73,20 @@ function MapCanvas({
   ownerName,
   ownerElement,
   entries,
+  selectedId,
+  onSelect,
+  onBackgroundClick,
 }: {
   ownerName: string;
   ownerElement: ElementKey;
   entries: EntryDoc[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+  onBackgroundClick?: () => void;
 }) {
   const [settled, setSettled] = useState(false);
   const positions = layoutPositions(entries);
+  const isEmpty = entries.length === 0;
 
   useEffect(() => {
     const t = setTimeout(() => setSettled(true), 60);
@@ -83,7 +98,9 @@ function MapCanvas({
       className="relative aspect-square w-full overflow-hidden rounded-2xl ring-1 ring-amber-900/10"
       style={{
         backgroundImage: `${ZONE_GRADIENT}, radial-gradient(circle at 50% 50%, #fffaf0 0%, #fff3dc 60%, #ffe8c2 100%)`,
+        opacity: isEmpty ? 0.6 : 1,
       }}
+      onClick={onBackgroundClick}
     >
       {ZONES.map((zone) => {
         const { x, y } = compassToXY(zone.angle, LABEL_DIST);
@@ -93,7 +110,9 @@ function MapCanvas({
             className="absolute flex flex-col items-center gap-0.5 text-center"
             style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%, -50%)" }}
           >
-            <span className="text-base leading-none">{zone.icon}</span>
+            <span className="text-base leading-none grayscale-0" style={{ opacity: isEmpty ? 0.5 : 1 }}>
+              {zone.icon}
+            </span>
             <span className="whitespace-nowrap text-[9px] font-bold text-amber-900/45">{zone.label}</span>
           </div>
         );
@@ -101,15 +120,16 @@ function MapCanvas({
 
       <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" preserveAspectRatio="none">
         {positions.map(({ entry, x, y }) => (
-          <line
+          <path
             key={entry.id}
-            x1={CENTER}
-            y1={CENTER}
-            x2={settled ? x : CENTER}
-            y2={settled ? y : CENTER}
-            stroke="rgba(154,52,18,0.2)"
-            strokeWidth={0.3}
-            style={{ transition: "x2 0.7s cubic-bezier(0.22,1,0.36,1), y2 0.7s cubic-bezier(0.22,1,0.36,1)" }}
+            d={roadPath(settled ? x : CENTER, settled ? y : CENTER)}
+            fill="none"
+            stroke="#a8703f"
+            strokeWidth={0.8}
+            strokeLinecap="round"
+            strokeDasharray="0.5 2"
+            opacity={0.4}
+            style={{ transition: "d 0.7s cubic-bezier(0.22,1,0.36,1)" }}
           />
         ))}
       </svg>
@@ -130,56 +150,124 @@ function MapCanvas({
       </div>
 
       {positions.map(({ entry, x, y, iconSize }) => (
-        <div
+        <button
           key={entry.id}
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect(entry.id);
+          }}
           className="absolute flex flex-col items-center"
           style={{
             left: `${settled ? x : CENTER}%`,
             top: `${settled ? y : CENTER}%`,
-            transform: "translate(-50%, -50%)",
+            transform: `translate(-50%, -50%) scale(${selectedId === entry.id ? 1.12 : 1})`,
             opacity: settled ? 1 : 0,
-            transition: "left 0.7s cubic-bezier(0.22,1,0.36,1), top 0.7s cubic-bezier(0.22,1,0.36,1), opacity 0.4s",
+            transition:
+              "left 0.7s cubic-bezier(0.22,1,0.36,1), top 0.7s cubic-bezier(0.22,1,0.36,1), opacity 0.4s, transform 0.15s",
           }}
         >
           <ElementIcon element={entry.visitorElement} size={iconSize} variant="filled" />
           <span className="mt-0.5 max-w-[72px] truncate rounded-full bg-white/95 px-1.5 text-[10px] font-semibold text-amber-950 shadow-sm">
             {entry.visitorName}
           </span>
-        </div>
+        </button>
       ))}
 
-      {entries.length === 0 && (
-        <p className="absolute inset-x-0 bottom-4 text-center text-xs text-amber-900/50">
-          친구들이 생일을 넣으면 여기 나타나요
+      {isEmpty && (
+        <p className="absolute inset-x-0 bottom-4 text-center text-xs font-medium text-amber-900/50">
+          아직 아무도 살지 않는 미개척지예요
         </p>
       )}
     </div>
   );
 }
 
+function SelectedCard({ entry, onClose }: { entry: EntryDoc; onClose: () => void }) {
+  const element = ELEMENT_BANK[entry.visitorElement];
+  const affinity = AFFINITY_BANK[entry.affinityCategory];
+  return (
+    <div className="relative w-full max-w-sm rounded-2xl bg-white p-4 shadow-md ring-1 ring-amber-900/10">
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="닫기"
+        className="absolute right-3 top-3 text-amber-900/30 hover:text-amber-900/60"
+      >
+        ✕
+      </button>
+      <div className="flex items-center gap-3">
+        <ElementIcon element={entry.visitorElement} size={44} variant="filled" />
+        <div>
+          <p className="font-bold text-amber-950">{entry.visitorName}</p>
+          <p className="text-xs text-amber-900/45">
+            {entry.seasonType} · {element.label}({element.hanja})
+          </p>
+        </div>
+        <span className="ml-auto shrink-0 rounded-full bg-amber-900 px-2.5 py-1 text-xs font-bold text-white">
+          케미 {entry.affinityScore}
+        </span>
+      </div>
+      <p className="mt-2 text-xs font-semibold text-amber-700">
+        {affinity.emoji} {affinity.label}
+      </p>
+      <p className="mt-1 text-sm leading-relaxed text-amber-900/70">{entry.resultAffinityBlurb}</p>
+    </div>
+  );
+}
+
 export default function NeighborhoodMap({ ownerName, ownerElement, entries }: NeighborhoodMapProps) {
   const [expanded, setExpanded] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selectedEntry = entries.find((e) => e.id === selectedId) ?? null;
 
-  const counts: Record<AffinityCategory, number> = {
+  const affinityCounts: Record<AffinityCategory, number> = {
     guin: 0,
     danjjak: 0,
     naesaram: 0,
     oreunpal: 0,
     horangi: 0,
   };
-  for (const entry of entries) counts[entry.affinityCategory]++;
+  for (const entry of entries) affinityCounts[entry.affinityCategory]++;
+
+  const settledElements = new Set(entries.map((e) => e.visitorElement));
 
   return (
     <div className="w-full max-w-sm">
-      <button type="button" onClick={() => setExpanded(true)} className="block w-full" aria-label="지도 크게 보기">
-        <MapCanvas ownerName={ownerName} ownerElement={ownerElement} entries={entries} />
-      </button>
-      <p className="mt-1.5 text-center text-xs text-amber-900/40">지도를 누르면 크게 볼 수 있어요</p>
+      <MapCanvas
+        ownerName={ownerName}
+        ownerElement={ownerElement}
+        entries={entries}
+        selectedId={selectedId}
+        onSelect={(id) => setSelectedId(id === selectedId ? null : id)}
+        onBackgroundClick={() => (selectedId ? setSelectedId(null) : setExpanded(true))}
+      />
+      <p className="mt-1.5 text-center text-xs text-amber-900/40">
+        {selectedId ? "다시 누르면 닫혀요" : "동네를 누르면 크게 볼 수 있어요"}
+      </p>
+
+      {selectedEntry && (
+        <div className="mt-3">
+          <SelectedCard entry={selectedEntry} onClose={() => setSelectedId(null)} />
+        </div>
+      )}
+
+      <div className="mt-3 flex items-center gap-2">
+        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-amber-900/10">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all"
+            style={{ width: `${(settledElements.size / ELEMENT_ORDER.length) * 100}%` }}
+          />
+        </div>
+        <span className="shrink-0 text-xs font-bold text-amber-900/50">
+          동네 {settledElements.size}/{ELEMENT_ORDER.length}
+        </span>
+      </div>
 
       <div className="mt-3 flex flex-wrap justify-center gap-1.5">
         {AFFINITY_ORDER.map((key) => {
           const affinity = AFFINITY_BANK[key];
-          const count = counts[key];
+          const count = affinityCounts[key];
           return (
             <span
               key={key}
@@ -199,7 +287,13 @@ export default function NeighborhoodMap({ ownerName, ownerElement, entries }: Ne
           onClick={() => setExpanded(false)}
         >
           <div className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-            <MapCanvas ownerName={ownerName} ownerElement={ownerElement} entries={entries} />
+            <MapCanvas
+              ownerName={ownerName}
+              ownerElement={ownerElement}
+              entries={entries}
+              selectedId={selectedId}
+              onSelect={(id) => setSelectedId(id === selectedId ? null : id)}
+            />
           </div>
           <button
             type="button"

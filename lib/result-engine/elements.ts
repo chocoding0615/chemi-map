@@ -184,3 +184,18 @@ export function getSeasonType(element: ElementKey, birthdate: string): string {
   const season = seasonFromMonth(month);
   return `${SEASON_LABEL[season]} ${SEASON_NOUN[element][season]}형`;
 }
+
+// 지도 주인의 오행으로 "OO마을" 이름을 짓는다. 이름+생년월일 시드로 고정 선택되니
+// 같은 사람은 항상 같은 마을 이름을 갖는다 — 사주도령에는 없는, 우리 지도만의 정체성.
+const VILLAGE_NAMES: Record<ElementKey, string[]> = {
+  wood: ["푸른숲마을", "나무그늘마을", "새싹정원마을"],
+  fire: ["노을빛마을", "화롯불마을", "햇살언덕마을"],
+  earth: ["황토빛마을", "포근한흙마을", "언덕배기마을"],
+  metal: ["반짝바위마을", "서릿빛마을", "단단한돌마을"],
+  water: ["물빛마을", "잔잔한파도마을", "이슬맺힌마을"],
+};
+
+export function getVillageName(element: ElementKey, ownerName: string, ownerBirthdate: string): string {
+  const names = VILLAGE_NAMES[element];
+  return names[pickVariant(`${ownerName}-${ownerBirthdate}-village`, names.length)];
+}

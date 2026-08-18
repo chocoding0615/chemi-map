@@ -96,3 +96,22 @@ export function calculateAffinityScore(category: AffinityCategory, seed: string)
   const variance = pickVariant(seed, 13) - 6; // -6..+6
   return Math.min(99, Math.max(60, AFFINITY_BANK[category].scoreBase + variance));
 }
+
+// 마을에 등록된 사람들 중 가장 많은 카테고리를 보고 마을 분위기를 한 줄로 설명한다.
+const VILLAGE_VIBE: Record<AffinityCategory, string> = {
+  guin: "나침반처럼 방향을 알려주는 사람들이 유독 많은 마을이에요.",
+  danjjak: "죽이 잘 맞는 짝꿍들이 모인, 인복 넘치는 마을이에요.",
+  naesaram: "정 많고 챙겨주는 걸 좋아하는 사람들이 자라나는 마을이에요.",
+  oreunpal: "묵묵히 뒤를 받쳐주는 든든한 사람들이 모인 마을이에요.",
+  horangi: "만날 때마다 한 뼘씩 성장하게 되는, 단단한 마을이에요.",
+};
+
+export function describeVillageVibe(entries: { affinityCategory: AffinityCategory }[]): string {
+  if (entries.length === 0) return "아직 아무도 살지 않는 마을이에요. 첫 번째 이웃을 초대해보세요!";
+
+  const counts: Record<AffinityCategory, number> = { guin: 0, danjjak: 0, naesaram: 0, oreunpal: 0, horangi: 0 };
+  for (const entry of entries) counts[entry.affinityCategory]++;
+
+  const top = AFFINITY_ORDER.reduce((best, key) => (counts[key] > counts[best] ? key : best));
+  return VILLAGE_VIBE[top];
+}
