@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import MbtiSelect from "./MbtiSelect";
 import ResultCard from "./ResultCard";
 
@@ -17,6 +18,7 @@ interface Result {
 }
 
 export default function EntryForm({ slug, ownerName }: EntryFormProps) {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [mbti, setMbti] = useState("");
   const [birthdate, setBirthdate] = useState("");
@@ -46,6 +48,7 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
         return;
       }
       setResult(data.result);
+      router.refresh();
     } catch {
       setError("네트워크 오류가 발생했어요. 다시 시도해주세요.");
     } finally {
