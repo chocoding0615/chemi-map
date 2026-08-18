@@ -41,52 +41,52 @@ interface AffinityEntry {
 
 export const AFFINITY_BANK: Record<AffinityCategory, AffinityEntry> = {
   guin: {
-    label: "귀인",
-    emoji: "🌟",
+    label: "나침반",
+    emoji: "🧭",
     scoreBase: 84,
     blurb: (owner, visitor) => {
       const o = ELEMENT_BANK[owner];
       const v = ELEMENT_BANK[visitor];
-      return `${v.label}生${o.label}(${v.hanja}生${o.hanja}) — 지칠 때 이 사람을 만나면 기운이 다시 차올라요. 나를 살리는 귀인이에요.`;
+      return `${v.label}生${o.label}(${v.hanja}生${o.hanja}) — 길을 잃은 것 같을 때 이 사람을 만나면 방향이 다시 보여요. 나를 이끌어주는 나침반이에요.`;
     },
   },
   danjjak: {
-    label: "단짝",
-    emoji: "🤎",
+    label: "짝꿍",
+    emoji: "🫶",
     scoreBase: 82,
     blurb: (owner) => {
       const o = ELEMENT_BANK[owner];
-      return `같은 ${o.label}(${o.hanja}) 기운이라 성향이 비슷해서, 설명 없이도 손발이 잘 맞는 단짝이에요.`;
+      return `같은 ${o.label}(${o.hanja}) 기운이라 성향이 비슷해서, 설명 없이도 손발이 잘 맞는 짝꿍이에요.`;
     },
   },
   naesaram: {
-    label: "내 사람",
+    label: "새싹",
     emoji: "🌱",
     scoreBase: 79,
     blurb: (owner, visitor) => {
       const o = ELEMENT_BANK[owner];
       const v = ELEMENT_BANK[visitor];
-      return `${o.label}生${v.label}(${o.hanja}生${v.hanja}) — 내가 시간과 마음을 써서 챙겨주게 되는, 아끼는 내 사람이에요.`;
+      return `${o.label}生${v.label}(${o.hanja}生${v.hanja}) — 내가 시간과 마음을 써서 물을 주게 되는, 아끼는 새싹이에요.`;
     },
   },
   oreunpal: {
-    label: "오른팔",
+    label: "지원군",
     emoji: "🤝",
     scoreBase: 77,
     blurb: (owner, visitor) => {
       const o = ELEMENT_BANK[owner];
       const v = ELEMENT_BANK[visitor];
-      return `${o.label}剋${v.label}(${o.hanja}剋${v.hanja}) — 내가 방향을 잡으면, 이 사람은 그 방향을 든든하게 받쳐줘요.`;
+      return `${o.label}剋${v.label}(${o.hanja}剋${v.hanja}) — 내가 방향을 잡고 나아가면, 이 사람은 뒤에서 든든하게 받쳐주는 지원군이에요.`;
     },
   },
   horangi: {
-    label: "호랑이 선생",
-    emoji: "🐯",
+    label: "오르막",
+    emoji: "⛰️",
     scoreBase: 74,
     blurb: (owner, visitor) => {
       const o = ELEMENT_BANK[owner];
       const v = ELEMENT_BANK[visitor];
-      return `${v.label}剋${o.label}(${v.hanja}剋${o.hanja}) — 가끔 따끔하지만, 결국 나를 성장시키는 호랑이 선생이에요.`;
+      return `${v.label}剋${o.label}(${v.hanja}剋${o.hanja}) — 가끔 숨차고 힘들지만, 오르고 나면 결국 나를 한 뼘 키워주는 오르막이에요.`;
     },
   },
 };

@@ -49,14 +49,13 @@ function MapCanvas({
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl"
+      className="relative overflow-hidden rounded-2xl ring-1 ring-amber-900/10"
       style={{
         width: size,
         height: size,
-        background: "radial-gradient(circle at 50% 40%, #1c2454 0%, #0b0f2e 70%, #060816 100%)",
         backgroundImage:
-          "radial-gradient(circle at 50% 40%, #1c2454 0%, #0b0f2e 70%, #060816 100%), radial-gradient(rgba(255,255,255,0.5) 1px, transparent 1px)",
-        backgroundSize: "100% 100%, 22px 22px",
+          "radial-gradient(circle at 50% 42%, #fff7e6 0%, #fed7aa 55%, #fb923c 100%), radial-gradient(rgba(120,53,15,0.12) 1px, transparent 1px)",
+        backgroundSize: "100% 100%, 18px 18px",
       }}
     >
       <svg width={size} height={size} className="absolute inset-0">
@@ -67,7 +66,7 @@ function MapCanvas({
             y1={center}
             x2={x}
             y2={y}
-            stroke="rgba(255,255,255,0.18)"
+            stroke="rgba(120,53,15,0.25)"
             strokeWidth={1}
           />
         ))}
@@ -78,7 +77,7 @@ function MapCanvas({
         style={{ left: center, top: center, transform: "translate(-50%, -50%)" }}
       >
         <ElementIcon element={ownerElement} size={Math.max(48, size * 0.18)} variant="filled" />
-        <span className="mt-1 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-bold text-amber-950">
+        <span className="mt-1 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-bold text-amber-950 shadow-sm">
           {ownerName} (나)
         </span>
       </div>
@@ -91,7 +90,7 @@ function MapCanvas({
         >
           <ElementIcon element={entry.visitorElement} size={satelliteSize} variant="filled" />
           <span
-            className="mt-0.5 max-w-[64px] truncate rounded-full bg-black/40 px-1.5 text-[10px] font-semibold text-white"
+            className="mt-0.5 max-w-[64px] truncate rounded-full bg-white/90 px-1.5 font-semibold text-amber-950 shadow-sm"
             style={{ fontSize: size < 250 ? 9 : 10 }}
           >
             {entry.visitorName}
@@ -100,7 +99,7 @@ function MapCanvas({
       ))}
 
       {entries.length === 0 && (
-        <p className="absolute inset-x-0 bottom-4 text-center text-xs text-white/50">
+        <p className="absolute inset-x-0 bottom-4 text-center text-xs text-amber-900/50">
           친구들이 생일을 넣으면 여기 나타나요
         </p>
       )}
