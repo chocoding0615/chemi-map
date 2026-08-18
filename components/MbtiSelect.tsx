@@ -9,21 +9,24 @@ interface MbtiSelectProps {
 
 export default function MbtiSelect({ value, onChange }: MbtiSelectProps) {
   return (
-    <div className="grid grid-cols-4 gap-2">
-      {MBTI_TYPES.map((type) => (
-        <button
-          key={type}
-          type="button"
-          onClick={() => onChange(type)}
-          className={`rounded-xl py-2 text-sm font-semibold transition ${
-            value === type
-              ? "bg-gradient-to-b from-amber-400 to-orange-500 text-white shadow-md shadow-orange-500/25"
-              : "bg-amber-50/60 text-amber-900/70 ring-1 ring-amber-900/10 hover:bg-amber-100"
-          }`}
-        >
-          {type}
-        </button>
-      ))}
+    <div className="relative">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full appearance-none rounded-xl border border-amber-900/10 bg-amber-50/60 px-4 py-2.5 text-sm text-amber-950 focus:border-amber-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-200"
+      >
+        <option value="" disabled>
+          MBTI를 선택해주세요
+        </option>
+        {MBTI_TYPES.map((type) => (
+          <option key={type} value={type}>
+            {type}
+          </option>
+        ))}
+      </select>
+      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-amber-900/40">
+        ▾
+      </span>
     </div>
   );
 }
