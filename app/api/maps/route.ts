@@ -11,12 +11,16 @@ const BIRTHTIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   const name = typeof body?.name === "string" ? body.name.trim() : "";
+  const gender = body?.gender === "male" || body?.gender === "female" ? body.gender : "";
   const mbti = typeof body?.mbti === "string" ? body.mbti.toUpperCase() : "";
   const birthdate = typeof body?.birthdate === "string" ? body.birthdate : "";
   const birthTime = typeof body?.birthTime === "string" && body.birthTime ? body.birthTime : undefined;
 
   if (!name || name.length > 20) {
     return NextResponse.json({ error: "이름을 1~20자로 입력해주세요." }, { status: 400 });
+  }
+  if (!gender) {
+    return NextResponse.json({ error: "성별을 선택해주세요." }, { status: 400 });
   }
   if (!MBTI_TYPES.includes(mbti as (typeof MBTI_TYPES)[number])) {
     return NextResponse.json({ error: "MBTI 값이 올바르지 않습니다." }, { status: 400 });
@@ -42,6 +46,7 @@ export async function POST(request: NextRequest) {
     .set({
       slug,
       ownerName: name,
+      ownerGender: gender,
       ownerMbti: mbti,
       ownerBirthdate: birthdate,
       ownerBirthTime: birthTime ?? null,

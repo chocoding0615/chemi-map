@@ -2,9 +2,12 @@ import type { Temperament } from "./result-engine/temperament";
 import type { ElementKey } from "./result-engine/elements";
 import type { AffinityCategory } from "./result-engine/affinity";
 
+export type Gender = "male" | "female";
+
 export interface MapDoc {
   slug: string;
   ownerName: string;
+  ownerGender: Gender;
   ownerMbti: string;
   ownerBirthdate: string;
   ownerBirthTime: string | null;

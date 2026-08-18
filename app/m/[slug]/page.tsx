@@ -2,10 +2,10 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getDb } from "@/lib/firebaseAdmin";
 import EntryForm from "@/components/EntryForm";
-import NeighborhoodMap from "@/components/NeighborhoodMap";
+import EquipmentScreen from "@/components/EquipmentScreen";
 import ChemiRankList from "@/components/ChemiRankList";
 import ShareBanner from "@/components/ShareBanner";
-import type { EntryDoc } from "@/lib/types";
+import type { EntryDoc, Gender } from "@/lib/types";
 import { getVillageName, type ElementKey } from "@/lib/result-engine/elements";
 import { describeVillageVibe } from "@/lib/result-engine/affinity";
 
@@ -61,6 +61,7 @@ async function getMapData(slug: string) {
 
   return {
     ownerName: mapData.ownerName as string,
+    ownerGender: (mapData.ownerGender as Gender) ?? "male",
     ownerElement: mapData.ownerElement as ElementKey,
     ownerBirthdate: mapData.ownerBirthdate as string,
     entryCount: (mapData.entryCount as number) ?? 0,
@@ -94,6 +95,7 @@ export default async function MapPage({ params, searchParams }: MapPageProps) {
 
   const villageName = getVillageName(data.ownerElement, data.ownerName, data.ownerBirthdate);
   const villageVibe = describeVillageVibe(data.entries);
+  const headerEmoji = data.ownerGender === "female" ? "🧍‍♀️" : "🧍‍♂️";
 
   return (
     <div className="flex flex-1 flex-col items-center gap-6 px-6 py-16">
@@ -101,7 +103,7 @@ export default async function MapPage({ params, searchParams }: MapPageProps) {
 
       <div className="text-center">
         <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-white text-5xl shadow-md ring-4 ring-white/60">
-          🏠
+          {headerEmoji}
         </div>
         <h1 className="mt-5 text-2xl font-extrabold tracking-tight text-amber-950">
           {data.ownerName}님의 {villageName}
@@ -110,7 +112,7 @@ export default async function MapPage({ params, searchParams }: MapPageProps) {
         <p className="mt-2 max-w-xs text-sm leading-relaxed text-amber-900/60">{villageVibe}</p>
       </div>
 
-      <NeighborhoodMap ownerName={data.ownerName} ownerElement={data.ownerElement} entries={data.entries} />
+      <EquipmentScreen ownerName={data.ownerName} ownerGender={data.ownerGender} entries={data.entries} />
 
       <div
         id="entry-form"

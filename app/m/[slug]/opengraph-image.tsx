@@ -16,6 +16,7 @@ export default async function OpengraphImage({ params }: { params: Promise<{ slu
   const villageName = mapData
     ? getVillageName(mapData.ownerElement, mapData.ownerName, mapData.ownerBirthdate)
     : "케미 마을";
+  const characterEmoji = mapData?.ownerGender === "female" ? "🧍‍♀️" : "🧍‍♂️";
 
   const fontData = await readFile(path.join(process.cwd(), "public/fonts/Pretendard-Bold.ttf"));
 
@@ -33,7 +34,7 @@ export default async function OpengraphImage({ params }: { params: Promise<{ slu
           fontFamily: "Pretendard",
         }}
       >
-        <div style={{ display: "flex", fontSize: 80, marginBottom: 16 }}>🏠</div>
+        <div style={{ display: "flex", fontSize: 80, marginBottom: 16 }}>{characterEmoji}</div>
         <div style={{ display: "flex", fontSize: 56, color: "#3a2a1a", textAlign: "center" }}>
           {`${ownerName}님의 ${villageName}`}
         </div>
