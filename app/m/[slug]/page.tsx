@@ -69,18 +69,26 @@ export default async function MapPage({ params, searchParams }: MapPageProps) {
   if (!data) notFound();
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6 bg-white px-6 py-16">
+    <div className="flex flex-1 flex-col items-center gap-6 px-6 py-16">
       {created === "1" && <ShareBanner slug={slug} />}
 
       <div className="text-center">
-        <div className="text-5xl">🧭</div>
-        <h1 className="mt-4 text-2xl font-bold text-neutral-900">{data.ownerName}님의 케미 지도</h1>
+        <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-white text-5xl shadow-md ring-4 ring-white/60">
+          🧭
+        </div>
+        <h1 className="mt-5 text-2xl font-extrabold tracking-tight text-amber-950">
+          {data.ownerName}님의 케미 지도
+        </h1>
       </div>
 
-      <EntryForm slug={slug} ownerName={data.ownerName} />
+      <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-xl shadow-amber-900/5 ring-1 ring-amber-900/5 sm:p-8">
+        <EntryForm slug={slug} ownerName={data.ownerName} />
+      </div>
 
       <div className="w-full max-w-md">
-        <h2 className="text-center text-sm font-medium text-neutral-400">지도에 등록된 사람들</h2>
+        <h2 className="text-center text-sm font-semibold text-amber-900/50">
+          지도에 등록된 사람들
+        </h2>
         <EntryGallery entries={data.entries} />
       </div>
     </div>

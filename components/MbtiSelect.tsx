@@ -15,10 +15,10 @@ export default function MbtiSelect({ value, onChange }: MbtiSelectProps) {
           key={type}
           type="button"
           onClick={() => onChange(type)}
-          className={`rounded-lg border py-2 text-sm font-medium transition ${
+          className={`rounded-xl py-2 text-sm font-semibold transition ${
             value === type
-              ? "border-amber-500 bg-amber-500 text-white"
-              : "border-neutral-300 bg-white text-neutral-700 hover:border-amber-400"
+              ? "bg-gradient-to-b from-amber-400 to-orange-500 text-white shadow-md shadow-orange-500/25"
+              : "bg-amber-50/60 text-amber-900/70 ring-1 ring-amber-900/10 hover:bg-amber-100"
           }`}
         >
           {type}
