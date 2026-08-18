@@ -2,9 +2,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getDb } from "@/lib/firebaseAdmin";
 import EntryForm from "@/components/EntryForm";
-import EntryGallery from "@/components/EntryGallery";
+import StampMap from "@/components/StampMap";
 import ShareBanner from "@/components/ShareBanner";
-import ElementCollectionTracker from "@/components/ElementCollectionTracker";
 import type { EntryDoc } from "@/lib/types";
 
 interface MapPageProps {
@@ -54,7 +53,7 @@ async function getMapData(slug: string) {
     };
   });
 
-  return { ownerName: mapData.ownerName as string, entries };
+  return { ownerName: mapData.ownerName as string, entryCount: (mapData.entryCount as number) ?? 0, entries };
 }
 
 export async function generateMetadata({ params }: MapPageProps): Promise<Metadata> {
@@ -74,8 +73,6 @@ export default async function MapPage({ params, searchParams }: MapPageProps) {
   const data = await getMapData(slug);
   if (!data) notFound();
 
-  const unlockedKeys = [...new Set(data.entries.map((entry) => entry.visitorElement))];
-
   return (
     <div className="flex flex-1 flex-col items-center gap-6 px-6 py-16">
       {created === "1" && <ShareBanner slug={slug} />}
@@ -89,17 +86,10 @@ export default async function MapPage({ params, searchParams }: MapPageProps) {
         </h1>
       </div>
 
-      <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-xl shadow-amber-900/5 ring-1 ring-amber-900/5 sm:p-8">
+      <StampMap entries={data.entries} entryCount={data.entryCount} />
+
+      <div id="entry-form" className="w-full max-w-sm scroll-mt-8 rounded-3xl bg-white p-6 shadow-xl shadow-amber-900/5 ring-1 ring-amber-900/5 sm:p-8">
         <EntryForm slug={slug} ownerName={data.ownerName} />
-      </div>
-
-      <ElementCollectionTracker unlockedKeys={unlockedKeys} />
-
-      <div className="w-full max-w-md">
-        <h2 className="text-center text-sm font-semibold text-amber-900/50">
-          지도에 등록된 사람들
-        </h2>
-        <EntryGallery entries={data.entries} />
       </div>
     </div>
   );

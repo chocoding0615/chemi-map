@@ -3,6 +3,8 @@ import { ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 interface ElementIconProps {
   element: ElementKey;
   size?: number;
+  /** "badge" = 옅은 색 배경 + 진한 아이콘(기본). "filled" = 꽉 찬 색 배경 + 흰 아이콘(스탬프 느낌). */
+  variant?: "badge" | "filled";
 }
 
 // 오행별 손그림 느낌의 심볼. 아이콘 라이브러리 대신 직접 그린 SVG로,
@@ -60,16 +62,18 @@ const GLYPHS: Record<ElementKey, React.ReactNode> = {
   ),
 };
 
-export default function ElementIcon({ element, size = 48 }: ElementIconProps) {
+export default function ElementIcon({ element, size = 48, variant = "badge" }: ElementIconProps) {
   const { color } = ELEMENT_BANK[element];
+  const filled = variant === "filled";
   return (
     <div
       className="inline-flex items-center justify-center rounded-full"
       style={{
         width: size,
         height: size,
-        backgroundColor: `${color}1a`,
-        color,
+        backgroundColor: filled ? color : `${color}1a`,
+        color: filled ? "#fff" : color,
+        boxShadow: filled ? "0 2px 6px rgba(0,0,0,0.15)" : undefined,
       }}
     >
       <svg viewBox="0 0 24 24" width={size * 0.55} height={size * 0.55}>
