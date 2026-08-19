@@ -1,6 +1,15 @@
 import { pickVariant, type ElementKey } from "@/lib/result-engine/elements";
 
-export type CategorySlug = "love" | "career" | "gunghap" | "yearly" | "daeun" | "taekil" | "sogaeting";
+export type CategorySlug =
+  | "love"
+  | "marriage"
+  | "career"
+  | "wealth"
+  | "gunghap"
+  | "yearly"
+  | "daeun"
+  | "taekil"
+  | "sogaeting";
 
 export type CategoryInputKind = "birthdate" | "twoBirthdates";
 
@@ -20,7 +29,9 @@ export interface FortuneCategory {
 // 보여주는 게 부적절하다고 판단해 "준비 중" 배지로만 노출한다 (홈/그리드에서 처리).
 export const FORTUNE_CATEGORY_ORDER: CategorySlug[] = [
   "love",
+  "marriage",
   "career",
+  "wealth",
   "gunghap",
   "yearly",
   "daeun",
@@ -59,6 +70,36 @@ export const FORTUNE_CATEGORIES: Record<CategorySlug, FortuneCategory> = {
       ],
     },
   },
+  marriage: {
+    slug: "marriage",
+    nameKo: "결혼운",
+    description: "결혼으로 이어지는 흐름을 복실이가 봐드려요",
+    priceKrw: 990,
+    icon: "💍",
+    inputKind: "birthdate",
+    blurbs: {
+      wood: [
+        "관계가 천천히 뿌리내려 결혼까지 자연스럽게 이어질 수 있는 흐름이에요. 서두르지 않아도 돼요.",
+        "함께 미래를 그려보고 싶은 마음이 커지는 시기예요. 진지한 대화를 먼저 꺼내봐도 좋아요.",
+      ],
+      fire: [
+        "마음이 확실해지면 속도감 있게 결혼까지 밀고 나가는 흐름이에요. 타이밍을 놓치지 마세요.",
+        "적극적으로 마음을 표현하면 관계가 한 단계 더 나아가는 시기예요.",
+      ],
+      earth: [
+        "안정적인 기반 위에서 결혼을 진지하게 고민하게 되는 시기예요. 서두르지 않는 게 오히려 좋아요.",
+        "양가 어른들과의 관계도 든든하게 자리 잡는 흐름이에요.",
+      ],
+      metal: [
+        "결혼을 향한 결단을 내리기 좋은 시기예요. 조건을 재기보다 마음을 믿어봐도 좋아요.",
+        "정리할 건 정리하고 확실하게 다음 단계로 넘어가는 흐름이에요.",
+      ],
+      water: [
+        "속으로 신중하게 결혼을 그려보는 시기예요. 생각이 정리되면 자연스럽게 흐름이 따라와요.",
+        "상대의 진심을 깊이 헤아리게 되는 시기예요. 대화를 통해 확신이 쌓여가요.",
+      ],
+    },
+  },
   career: {
     slug: "career",
     nameKo: "직업운",
@@ -86,6 +127,36 @@ export const FORTUNE_CATEGORIES: Record<CategorySlug, FortuneCategory> = {
       water: [
         "상황을 관찰하며 한 발 앞서 움직이면 유리한 시기예요.",
         "유연하게 대응하는 게 무기가 되는 흐름이에요. 변화를 두려워하지 마세요.",
+      ],
+    },
+  },
+  wealth: {
+    slug: "wealth",
+    nameKo: "재물운",
+    description: "돈의 흐름을 복실이가 봐드려요",
+    priceKrw: 990,
+    icon: "💰",
+    inputKind: "birthdate",
+    blurbs: {
+      wood: [
+        "꾸준히 모은 게 서서히 불어나는 흐름이에요. 장기적인 투자·저축이 잘 맞는 시기예요.",
+        "새로운 수입원의 씨앗이 생길 수 있는 시기예요. 작은 기회도 눈여겨보세요.",
+      ],
+      fire: [
+        "돈이 들어오고 나가는 게 빨라지는 시기예요. 충동적인 지출만 조심하면 좋은 흐름이에요.",
+        "적극적으로 움직이면 예상보다 큰 수입이 생길 수 있는 시기예요.",
+      ],
+      earth: [
+        "안정적으로 재물을 지키는 데 유리한 시기예요. 무리한 투자보다 지키는 전략이 좋아요.",
+        "차곡차곡 쌓아온 게 든든한 자산이 되는 흐름이에요.",
+      ],
+      metal: [
+        "돈 관리에 있어 결단력이 빛나는 시기예요. 정리할 지출은 과감히 정리해보세요.",
+        "원칙 있는 소비·저축 습관이 확실한 결과로 돌아오는 시기예요.",
+      ],
+      water: [
+        "돈의 흐름을 유연하게 파악하는 게 중요한 시기예요. 정보를 잘 살피면 기회가 보여요.",
+        "지출을 줄이기보다 흐름을 잘 타는 게 유리한 시기예요.",
       ],
     },
   },

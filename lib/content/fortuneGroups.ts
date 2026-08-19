@@ -37,12 +37,13 @@ export const FORTUNE_GROUPS: FortuneGroup[] = [
   },
   {
     title: "인연과 관계",
-    items: [fromCategory("love"), fromCategory("gunghap"), fromCategory("sogaeting")],
+    items: [fromCategory("love"), fromCategory("marriage"), fromCategory("gunghap"), fromCategory("sogaeting")],
   },
   {
     title: "그 밖의 운세",
     items: [
       fromCategory("career"),
+      fromCategory("wealth"),
       fromCategory("taekil"),
       { icon: "💬", label: "고민 상담", desc: "준비 중", href: "#", disabled: true },
     ],
