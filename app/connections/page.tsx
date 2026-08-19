@@ -1,5 +1,6 @@
 import MapCreateForm from "@/components/MapCreateForm";
 import FoxMascot from "@/components/FoxMascot";
+import MyMapBanner from "@/components/MyMapBanner";
 
 export const metadata = { title: "인연 지도 만들기 · 여우점" };
 
@@ -13,7 +14,11 @@ export default function ConnectionsPage() {
         <br />
         친구들이 생일과 MBTI를 넣으면, 나에게 어떤 사람인지 나와요.
       </p>
-      <div className="mt-8 w-full rounded-3xl bg-white p-6 shadow-xl shadow-brown/5 ring-1 ring-brown/5 sm:p-8">
+
+      <MyMapBanner />
+
+      <p className="mt-8 w-full text-center text-xs font-semibold text-brown-soft/40">새 지도 만들기</p>
+      <div className="mt-3 w-full rounded-3xl bg-white p-6 shadow-xl shadow-brown/5 ring-1 ring-brown/5 sm:p-8">
         <MapCreateForm />
       </div>
     </div>
