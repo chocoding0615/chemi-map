@@ -1,6 +1,6 @@
 import Link from "next/link";
 import FoxMascot from "@/components/FoxMascot";
-import { FORTUNE_CATEGORIES, FORTUNE_CATEGORY_ORDER } from "@/lib/content/fortuneCategories";
+import { FORTUNE_GROUPS } from "@/lib/content/fortuneGroups";
 import { DIARY_ENTRIES } from "@/lib/content/diary";
 import { FORTUNE_FREE_PREVIEW } from "@/lib/config";
 
@@ -43,51 +43,51 @@ export default function Home() {
       </div>
 
       {/* 무료 콘텐츠 배너 */}
-      <div className="mt-4 grid w-full grid-cols-2 gap-3">
-        <Link
-          href="/today"
-          className="rounded-2xl bg-gradient-to-b from-mint/30 to-cream p-4 text-center shadow-sm ring-1 ring-brown/5 transition active:scale-95 hover:bg-mint/20"
-        >
-          <span className="text-2xl">☀️</span>
-          <p className="mt-1 text-sm font-bold text-brown">오늘의 기운</p>
-          <p className="mt-0.5 text-[11px] text-mint-dark">무료 · 매일 갱신</p>
-        </Link>
-        <Link
-          href="/fox-type"
-          className="rounded-2xl bg-gradient-to-b from-lavender/30 to-cream p-4 text-center shadow-sm ring-1 ring-brown/5 transition active:scale-95 hover:bg-lavender/20"
-        >
+      <Link
+        href="/fox-type"
+        className="mt-4 flex w-full items-center justify-between rounded-2xl bg-gradient-to-b from-lavender/30 to-cream p-4 shadow-sm ring-1 ring-brown/5 transition active:scale-[0.98] hover:bg-lavender/20"
+      >
+        <span className="flex items-center gap-3">
           <span className="text-2xl">🦊</span>
-          <p className="mt-1 text-sm font-bold text-brown">나는 무슨 여우상일까</p>
-          <p className="mt-0.5 text-[11px] text-lavender-dark">무료 · 공유용</p>
-        </Link>
-      </div>
+          <span>
+            <span className="block text-sm font-bold text-brown">나는 무슨 여우상일까</span>
+            <span className="block text-[11px] text-lavender-dark">무료 · 공유용</span>
+          </span>
+        </span>
+        <span className="text-lg text-brown-soft/30">→</span>
+      </Link>
 
-      {/* 유료 카테고리 그리드 */}
-      <div className="mt-10 w-full">
-        <h2 className="text-sm font-semibold text-brown-soft/50">운세 더 보기</h2>
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          {FORTUNE_CATEGORY_ORDER.map((slug) => {
-            const category = FORTUNE_CATEGORIES[slug];
-            return (
-              <Link
-                key={slug}
-                href={`/fortune/${slug}`}
-                className="rounded-2xl bg-white p-4 text-center shadow-sm ring-1 ring-brown/5 transition active:scale-95 hover:bg-apricot/40"
-              >
-                <span className="text-2xl">{category.icon}</span>
-                <p className="mt-1 text-sm font-bold text-brown">{category.nameKo}</p>
-                <p className="mt-0.5 text-[11px] text-brown-soft/40">
-                  {FORTUNE_FREE_PREVIEW ? "지금은 무료" : `${category.priceKrw.toLocaleString()}원`}
-                </p>
-              </Link>
-            );
-          })}
-          <div className="flex flex-col items-center justify-center rounded-2xl bg-brown/5 p-4 text-center opacity-60">
-            <span className="text-2xl">💬</span>
-            <p className="mt-1 text-sm font-bold text-brown-soft/50">고민 상담</p>
-            <p className="mt-0.5 text-[11px] text-brown-soft/40">준비 중</p>
+      {/* 운세 더 보기 — 그룹별 섹션 */}
+      <div className="mt-10 w-full space-y-8">
+        {FORTUNE_GROUPS.map((group) => (
+          <div key={group.title}>
+            <h2 className="text-sm font-semibold text-brown-soft/50">{group.title}</h2>
+            <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {group.items.map((item) =>
+                item.disabled ? (
+                  <div
+                    key={item.label}
+                    className="flex flex-col items-center justify-center rounded-2xl bg-brown/5 p-4 text-center opacity-60"
+                  >
+                    <span className="text-2xl">{item.icon}</span>
+                    <p className="mt-1 text-sm font-bold text-brown-soft/50">{item.label}</p>
+                    <p className="mt-0.5 text-[11px] text-brown-soft/40">{item.desc}</p>
+                  </div>
+                ) : (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className="flex flex-col items-center justify-center rounded-2xl bg-white p-4 text-center shadow-sm ring-1 ring-brown/5 transition active:scale-95 hover:bg-apricot/40"
+                  >
+                    <span className="text-2xl">{item.icon}</span>
+                    <p className="mt-1 text-sm font-bold text-brown">{item.label}</p>
+                    <p className="mt-0.5 text-[11px] text-brown-soft/40">{item.desc}</p>
+                  </Link>
+                )
+              )}
+            </div>
           </div>
-        </div>
+        ))}
       </div>
 
       {/* 비밀일기 프리뷰 */}
