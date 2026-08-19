@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FoxMascot from "@/components/FoxMascot";
 import ElementIcon from "@/components/ElementIcon";
 import FoxCard from "@/components/FoxCard";
@@ -8,6 +8,7 @@ import { calculateElementProfile, type ElementKey } from "@/lib/result-engine/el
 import { getFoxType, type FoxTypeEntry } from "@/lib/result-engine/foxType";
 import { captureNodeAsPng, downloadBlob, shareImageOrCopyLink } from "@/lib/shareCard";
 import { awardForAction } from "@/lib/foxRewards";
+import { registerBackHandler } from "@/lib/backHandler";
 
 interface FoxTypeResult {
   element: ElementKey;
@@ -22,6 +23,11 @@ export default function FoxTypePage() {
   const [result, setResult] = useState<FoxTypeResult | null>(null);
   const [shareStatus, setShareStatus] = useState<"idle" | "working" | "copied">("idle");
   const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!result) return;
+    return registerBackHandler(() => setResult(null));
+  }, [result]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

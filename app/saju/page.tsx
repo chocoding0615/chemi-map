@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ElementIcon from "@/components/ElementIcon";
 import ElementDistributionChart from "@/components/ElementDistributionChart";
 import MockPayGate from "@/components/MockPayGate";
@@ -15,6 +15,7 @@ import {
 } from "@/lib/result-engine/elements";
 import { getFortuneDepth } from "@/lib/result-engine/depth";
 import { awardForAction, markFortuneSeen } from "@/lib/foxRewards";
+import { registerBackHandler } from "@/lib/backHandler";
 
 interface SajuResult {
   dominant: ElementKey;
@@ -36,6 +37,11 @@ export default function SajuPage() {
   const [birthTime, setBirthTime] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<SajuResult | null>(null);
+
+  useEffect(() => {
+    if (!result) return;
+    return registerBackHandler(() => setResult(null));
+  }, [result]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

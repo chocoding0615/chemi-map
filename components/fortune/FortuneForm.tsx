@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ElementIcon from "@/components/ElementIcon";
 import MbtiSelect from "@/components/MbtiSelect";
 import MockPayGate from "@/components/MockPayGate";
@@ -12,6 +12,7 @@ import { getFortuneDepth } from "@/lib/result-engine/depth";
 import { getMbtiCompat } from "@/lib/result-engine/mbtiCompat";
 import { markFortuneSeen } from "@/lib/foxRewards";
 import type { FortuneSeenId } from "@/lib/progress";
+import { registerBackHandler } from "@/lib/backHandler";
 
 interface FortuneFormProps {
   category: FortuneCategory;
@@ -130,6 +131,11 @@ export default function FortuneForm({ category }: FortuneFormProps) {
   const [personB, setPersonB] = useState<PersonInput>(EMPTY_PERSON);
   const [error, setError] = useState("");
   const [result, setResult] = useState<FortuneResult | null>(null);
+
+  useEffect(() => {
+    if (!result) return;
+    return registerBackHandler(() => setResult(null));
+  }, [result]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
