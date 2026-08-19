@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import MbtiSelect from "./MbtiSelect";
+import { awardForAction } from "@/lib/foxRewards";
 
 export default function MapCreateForm() {
   const router = useRouter();
@@ -35,6 +36,7 @@ export default function MapCreateForm() {
         setError(data.error ?? "지도를 만들지 못했어요. 다시 시도해주세요.");
         return;
       }
+      awardForAction("connections");
       router.push(`/m/${data.slug}?created=1`);
     } catch {
       setError("네트워크 오류가 발생했어요. 다시 시도해주세요.");

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import FoxMascot from "@/components/FoxMascot";
 import ElementIcon from "@/components/ElementIcon";
 import { getDailyFortune } from "@/lib/result-engine/dailyFortune";
+import { awardForAction } from "@/lib/foxRewards";
 
 const BIRTHDATE_KEY = "yeojujeom.today.birthdate";
 
@@ -22,6 +23,7 @@ export default function TodayPage() {
     }
     setHydrated(true);
     /* eslint-enable react-hooks/set-state-in-effect */
+    awardForAction("daily"); // 하루 1회만 실제로 exp가 붙도록 progress.ts 내부에서 중복 방지
   }, []);
 
   function handleSave(e: React.FormEvent) {

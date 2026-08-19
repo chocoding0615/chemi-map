@@ -10,6 +10,8 @@ import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/re
 import { getAffinityCategory, AFFINITY_BANK, calculateAffinityScore } from "@/lib/result-engine/affinity";
 import { getFortuneDepth } from "@/lib/result-engine/depth";
 import { getMbtiCompat } from "@/lib/result-engine/mbtiCompat";
+import { markFortuneSeen } from "@/lib/foxRewards";
+import type { FortuneSeenId } from "@/lib/progress";
 
 interface FortuneFormProps {
   category: FortuneCategory;
@@ -143,6 +145,7 @@ export default function FortuneForm({ category }: FortuneFormProps) {
       const blurb = getCategoryBlurb(category.slug, dominant, seed);
       const depth = getFortuneDepth(dominant, seed);
       setResult({ kind: "single", element: dominant, blurb, ...depth });
+      markSeenIfTracked(category.slug);
       return;
     }
 
@@ -185,6 +188,13 @@ export default function FortuneForm({ category }: FortuneFormProps) {
       mbtiBlurb: mbtiCompat?.entry.blurb ?? "",
       ...depth,
     });
+    markSeenIfTracked(category.slug);
+  }
+
+  function markSeenIfTracked(slug: string) {
+    const trackedId: FortuneSeenId | null =
+      slug === "love" ? "love" : slug === "career" ? "career" : slug === "gunghap" ? "compat" : null;
+    if (trackedId) markFortuneSeen(trackedId);
   }
 
   if (result) {

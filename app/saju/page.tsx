@@ -14,6 +14,7 @@ import {
   type ElementKey,
 } from "@/lib/result-engine/elements";
 import { getFortuneDepth } from "@/lib/result-engine/depth";
+import { awardForAction, markFortuneSeen } from "@/lib/foxRewards";
 
 interface SajuResult {
   dominant: ElementKey;
@@ -61,6 +62,8 @@ export default function SajuPage() {
       hasTimeInput: profile.hasTimeInput,
       ...depth,
     });
+    awardForAction("saju");
+    markFortuneSeen("saju");
   }
 
   return (

@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import FoxMascot from "@/components/FoxMascot";
 import ElementIcon from "@/components/ElementIcon";
+import FoxCard from "@/components/FoxCard";
 import { calculateElementProfile, type ElementKey } from "@/lib/result-engine/elements";
 import { getFoxType, type FoxTypeEntry } from "@/lib/result-engine/foxType";
+import { captureNodeAsPng, downloadBlob, shareImageOrCopyLink } from "@/lib/shareCard";
+import { awardForAction } from "@/lib/foxRewards";
 
 interface FoxTypeResult {
   element: ElementKey;
@@ -16,7 +19,8 @@ export default function FoxTypePage() {
   const [birthdate, setBirthdate] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<FoxTypeResult | null>(null);
-  const [shared, setShared] = useState(false);
+  const [shareStatus, setShareStatus] = useState<"idle" | "working" | "copied">("idle");
+  const cardRef = useRef<HTMLDivElement>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,22 +32,38 @@ export default function FoxTypePage() {
     const { dominant } = calculateElementProfile(birthdate);
     const { entry, description } = getFoxType(dominant, birthdate);
     setResult({ element: dominant, entry, description });
+    awardForAction("foxtype");
+  }
+
+  async function handleSaveImage() {
+    if (!cardRef.current || !result) return;
+    setShareStatus("working");
+    try {
+      const blob = await captureNodeAsPng(cardRef.current);
+      downloadBlob(blob, `여우점_${result.entry.name}.png`);
+      awardForAction("share");
+    } catch {
+      // 캡처 실패 — 조용히 무시(브라우저 호환성 이슈일 가능성)
+    } finally {
+      setShareStatus("idle");
+    }
   }
 
   async function handleShare() {
-    if (!result) return;
-    const text = `나는 ${result.entry.name}! ${result.entry.tagline} 🦊 여우점에서 나는 무슨 여우상인지 확인해보세요`;
-    const url = typeof window !== "undefined" ? window.location.origin : "";
+    if (!cardRef.current || !result) return;
+    setShareStatus("working");
     try {
-      if (navigator.share) {
-        await navigator.share({ text, url });
-        return;
-      }
-      await navigator.clipboard.writeText(`${text} ${url}`);
-      setShared(true);
-      setTimeout(() => setShared(false), 2000);
+      const blob = await captureNodeAsPng(cardRef.current);
+      const status = await shareImageOrCopyLink(
+        blob,
+        `여우점_${result.entry.name}.png`,
+        `나는 ${result.entry.name}! ${result.entry.tagline} 🦊`
+      );
+      awardForAction("share");
+      setShareStatus(status === "copied" ? "copied" : "idle");
+      if (status === "copied") setTimeout(() => setShareStatus("idle"), 2000);
     } catch {
-      // 공유/클립보드 API를 쓸 수 없는 환경 — 조용히 무시
+      setShareStatus("idle");
     }
   }
 
@@ -86,17 +106,33 @@ export default function FoxTypePage() {
           <p className="mt-1 text-sm font-semibold text-coral-dark">{result.entry.tagline}</p>
           <p className="mt-4 text-sm leading-relaxed text-brown-soft/70">{result.description}</p>
 
-          <button
-            type="button"
-            onClick={handleShare}
-            className="mt-5 w-full rounded-xl bg-white py-3 text-sm font-bold text-coral-dark shadow-sm ring-1 ring-brown/10 transition active:scale-95 hover:bg-cream"
-          >
-            {shared ? "복사됨!" : "공유하기"}
-          </button>
+          <div className="mt-5">
+            <FoxCard ref={cardRef} foxName={result.entry.name} tagline={result.entry.tagline} element={result.element} />
+          </div>
+
+          <div className="mt-5 grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={handleSaveImage}
+              disabled={shareStatus === "working"}
+              className="rounded-xl bg-white py-3 text-sm font-bold text-coral-dark shadow-sm ring-1 ring-brown/10 transition active:scale-95 hover:bg-cream disabled:opacity-60"
+            >
+              이미지 저장
+            </button>
+            <button
+              type="button"
+              onClick={handleShare}
+              disabled={shareStatus === "working"}
+              className="rounded-xl bg-gradient-to-b from-coral to-coral-dark py-3 text-sm font-bold text-white shadow-md shadow-coral-dark/25 transition active:scale-95 disabled:opacity-60"
+            >
+              {shareStatus === "copied" ? "링크 복사됨!" : "공유하기"}
+            </button>
+          </div>
+
           <button
             type="button"
             onClick={() => setResult(null)}
-            className="mt-3 text-xs font-semibold text-brown-soft/50 underline underline-offset-2"
+            className="mt-4 text-xs font-semibold text-brown-soft/50 underline underline-offset-2"
           >
             다시 확인하기
           </button>
