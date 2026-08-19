@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { getTodayScore } from "@/lib/result-engine/todayScore";
-
-interface TodayScoreCardProps {
-  birthdate: string | null;
-}
+import { getStoredBirthdate } from "@/lib/dailyPersonalization";
+import { onBirthdateChanged } from "@/lib/notify";
 
 const CATEGORY_META = [
   { key: "love", label: "애정운", emoji: "💕" },
@@ -14,13 +12,22 @@ const CATEGORY_META = [
   { key: "health", label: "건강운", emoji: "🍃" },
 ] as const;
 
-export default function TodayScoreCard({ birthdate }: TodayScoreCardProps) {
+// 어느 화면에서 띄우든 항상 같은 점수가 나와야 하므로, 호출부가 넘겨주는 생일이
+// 아니라 이 컴포넌트가 직접 "오늘의 기운"과 공유하는 저장된 생일을 읽는다 —
+// 예전엔 /saju가 폼에 막 입력한 값을 그대로 넘겨서 /today와 다른 seed가 됐었다.
+export default function TodayScoreCard() {
   const [hydrated, setHydrated] = useState(false);
+  const [birthdate, setBirthdate] = useState<string | null>(null);
 
   useEffect(() => {
-    // 서버 렌더와의 하이드레이션 불일치를 피하려고 마운트 후에만 오늘 날짜를 계산한다.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // 서버 렌더와의 하이드레이션 불일치를 피하려고 마운트 후에만 localStorage/날짜를 읽는다.
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setBirthdate(getStoredBirthdate());
     setHydrated(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
+    // 같은 페이지 안에서 생일을 저장/초기화하면(예: /today의 폼) 새로고침 없이도
+    // 바로 반영되도록 구독한다.
+    return onBirthdateChanged(() => setBirthdate(getStoredBirthdate()));
   }, []);
 
   if (!hydrated) {

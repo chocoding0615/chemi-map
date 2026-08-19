@@ -1,4 +1,8 @@
-// "오늘의 기운"과 "오늘의 부적 뽑기"가 개인화에 같은 생일 값을 공유하도록 한 곳에 모아둔다.
+// "오늘의 기운"·"오늘의 부적 뽑기"·"오늘의 운세 점수"가 전부 이 하나의 저장된
+// 생일을 공유한다 — 화면마다 따로 값을 들고 있으면 결과가 어긋나기 쉬우니
+// 항상 이 모듈을 통해서만 읽고 쓴다.
+import { notifyBirthdateChanged } from "./notify";
+
 const BIRTHDATE_KEY = "yeojujeom.today.birthdate";
 const ANON_ID_KEY = "yeojujeom.anonId";
 
@@ -14,11 +18,13 @@ export function getStoredBirthdate(): string | null {
 export function setStoredBirthdate(value: string): void {
   if (!isBrowser()) return;
   window.localStorage.setItem(BIRTHDATE_KEY, value);
+  notifyBirthdateChanged();
 }
 
 export function clearStoredBirthdate(): void {
   if (!isBrowser()) return;
   window.localStorage.removeItem(BIRTHDATE_KEY);
+  notifyBirthdateChanged();
 }
 
 // 생일을 저장 안 한 손님도 매일 결정론적인 결과를 볼 수 있도록, 최초 방문 시

@@ -27,7 +27,6 @@ interface SajuResult {
   distribution: Record<ElementKey, number>;
   pillarText: string;
   hasTimeInput: boolean;
-  birthdate: string;
   personality: PersonalityReading;
   balance: BalanceInsight;
   advice: string;
@@ -66,7 +65,6 @@ export default function SajuPage() {
       distribution: profile.distribution,
       pillarText: profile.pillarText,
       hasTimeInput: profile.hasTimeInput,
-      birthdate,
       personality,
       balance: getBalanceInsight(profile.distribution),
       advice: getSajuAdvice(profile.dominant, seed),
@@ -139,7 +137,7 @@ export default function SajuPage() {
         </form>
       ) : (
         <div className="mt-8 w-full space-y-4">
-          <TodayScoreCard birthdate={result.birthdate} />
+          <TodayScoreCard />
 
           <div className="w-full rounded-2xl bg-gradient-to-b from-apricot to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
             <div className="flex justify-center">

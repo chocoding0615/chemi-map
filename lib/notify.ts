@@ -10,6 +10,7 @@ export interface ToastPayload {
 const TOAST_EVENT = "yeojujeom:toast";
 const PROGRESS_EVENT = "yeojujeom:progress-changed";
 const NINE_TAIL_EVENT = "yeojujeom:nine-tail";
+const BIRTHDATE_EVENT = "yeojujeom:birthdate-changed";
 
 function isBrowser() {
   return typeof window !== "undefined";
@@ -47,4 +48,15 @@ export function onNineTail(handler: () => void): () => void {
   if (!isBrowser()) return () => {};
   window.addEventListener(NINE_TAIL_EVENT, handler);
   return () => window.removeEventListener(NINE_TAIL_EVENT, handler);
+}
+
+export function notifyBirthdateChanged(): void {
+  if (!isBrowser()) return;
+  window.dispatchEvent(new Event(BIRTHDATE_EVENT));
+}
+
+export function onBirthdateChanged(handler: () => void): () => void {
+  if (!isBrowser()) return () => {};
+  window.addEventListener(BIRTHDATE_EVENT, handler);
+  return () => window.removeEventListener(BIRTHDATE_EVENT, handler);
 }

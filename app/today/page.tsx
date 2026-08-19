@@ -59,7 +59,7 @@ export default function TodayPage() {
       ) : (
         <>
           <div className="mt-8 w-full">
-            <TodayScoreCard birthdate={birthdate} />
+            <TodayScoreCard />
           </div>
 
           <Link

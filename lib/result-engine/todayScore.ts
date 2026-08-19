@@ -22,6 +22,22 @@ export interface TodayScore {
   luckyDirection: string;
 }
 
+const MIN_SCORE = 35;
+const MAX_SCORE = 98;
+
+// 극단값(0점/100점 근처)이 잘 안 나오도록 세 번 뽑아 평균 내서 중앙으로 몰리게 하고
+// (동전 여러 개를 던져 합산하면 가운데로 몰리는 것과 같은 원리), 지수를 살짝 걸어
+// 중상위(50~90) 쪽으로 한 번 더 밀어올린 다음 [35, 98] 구간으로 매핑한다.
+function scaledScore(seed: string): number {
+  const a = pickVariant(`${seed}-a`, 1000);
+  const b = pickVariant(`${seed}-b`, 1000);
+  const c = pickVariant(`${seed}-c`, 1000);
+  const avgRaw = (a + b + c) / 3000; // 0~1, 삼각분포에 가깝게 0.5 부근에 몰림
+  const biased = Math.pow(avgRaw, 0.8); // 0~1, 중상위로 살짝 밀어올림
+  const score = MIN_SCORE + biased * (MAX_SCORE - MIN_SCORE);
+  return Math.round(Math.min(MAX_SCORE, Math.max(MIN_SCORE, score)));
+}
+
 const COMMENT_BANK = {
   high: [
     "오늘은 뭘 해도 술술 풀리는 날이에요! 자신 있게 움직여도 좋아요.",
@@ -47,17 +63,24 @@ function commentFor(overall: number, seed: string): string {
   return bank[pickVariant(`${seed}-comment`, bank.length)];
 }
 
+// 화면(오늘의 기운/사주 결과)에 상관없이 항상 같은 값이 나오도록, 이 함수 하나만이
+// 유일한 계산 지점이다 — 호출부는 "생일(있으면) + 오늘 날짜"만 넘기면 된다.
 export function getTodayScore(birthdate: string | null, dateISO: string): TodayScore {
   const base = birthdate ?? "guest";
   const seed = `${base}-${dateISO}-score`;
 
-  const overall = pickVariant(`${seed}-overall`, 101); // 0~100, 재미용이라 하한선 없이 그대로 노출
   const detail: TodayScoreDetail = {
-    love: pickVariant(`${seed}-love`, 101),
-    wealth: pickVariant(`${seed}-wealth`, 101),
-    career: pickVariant(`${seed}-career`, 101),
-    health: pickVariant(`${seed}-health`, 101),
+    love: scaledScore(`${seed}-love`),
+    wealth: scaledScore(`${seed}-wealth`),
+    career: scaledScore(`${seed}-career`),
+    health: scaledScore(`${seed}-health`),
   };
+
+  // 종합 점수는 세부 점수 평균에서 ±5 정도만 보정해서, "종합은 높은데 세부는
+  // 다 낮다" 같은 모순이 나오지 않게 한다.
+  const detailAvg = (detail.love + detail.wealth + detail.career + detail.health) / 4;
+  const adjustment = pickVariant(`${seed}-adjust`, 11) - 5; // -5~+5
+  const overall = Math.round(Math.min(MAX_SCORE, Math.max(MIN_SCORE, detailAvg + adjustment)));
 
   // 오늘의 행운 요소는 개인 사주와 무관하게 "오늘 날짜"만으로 정해져서
   // 그날 방문한 모든 사람이 같은 걸 본다(달력처럼 오늘 하루 공통 운세).
