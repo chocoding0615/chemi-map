@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import ElementIcon from "./ElementIcon";
 import ElementDistributionChart from "./ElementDistributionChart";
+import MockPayGate from "./MockPayGate";
+import { addActivity } from "@/lib/localActivity";
 import type { ElementKey } from "@/lib/result-engine/elements";
 
 interface ResultCardProps {
@@ -34,57 +35,40 @@ export default function ResultCard({
   pillarText,
   hasTimeInput,
 }: ResultCardProps) {
-  const [unlocked, setUnlocked] = useState(false);
-  const [paying, setPaying] = useState(false);
-
-  function handleTestPay() {
-    setPaying(true);
-    // 실제 PG 연동 전이라 결제 자체는 모의(mock) 처리 — 나중에 여기를 실제
-    // 결제 위젯 호출로 교체하면 UI 흐름은 그대로 재사용 가능.
-    setTimeout(() => {
-      setPaying(false);
-      setUnlocked(true);
-    }, 900);
-  }
-
   return (
-    <div className="rounded-2xl bg-gradient-to-b from-amber-100 to-orange-100 p-6 text-center shadow-inner ring-1 ring-amber-900/10">
+    <div className="rounded-2xl bg-gradient-to-b from-apricot to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
       <div className="flex justify-center">
         <ElementIcon element={element} size={64} />
       </div>
-      <p className="mt-2 text-xs font-semibold text-amber-900/50">{seasonType}</p>
-      <p className="mt-1 text-lg font-extrabold leading-snug text-amber-950">{title}</p>
+      <p className="mt-2 text-xs font-semibold text-brown-soft/50">{seasonType}</p>
+      <p className="mt-1 text-lg font-extrabold leading-snug text-brown">{title}</p>
 
       <div className="mt-3 flex items-center justify-center gap-2">
-        <span className="inline-flex items-center gap-1 rounded-full bg-white/70 px-3 py-1 text-xs font-bold text-amber-900">
+        <span className="inline-flex items-center gap-1 rounded-full bg-white/70 px-3 py-1 text-xs font-bold text-brown">
           {affinityEmoji} {affinityLabel}
         </span>
-        <span className="inline-flex items-center rounded-full bg-amber-900 px-3 py-1 text-xs font-bold text-white">
+        <span className="inline-flex items-center rounded-full bg-coral-dark px-3 py-1 text-xs font-bold text-white">
           케미 {affinityScore}
         </span>
       </div>
 
-      <p className="mt-4 text-sm leading-relaxed text-amber-900/70">{affinityBlurb}</p>
-      <p className="mt-2 text-sm leading-relaxed text-amber-900/70">{elementBlurb}</p>
+      <p className="mt-4 text-sm leading-relaxed text-brown-soft/70">{affinityBlurb}</p>
+      <p className="mt-2 text-sm leading-relaxed text-brown-soft/70">{elementBlurb}</p>
 
-      {unlocked ? (
+      <MockPayGate
+        priceKrw={0}
+        unlockLabel="🔒 테스트 결제로 상세 결과 열어보기 (실제 결제 아님)"
+        onUnlock={() => addActivity({ category: "인연 지도", title, priceKrw: 0 })}
+      >
         <div className="mt-5 space-y-3 rounded-xl bg-white/60 p-4 text-left">
-          <p className="text-center text-xs font-semibold text-amber-900/50">
+          <p className="text-center text-xs font-semibold text-brown-soft/50">
             사주 상세 · {hasTimeInput ? "출생시간 포함" : "출생시간 미입력 (참고용)"}
           </p>
-          <p className="text-center text-xs text-amber-900/70">{pillarText}</p>
+          <p className="text-center text-xs text-brown-soft/70">{pillarText}</p>
           <ElementDistributionChart distribution={distribution} />
-          <p className="text-sm leading-relaxed text-amber-900/70">{distributionBlurb}</p>
+          <p className="text-sm leading-relaxed text-brown-soft/70">{distributionBlurb}</p>
         </div>
-      ) : (
-        <button
-          onClick={handleTestPay}
-          disabled={paying}
-          className="mt-5 w-full rounded-xl border border-dashed border-amber-400 bg-white/50 py-3 text-sm font-bold text-amber-700 transition hover:bg-white disabled:opacity-60"
-        >
-          {paying ? "결제 처리 중..." : "🔒 테스트 결제로 상세 결과 열어보기 (실제 결제 아님)"}
-        </button>
-      )}
+      </MockPayGate>
     </div>
   );
 }

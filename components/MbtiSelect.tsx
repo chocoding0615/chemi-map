@@ -13,7 +13,7 @@ export default function MbtiSelect({ value, onChange }: MbtiSelectProps) {
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full appearance-none rounded-xl border border-amber-900/10 bg-amber-50/60 px-4 py-2.5 text-sm text-amber-950 focus:border-amber-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-200"
+        className="w-full appearance-none rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
       >
         <option value="" disabled>
           MBTI를 선택해주세요
@@ -24,9 +24,7 @@ export default function MbtiSelect({ value, onChange }: MbtiSelectProps) {
           </option>
         ))}
       </select>
-      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-amber-900/40">
-        ▾
-      </span>
+      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-brown/40">▾</span>
     </div>
   );
 }

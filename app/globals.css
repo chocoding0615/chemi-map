@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+@theme {
+  --color-cream: #fff8f0;
+  --color-apricot: #ffeedd;
+  --color-coral: #ff9f5a;
+  --color-coral-dark: #f2803a;
+  --color-mint: #8fd9bb;
+  --color-mint-dark: #5fbe96;
+  --color-lavender: #c9bfea;
+  --color-lavender-dark: #a997dc;
+  --color-brown: #4a3428;
+  --color-brown-soft: #7a5c46;
+  --font-hand: var(--font-gaegu), var(--font-pretendard), cursive;
+}
+
+.bg-dots {
+  background-image: radial-gradient(circle, rgba(74, 52, 40, 0.08) 1.3px, transparent 1.3px);
+  background-size: 18px 18px;
+}

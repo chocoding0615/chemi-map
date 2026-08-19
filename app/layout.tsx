@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Gaegu } from "next/font/google";
+import SiteFooter from "@/components/SiteFooter";
 import "./globals.css";
 
 const pretendard = localFont({
@@ -9,16 +11,24 @@ const pretendard = localFont({
   display: "swap",
 });
 
+const gaegu = Gaegu({
+  subsets: ["latin"],
+  weight: "700",
+  variable: "--font-gaegu",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "케미 지도",
-  description: "생일과 MBTI만 넣으면, 내가 이 사람에게 어떤 사람인지 나와요.",
+  title: "여우점",
+  description: "아기 구미호 복실이가 그려주는 나의 사주 — 여우점",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" className={`${pretendard.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-gradient-to-b from-amber-50 via-orange-50 to-amber-100 font-[family-name:var(--font-pretendard)]">
+    <html lang="ko" className={`${pretendard.variable} ${gaegu.variable} h-full antialiased`}>
+      <body className="bg-dots flex min-h-full flex-col bg-gradient-to-b from-cream via-apricot to-cream font-[family-name:var(--font-pretendard)]">
         {children}
+        <SiteFooter />
       </body>
     </html>
   );

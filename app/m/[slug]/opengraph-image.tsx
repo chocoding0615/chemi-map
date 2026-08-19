@@ -16,7 +16,6 @@ export default async function OpengraphImage({ params }: { params: Promise<{ slu
   const villageName = mapData
     ? getVillageName(mapData.ownerElement, mapData.ownerName, mapData.ownerBirthdate)
     : "케미 마을";
-  const characterEmoji = mapData?.ownerGender === "female" ? "🧍‍♀️" : "🧍‍♂️";
 
   const fontData = await readFile(path.join(process.cwd(), "public/fonts/Pretendard-Bold.ttf"));
 
@@ -30,12 +29,12 @@ export default async function OpengraphImage({ params }: { params: Promise<{ slu
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#fff2d6",
+          backgroundColor: "#fff8f0",
           fontFamily: "Pretendard",
         }}
       >
-        <div style={{ display: "flex", fontSize: 80, marginBottom: 16 }}>{characterEmoji}</div>
-        <div style={{ display: "flex", fontSize: 56, color: "#3a2a1a", textAlign: "center" }}>
+        <div style={{ display: "flex", fontSize: 80, marginBottom: 16 }}>🦊</div>
+        <div style={{ display: "flex", fontSize: 56, color: "#4a3428", textAlign: "center" }}>
           {`${ownerName}님의 ${villageName}`}
         </div>
         <div style={{ display: "flex", gap: 14, marginTop: 28 }}>
@@ -52,8 +51,8 @@ export default async function OpengraphImage({ params }: { params: Promise<{ slu
             />
           ))}
         </div>
-        <div style={{ display: "flex", fontSize: 28, color: "#7a5c3a", marginTop: 26 }}>
-          생일과 MBTI만 넣으면, 내가 이 사람에게 어떤 사람인지 나와요
+        <div style={{ display: "flex", fontSize: 28, color: "#7a5c46", marginTop: 26 }}>
+          여우점 · 복실이가 그려주는 인연 지도
         </div>
       </div>
     ),
