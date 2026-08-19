@@ -1,26 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import FoxMascot from "@/components/FoxMascot";
 import ElementIcon from "@/components/ElementIcon";
 import { getDailyFortune } from "@/lib/result-engine/dailyFortune";
 import { awardForAction } from "@/lib/foxRewards";
-
-const BIRTHDATE_KEY = "yeojujeom.today.birthdate";
+import { getStoredBirthdate, setStoredBirthdate, clearStoredBirthdate } from "@/lib/dailyPersonalization";
+import { hasDrawnCharmToday } from "@/lib/dailyCharm";
 
 export default function TodayPage() {
   const [birthdate, setBirthdate] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [hydrated, setHydrated] = useState(false);
+  const [charmDrawnToday, setCharmDrawnToday] = useState(false);
 
   useEffect(() => {
     // 서버 렌더와의 하이드레이션 불일치를 피하려고 마운트 후에만 localStorage를 읽는다.
     /* eslint-disable react-hooks/set-state-in-effect */
-    const stored = window.localStorage.getItem(BIRTHDATE_KEY);
+    const stored = getStoredBirthdate();
     if (stored) {
       setBirthdate(stored);
       setInputValue(stored);
     }
+    setCharmDrawnToday(hasDrawnCharmToday());
     setHydrated(true);
     /* eslint-enable react-hooks/set-state-in-effect */
     awardForAction("daily"); // 하루 1회만 실제로 exp가 붙도록 progress.ts 내부에서 중복 방지
@@ -29,12 +32,12 @@ export default function TodayPage() {
   function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!inputValue) return;
-    window.localStorage.setItem(BIRTHDATE_KEY, inputValue);
+    setStoredBirthdate(inputValue);
     setBirthdate(inputValue);
   }
 
   function handleClear() {
-    window.localStorage.removeItem(BIRTHDATE_KEY);
+    clearStoredBirthdate();
     setBirthdate(null);
     setInputValue("");
   }
@@ -54,7 +57,17 @@ export default function TodayPage() {
         <div className="mt-8 h-40 w-full animate-pulse rounded-3xl bg-white/60" />
       ) : (
         <>
-          <div className="mt-8 w-full rounded-2xl bg-gradient-to-b from-apricot to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
+          <Link
+            href="/daily-charm"
+            className="mt-8 flex w-full items-center justify-between rounded-2xl bg-gradient-to-b from-lavender to-lavender-dark px-5 py-4 text-white shadow-lg shadow-lavender-dark/25 transition active:scale-[0.98]"
+          >
+            <span className="text-sm font-bold">
+              {charmDrawnToday ? "🎴 오늘의 부적, 결과 보러 가기" : "🎴 오늘의 부적, 아직 안 뽑았어요!"}
+            </span>
+            <span className="text-lg">→</span>
+          </Link>
+
+          <div className="mt-4 w-full rounded-2xl bg-gradient-to-b from-apricot to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
             {fortune.element && (
               <div className="flex justify-center">
                 <ElementIcon element={fortune.element} size={56} />
