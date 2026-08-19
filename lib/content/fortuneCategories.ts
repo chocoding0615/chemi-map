@@ -12,6 +12,8 @@ export interface FortuneCategory {
   icon: string;
   inputKind: CategoryInputKind;
   blurbs?: Record<ElementKey, string[]>;
+  /** twoBirthdates 카테고리 중 MBTI 궁합도 함께 보여줄지 (지금은 궁합만 해당). */
+  needsMbti?: boolean;
 }
 
 // 고민 상담(330원)은 이번 패스에서 제외 — AI 없이 정형화된 답변을 실제 상담처럼
@@ -90,10 +92,11 @@ export const FORTUNE_CATEGORIES: Record<CategorySlug, FortuneCategory> = {
   gunghap: {
     slug: "gunghap",
     nameKo: "궁합",
-    description: "두 사람의 궁합을 오행으로 봐드려요",
+    description: "두 사람의 궁합을 오행과 MBTI로 함께 봐드려요",
     priceKrw: 990,
     icon: "🤝",
     inputKind: "twoBirthdates",
+    needsMbti: true,
   },
   yearly: {
     slug: "yearly",

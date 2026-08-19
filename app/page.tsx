@@ -2,6 +2,7 @@ import Link from "next/link";
 import FoxMascot from "@/components/FoxMascot";
 import { FORTUNE_CATEGORIES, FORTUNE_CATEGORY_ORDER } from "@/lib/content/fortuneCategories";
 import { DIARY_ENTRIES } from "@/lib/content/diary";
+import { FORTUNE_FREE_PREVIEW } from "@/lib/config";
 
 export default function Home() {
   const diaryPreview = DIARY_ENTRIES.slice(0, 3);
@@ -29,7 +30,7 @@ export default function Home() {
         >
           <span className="text-2xl">🔮</span>
           <p className="mt-1 text-sm font-bold">내 사주 풀이</p>
-          <p className="mt-0.5 text-[11px] text-white/80">요약 무료</p>
+          <p className="mt-0.5 text-[11px] text-white/80">{FORTUNE_FREE_PREVIEW ? "지금은 무료" : "요약 무료"}</p>
         </Link>
         <Link
           href="/connections"
@@ -75,7 +76,9 @@ export default function Home() {
               >
                 <span className="text-2xl">{category.icon}</span>
                 <p className="mt-1 text-sm font-bold text-brown">{category.nameKo}</p>
-                <p className="mt-0.5 text-[11px] text-brown-soft/40">{category.priceKrw.toLocaleString()}원</p>
+                <p className="mt-0.5 text-[11px] text-brown-soft/40">
+                  {FORTUNE_FREE_PREVIEW ? "지금은 무료" : `${category.priceKrw.toLocaleString()}원`}
+                </p>
               </Link>
             );
           })}
