@@ -70,15 +70,37 @@ function saveProgress(progress: FoxProgress): void {
   notifyProgressChanged();
 }
 
-function tailsFromExp(exp: number): number {
+export interface TailState {
+  tails: number;
+  pct: number; // 현재 꼬리 구간 안에서 진행된 비율(0~100), 게이지바 width에 그대로 쓴다
+  remain: number; // 다음 꼬리까지 남은 exp
+  isMax: boolean;
+}
+
+// 꼬리 수·게이지 채움 비율·"남은 exp" 텍스트가 서로 어긋나지 않도록 이 함수
+// 하나에서만 파생시킨다 — 위젯이든 다른 화면이든 exp 값을 직접 재계산하지 말 것.
+export function deriveTailState(exp: number): TailState {
   let tails = 0;
-  for (let i = TAIL_THRESHOLDS.length - 1; i >= 0; i--) {
-    if (exp >= TAIL_THRESHOLDS[i]) {
-      tails = i;
-      break;
-    }
+  for (let i = 0; i < TAIL_THRESHOLDS.length; i++) {
+    if (exp >= TAIL_THRESHOLDS[i]) tails = i;
+    else break;
   }
-  return Math.min(9, tails);
+  tails = Math.min(tails, 9);
+
+  if (tails >= 9) {
+    return { tails: 9, pct: 100, remain: 0, isMax: true };
+  }
+  const cur = TAIL_THRESHOLDS[tails];
+  const next = TAIL_THRESHOLDS[tails + 1];
+  const gained = exp - cur;
+  const need = next - cur;
+  const pct = Math.max(0, Math.min(100, Math.round((gained / need) * 100)));
+  const remain = Math.max(0, next - exp);
+  return { tails, pct, remain, isMax: false };
+}
+
+function tailsFromExp(exp: number): number {
+  return deriveTailState(exp).tails;
 }
 
 export interface AddExpResult {
