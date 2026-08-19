@@ -52,7 +52,7 @@ export default async function OpengraphImage({ params }: { params: Promise<{ slu
           ))}
         </div>
         <div style={{ display: "flex", fontSize: 28, color: "#7a5c46", marginTop: 26 }}>
-          여우점 · 복실이가 그려주는 인연 지도
+          여우점 · 복실이가 그려주는 인연 매칭
         </div>
       </div>
     ),

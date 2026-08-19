@@ -20,7 +20,7 @@ export default function MyMapBanner() {
       href={`/m/${slug}`}
       className="mt-6 flex w-full items-center justify-between rounded-2xl bg-gradient-to-b from-coral to-coral-dark px-5 py-4 text-white shadow-lg shadow-coral-dark/25 transition active:scale-[0.98]"
     >
-      <span className="text-sm font-bold">🗺️ 내 인연 지도 보러 가기</span>
+      <span className="text-sm font-bold">🗺️ 내가 만든 지도 보러 가기</span>
       <span className="text-lg">→</span>
     </Link>
   );

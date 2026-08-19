@@ -36,8 +36,8 @@ export default function Home() {
           href="/connections"
           className="rounded-2xl bg-white p-4 text-center shadow-sm ring-1 ring-brown/10 transition active:scale-95 hover:bg-apricot/40"
         >
-          <span className="text-2xl">🗺️</span>
-          <p className="mt-1 text-sm font-bold text-brown">인연 지도</p>
+          <span className="text-2xl">🏘️</span>
+          <p className="mt-1 text-sm font-bold text-brown">여우 마을</p>
           <p className="mt-0.5 text-[11px] text-brown-soft/50">무료 · 공유해보기</p>
         </Link>
       </div>

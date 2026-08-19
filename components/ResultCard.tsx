@@ -58,7 +58,7 @@ export default function ResultCard({
       <MockPayGate
         priceKrw={0}
         unlockLabel="🔒 테스트 결제로 상세 결과 열어보기 (실제 결제 아님)"
-        onUnlock={() => addActivity({ category: "인연 지도", title, priceKrw: 0 })}
+        onUnlock={() => addActivity({ category: "인연 매칭", title, priceKrw: 0 })}
       >
         <div className="mt-5 space-y-3 rounded-xl bg-white/60 p-4 text-left">
           <p className="text-center text-xs font-semibold text-brown-soft/50">

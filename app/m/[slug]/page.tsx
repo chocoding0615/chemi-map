@@ -75,7 +75,7 @@ export async function generateMetadata({ params }: MapPageProps): Promise<Metada
   const mapSnap = await getDb().collection("maps").doc(slug).get();
   if (!mapSnap.exists) {
     return {
-      title: "인연 지도 · 여우점",
+      title: "인연 매칭 · 여우점",
       description: "생일과 MBTI만 넣으면, 내가 이 사람에게 어떤 사람인지 나와요.",
     };
   }

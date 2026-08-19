@@ -45,7 +45,7 @@ export const CHARMS: Charm[] = [
     emoji: "👝",
     rarity: "common",
     desc: "자잘한 행운을 담아두는 주머니예요. 안에 뭐가 들었는지는 복실이도 몰라요.",
-    howTo: "인연 지도를 처음 만들면 얻어요.",
+    howTo: "인연 매칭을 처음 만들면 얻어요.",
   },
   {
     id: "dawn-dew",
@@ -77,7 +77,7 @@ export const CHARMS: Charm[] = [
     emoji: "🧵",
     rarity: "rare",
     desc: "이어질 사람과 새끼손가락을 몰래 묶어두는 실이에요. 살짝 당기면 인연이 다가와요.",
-    howTo: "인연 지도를 3개 이상 만들면 얻어요.",
+    howTo: "인연 매칭을 3개 이상 만들면 얻어요.",
   },
   {
     id: "moon-mirror",

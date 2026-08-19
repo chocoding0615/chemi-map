@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import FoxMascot from "@/components/FoxMascot";
 import ElementIcon from "@/components/ElementIcon";
+import TodayScoreCard from "@/components/TodayScoreCard";
 import { getDailyFortune } from "@/lib/result-engine/dailyFortune";
 import { awardForAction } from "@/lib/foxRewards";
 import { getStoredBirthdate, setStoredBirthdate, clearStoredBirthdate } from "@/lib/dailyPersonalization";
@@ -57,9 +58,13 @@ export default function TodayPage() {
         <div className="mt-8 h-40 w-full animate-pulse rounded-3xl bg-white/60" />
       ) : (
         <>
+          <div className="mt-8 w-full">
+            <TodayScoreCard birthdate={birthdate} />
+          </div>
+
           <Link
             href="/daily-charm"
-            className="mt-8 flex w-full items-center justify-between rounded-2xl bg-gradient-to-b from-lavender to-lavender-dark px-5 py-4 text-white shadow-lg shadow-lavender-dark/25 transition active:scale-[0.98]"
+            className="mt-4 flex w-full items-center justify-between rounded-2xl bg-gradient-to-b from-lavender to-lavender-dark px-5 py-4 text-white shadow-lg shadow-lavender-dark/25 transition active:scale-[0.98]"
           >
             <span className="text-sm font-bold">
               {charmDrawnToday ? "🎴 오늘의 부적, 결과 보러 가기" : "🎴 오늘의 부적, 아직 안 뽑았어요!"}

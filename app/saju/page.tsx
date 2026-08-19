@@ -5,30 +5,34 @@ import ElementIcon from "@/components/ElementIcon";
 import ElementDistributionChart from "@/components/ElementDistributionChart";
 import MockPayGate from "@/components/MockPayGate";
 import FoxMascot from "@/components/FoxMascot";
+import TodayScoreCard from "@/components/TodayScoreCard";
 import { addActivity } from "@/lib/localActivity";
+import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 import {
-  calculateElementProfile,
-  describeDistribution,
-  pickVariant,
-  ELEMENT_BANK,
-  type ElementKey,
-} from "@/lib/result-engine/elements";
-import { getFortuneDepth } from "@/lib/result-engine/depth";
+  getPersonalityReading,
+  getBalanceInsight,
+  getSajuAdvice,
+  getSajuCaution,
+  getLuckyInfo,
+  type PersonalityReading,
+  type BalanceInsight,
+  type LuckyInfo,
+} from "@/lib/result-engine/sajuReading";
 import { awardForAction, markFortuneSeen } from "@/lib/foxRewards";
 import { registerBackHandler } from "@/lib/backHandler";
 
 interface SajuResult {
   dominant: ElementKey;
   teaser: string;
-  blurb: string;
   distribution: Record<ElementKey, number>;
-  distributionBlurb: string;
   pillarText: string;
   hasTimeInput: boolean;
+  birthdate: string;
+  personality: PersonalityReading;
+  balance: BalanceInsight;
   advice: string;
   caution: string;
-  luckyColor: string;
-  luckyItem: string;
+  lucky: LuckyInfo;
 }
 
 export default function SajuPage() {
@@ -52,21 +56,22 @@ export default function SajuPage() {
     setError("");
 
     const profile = calculateElementProfile(birthdate, birthTime || undefined);
-    const element = ELEMENT_BANK[profile.dominant];
     const seed = `${birthdate}-${gender}-${birthTime}-saju`;
-    const blurb = element.blurbs[pickVariant(seed, element.blurbs.length)];
-    const teaser = blurb.split(".")[0] + ".";
-    const depth = getFortuneDepth(profile.dominant, seed);
+    const personality = getPersonalityReading(profile.dominant, seed);
+    const teaser = personality.temperament.split(".")[0] + ".";
 
     setResult({
       dominant: profile.dominant,
       teaser,
-      blurb,
       distribution: profile.distribution,
-      distributionBlurb: describeDistribution(profile.distribution),
       pillarText: profile.pillarText,
       hasTimeInput: profile.hasTimeInput,
-      ...depth,
+      birthdate,
+      personality,
+      balance: getBalanceInsight(profile.distribution),
+      advice: getSajuAdvice(profile.dominant, seed),
+      caution: getSajuCaution(profile.dominant, seed),
+      lucky: getLuckyInfo(profile.dominant),
     });
     awardForAction("saju");
     markFortuneSeen("saju");
@@ -133,61 +138,90 @@ export default function SajuPage() {
           </button>
         </form>
       ) : (
-        <div className="mt-8 w-full rounded-2xl bg-gradient-to-b from-apricot to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
-          <div className="flex justify-center">
-            <ElementIcon element={result.dominant} size={64} />
-          </div>
-          <p className="mt-3 text-sm leading-relaxed text-brown-soft/70">{result.teaser}</p>
+        <div className="mt-8 w-full space-y-4">
+          <TodayScoreCard birthdate={result.birthdate} />
 
-          <MockPayGate
-            priceKrw={990}
-            onUnlock={() =>
-              addActivity({
-                category: "내 사주 풀이",
-                title: `${ELEMENT_BANK[result.dominant].label}(${ELEMENT_BANK[result.dominant].hanja}) 기운 상세 풀이`,
-                priceKrw: 990,
-              })
-            }
-          >
-            <div className="mt-5 space-y-4 rounded-xl bg-white/60 p-4 text-left">
-              <div>
-                <p className="text-center text-xs font-semibold text-brown-soft/50">
-                  사주 상세 · {result.hasTimeInput ? "출생시간 포함" : "출생시간 미입력 (참고용)"}
-                </p>
-                <p className="mt-1 text-center text-xs text-brown-soft/70">{result.pillarText}</p>
-              </div>
-              <ElementDistributionChart distribution={result.distribution} />
-              <p className="text-sm leading-relaxed text-brown-soft/70">{result.blurb}</p>
-              <p className="text-sm leading-relaxed text-brown-soft/70">{result.distributionBlurb}</p>
-
-              <div className="rounded-lg bg-mint/15 p-3">
-                <p className="text-xs font-bold text-mint-dark">💡 복실이의 조언</p>
-                <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{result.advice}</p>
-              </div>
-              <div className="rounded-lg bg-lavender/15 p-3">
-                <p className="text-xs font-bold text-lavender-dark">⚠️ 이런 점은 조심하세요</p>
-                <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{result.caution}</p>
-              </div>
-              <div className="flex gap-2 text-center text-xs">
-                <div className="flex-1 rounded-lg bg-cream p-2">
-                  <p className="font-bold text-coral-dark">행운의 색</p>
-                  <p className="mt-0.5 text-brown-soft/70">{result.luckyColor}</p>
-                </div>
-                <div className="flex-1 rounded-lg bg-cream p-2">
-                  <p className="font-bold text-coral-dark">행운의 아이템</p>
-                  <p className="mt-0.5 text-brown-soft/70">{result.luckyItem}</p>
-                </div>
-              </div>
+          <div className="w-full rounded-2xl bg-gradient-to-b from-apricot to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
+            <div className="flex justify-center">
+              <ElementIcon element={result.dominant} size={64} />
             </div>
-          </MockPayGate>
+            <p className="mt-3 text-sm leading-relaxed text-brown-soft/70">{result.teaser}</p>
 
-          <button
-            type="button"
-            onClick={() => setResult(null)}
-            className="mt-4 text-xs font-semibold text-brown-soft/50 underline underline-offset-2"
-          >
-            다시 입력하기
-          </button>
+            <MockPayGate
+              priceKrw={990}
+              onUnlock={() =>
+                addActivity({
+                  category: "내 사주 풀이",
+                  title: `${ELEMENT_BANK[result.dominant].label}(${ELEMENT_BANK[result.dominant].hanja}) 기운 상세 풀이`,
+                  priceKrw: 990,
+                })
+              }
+            >
+              <div className="mt-5 space-y-4 rounded-xl bg-white/60 p-4 text-left">
+                <div>
+                  <p className="text-center text-xs font-semibold text-brown-soft/50">
+                    사주 상세 · {result.hasTimeInput ? "출생시간 포함" : "출생시간 미입력 (참고용)"}
+                  </p>
+                  <p className="mt-1 text-center text-xs text-brown-soft/70">{result.pillarText}</p>
+                </div>
+
+                <ElementDistributionChart distribution={result.distribution} />
+                <p className="text-sm leading-relaxed text-brown-soft/70">{result.balance.strongText}</p>
+                <p className="text-sm leading-relaxed text-brown-soft/70">{result.balance.weakText}</p>
+
+                <div className="space-y-3 border-t border-brown/10 pt-4">
+                  <div>
+                    <p className="text-xs font-bold text-coral-dark">🌱 타고난 기질</p>
+                    <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{result.personality.temperament}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-coral-dark">💞 관계·인연에서의 성향</p>
+                    <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{result.personality.relationships}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-coral-dark">🌤️ 일·성장에서의 성향</p>
+                    <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{result.personality.growth}</p>
+                  </div>
+                </div>
+
+                <div className="rounded-lg bg-mint/15 p-3">
+                  <p className="text-xs font-bold text-mint-dark">💡 복실이의 조언</p>
+                  <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{result.advice}</p>
+                </div>
+                <div className="rounded-lg bg-lavender/15 p-3">
+                  <p className="text-xs font-bold text-lavender-dark">⚠️ 이런 점은 조심하세요</p>
+                  <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{result.caution}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-center text-xs">
+                  <div className="rounded-lg bg-cream p-2">
+                    <p className="font-bold text-coral-dark">행운의 색</p>
+                    <p className="mt-0.5 text-brown-soft/70">{result.lucky.color}</p>
+                  </div>
+                  <div className="rounded-lg bg-cream p-2">
+                    <p className="font-bold text-coral-dark">행운의 아이템</p>
+                    <p className="mt-0.5 text-brown-soft/70">{result.lucky.item}</p>
+                  </div>
+                  <div className="rounded-lg bg-cream p-2">
+                    <p className="font-bold text-coral-dark">행운의 방향</p>
+                    <p className="mt-0.5 text-brown-soft/70">{result.lucky.direction}</p>
+                  </div>
+                  <div className="rounded-lg bg-cream p-2">
+                    <p className="font-bold text-coral-dark">잘 맞는 시간대</p>
+                    <p className="mt-0.5 text-brown-soft/70">{result.lucky.time}</p>
+                  </div>
+                </div>
+              </div>
+            </MockPayGate>
+
+            <button
+              type="button"
+              onClick={() => setResult(null)}
+              className="mt-4 text-xs font-semibold text-brown-soft/50 underline underline-offset-2"
+            >
+              다시 입력하기
+            </button>
+          </div>
         </div>
       )}
     </div>
