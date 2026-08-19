@@ -9,6 +9,7 @@ export interface ToastPayload {
 
 const TOAST_EVENT = "yeojujeom:toast";
 const PROGRESS_EVENT = "yeojujeom:progress-changed";
+const NINE_TAIL_EVENT = "yeojujeom:nine-tail";
 
 function isBrowser() {
   return typeof window !== "undefined";
@@ -35,4 +36,15 @@ export function onProgressChanged(handler: () => void): () => void {
   if (!isBrowser()) return () => {};
   window.addEventListener(PROGRESS_EVENT, handler);
   return () => window.removeEventListener(PROGRESS_EVENT, handler);
+}
+
+export function notifyNineTail(): void {
+  if (!isBrowser()) return;
+  window.dispatchEvent(new Event(NINE_TAIL_EVENT));
+}
+
+export function onNineTail(handler: () => void): () => void {
+  if (!isBrowser()) return () => {};
+  window.addEventListener(NINE_TAIL_EVENT, handler);
+  return () => window.removeEventListener(NINE_TAIL_EVENT, handler);
 }

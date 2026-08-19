@@ -1,6 +1,11 @@
 import { addExp, recordFortuneSeen, type ActionId, type FoxProgress, type FortuneSeenId } from "./progress";
 import { evaluateCharmDrops, getOwnedCharmIds, addCharms, getCharmById } from "./charms";
-import { notify } from "./notify";
+import { notify, notifyNineTail } from "./notify";
+
+const MILESTONE_LINE: Partial<Record<number, string>> = {
+  3: "이제 제법 여우 티가 나죠?",
+  6: "여섯 개라니… 복실이도 신기해하고 있어요.",
+};
 
 // 페이지의 결과 화면이 뜨는 시점에 호출하는 단일 진입점 —
 // exp 적립 + 부적 획득 판정 + 토스트 알림을 한 번에 처리한다.
@@ -10,9 +15,11 @@ export function awardForAction(action: ActionId): void {
 
   if (tailsAfter > tailsBefore) {
     if (tailsAfter >= 9) {
-      notify({ kind: "milestone", text: "복실이가 진짜 구미호가 됐어요! 꼬리 9개를 다 모았어요 ✨" });
+      notifyNineTail(); // 9꼬리는 토스트 대신 별도 모달(NineTailModal)이 담당
     } else {
-      notify({ kind: "normal", text: `🦊 복실이 꼬리가 ${tailsAfter}개가 됐어요!` });
+      const extra = MILESTONE_LINE[tailsAfter];
+      const text = `🦊 복실이 꼬리가 ${tailsAfter}개가 됐어요! 조금씩 어른 여우가 되어가요.${extra ? ` ${extra}` : ""}`;
+      notify({ kind: "normal", text });
     }
   }
 }

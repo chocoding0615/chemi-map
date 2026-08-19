@@ -2,7 +2,7 @@
 export async function captureNodeAsPng(node: HTMLElement): Promise<Blob> {
   await document.fonts.ready;
   const { toBlob } = await import("html-to-image");
-  const blob = await toBlob(node, { pixelRatio: 2, cacheBust: true });
+  const blob = await toBlob(node, { pixelRatio: 3, cacheBust: true });
   if (!blob) throw new Error("이미지를 만들지 못했어요.");
   return blob;
 }

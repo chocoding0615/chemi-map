@@ -5,6 +5,15 @@ import Link from "next/link";
 import { getProgress, TAIL_THRESHOLDS, type FoxProgress } from "@/lib/progress";
 import { onProgressChanged } from "@/lib/notify";
 
+function captionFor(progress: FoxProgress): string {
+  if (progress.tails >= 9) return "구미호 완성 ✨";
+  const today = new Date().toISOString().slice(0, 10);
+  if (progress.lastDailyDate !== today) return "오늘의 기운을 보면 꼬리가 자라요 🌙";
+  const nextThreshold = TAIL_THRESHOLDS[Math.min(progress.tails + 1, 9)];
+  const remaining = Math.max(0, nextThreshold - progress.exp);
+  return `다음 꼬리까지 ${remaining}만큼 남았어요`;
+}
+
 export default function TailProgress() {
   const [progress, setProgress] = useState<FoxProgress | null>(null);
 
@@ -18,7 +27,7 @@ export default function TailProgress() {
   }, []);
 
   if (!progress) {
-    return <div className="mx-auto h-8 w-full max-w-[480px]" />;
+    return <div className="mx-auto h-14 w-full max-w-[480px]" />;
   }
 
   const tails = progress.tails;
@@ -28,15 +37,24 @@ export default function TailProgress() {
   const ratio = tails >= 9 ? 1 : Math.min(1, (progress.exp - prevThreshold) / span);
 
   return (
-    <Link href="/collection" className="mx-auto flex w-full max-w-[480px] items-center gap-2 px-6 pt-3 text-xs">
-      <span className="shrink-0 font-bold text-coral-dark">🦊 꼬리 {tails}/9</span>
-      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-brown/10">
-        <div
-          className="h-full rounded-full bg-gradient-to-r from-coral to-lavender transition-all"
-          style={{ width: `${ratio * 100}%` }}
-        />
+    <Link
+      href="/collection"
+      className="mx-auto flex w-full max-w-[480px] items-center gap-3 px-6 pt-3 transition active:scale-[0.99]"
+    >
+      <span className="shrink-0 text-3xl">🦊</span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between text-xs">
+          <span className="font-bold text-coral-dark">꼬리 x{tails}</span>
+          <span className="text-brown-soft/40">부적함 👝</span>
+        </div>
+        <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-brown/10">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-coral to-lavender transition-all"
+            style={{ width: `${ratio * 100}%` }}
+          />
+        </div>
+        <p className="mt-0.5 truncate text-[10px] text-brown-soft/40">{captionFor(progress)}</p>
       </div>
-      <span className="shrink-0 text-brown-soft/40">부적함</span>
     </Link>
   );
 }

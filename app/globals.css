@@ -11,10 +11,24 @@
   --color-lavender-dark: #a997dc;
   --color-brown: #4a3428;
   --color-brown-soft: #7a5c46;
+  --color-rarity-common: #9ca3af;
+  --color-rarity-rare: #5b9bd5;
+  --color-rarity-epic: #c77dff;
   --font-hand: var(--font-gaegu), var(--font-pretendard), cursive;
 }
 
 .bg-dots {
   background-image: radial-gradient(circle, rgba(74, 52, 40, 0.08) 1.3px, transparent 1.3px);
   background-size: 18px 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

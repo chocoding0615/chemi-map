@@ -59,6 +59,7 @@ export function getProgress(): FoxProgress {
     if (parsed?.version !== 1) return emptyProgress();
     return { ...emptyProgress(), ...parsed };
   } catch {
+    console.warn("[여우점] 진행도 데이터가 손상돼 초기화합니다.");
     return emptyProgress();
   }
 }

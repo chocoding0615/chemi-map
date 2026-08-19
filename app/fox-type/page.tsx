@@ -13,6 +13,7 @@ interface FoxTypeResult {
   element: ElementKey;
   entry: FoxTypeEntry;
   description: string;
+  distribution: Record<ElementKey, number>;
 }
 
 export default function FoxTypePage() {
@@ -29,9 +30,9 @@ export default function FoxTypePage() {
       return;
     }
     setError("");
-    const { dominant } = calculateElementProfile(birthdate);
+    const { dominant, distribution } = calculateElementProfile(birthdate);
     const { entry, description } = getFoxType(dominant, birthdate);
-    setResult({ element: dominant, entry, description });
+    setResult({ element: dominant, entry, description, distribution });
     awardForAction("foxtype");
   }
 
@@ -40,7 +41,7 @@ export default function FoxTypePage() {
     setShareStatus("working");
     try {
       const blob = await captureNodeAsPng(cardRef.current);
-      downloadBlob(blob, `여우점_${result.entry.name}.png`);
+      downloadBlob(blob, `foxjum-${result.element}.png`);
       awardForAction("share");
     } catch {
       // 캡처 실패 — 조용히 무시(브라우저 호환성 이슈일 가능성)
@@ -56,7 +57,7 @@ export default function FoxTypePage() {
       const blob = await captureNodeAsPng(cardRef.current);
       const status = await shareImageOrCopyLink(
         blob,
-        `여우점_${result.entry.name}.png`,
+        `foxjum-${result.element}.png`,
         `나는 ${result.entry.name}! ${result.entry.tagline} 🦊`
       );
       awardForAction("share");
@@ -107,7 +108,13 @@ export default function FoxTypePage() {
           <p className="mt-4 text-sm leading-relaxed text-brown-soft/70">{result.description}</p>
 
           <div className="mt-5">
-            <FoxCard ref={cardRef} foxName={result.entry.name} tagline={result.entry.tagline} element={result.element} />
+            <FoxCard
+              ref={cardRef}
+              foxName={result.entry.name}
+              tagline={result.entry.tagline}
+              element={result.element}
+              distribution={result.distribution}
+            />
           </div>
 
           <div className="mt-5 grid grid-cols-2 gap-2">

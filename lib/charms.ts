@@ -123,26 +123,48 @@ function isBrowser() {
   return typeof window !== "undefined";
 }
 
-export function getOwnedCharmIds(): string[] {
-  if (!isBrowser()) return [];
+interface CharmInventory {
+  version: 1;
+  ownedIds: string[];
+  acquiredAt: Record<string, string>;
+  updatedAt: string;
+}
+
+function readInventory(): CharmInventory {
+  const empty: CharmInventory = { version: 1, ownedIds: [], acquiredAt: {}, updatedAt: new Date().toISOString() };
+  if (!isBrowser()) return empty;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
+    if (!raw) return empty;
     const parsed = JSON.parse(raw);
-    if (parsed?.version !== 1 || !Array.isArray(parsed.ownedIds)) return [];
-    return parsed.ownedIds as string[];
+    if (parsed?.version !== 1 || !Array.isArray(parsed.ownedIds)) return empty;
+    return { ...empty, ...parsed, acquiredAt: parsed.acquiredAt ?? {} };
   } catch {
-    return [];
+    console.warn("[여우점] 부적함 데이터가 손상돼 초기화합니다.");
+    return empty;
   }
+}
+
+export function getOwnedCharmIds(): string[] {
+  return readInventory().ownedIds;
+}
+
+export function getCharmAcquiredAt(id: string): string | undefined {
+  return readInventory().acquiredAt[id];
 }
 
 export function addCharms(ids: string[]): void {
   if (!isBrowser() || ids.length === 0) return;
-  const owned = new Set(getOwnedCharmIds());
-  for (const id of ids) owned.add(id);
+  const inventory = readInventory();
+  const owned = new Set(inventory.ownedIds);
+  const now = new Date().toISOString();
+  for (const id of ids) {
+    owned.add(id);
+    if (!inventory.acquiredAt[id]) inventory.acquiredAt[id] = now;
+  }
   window.localStorage.setItem(
     STORAGE_KEY,
-    JSON.stringify({ version: 1, ownedIds: [...owned], updatedAt: new Date().toISOString() })
+    JSON.stringify({ version: 1, ownedIds: [...owned], acquiredAt: inventory.acquiredAt, updatedAt: now })
   );
   notifyProgressChanged();
 }

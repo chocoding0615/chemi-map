@@ -4,6 +4,7 @@ import { Gaegu } from "next/font/google";
 import SiteFooter from "@/components/SiteFooter";
 import TailProgress from "@/components/TailProgress";
 import ToastHost from "@/components/ToastHost";
+import NineTailModal from "@/components/NineTailModal";
 import "./globals.css";
 
 const pretendard = localFont({
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="ko" className={`${pretendard.variable} ${gaegu.variable} h-full antialiased`}>
       <body className="bg-dots flex min-h-full flex-col bg-gradient-to-b from-cream via-apricot to-cream font-[family-name:var(--font-pretendard)]">
         <ToastHost />
+        <NineTailModal />
         <TailProgress />
         {children}
         <SiteFooter />
