@@ -1,18 +1,25 @@
 import { forwardRef } from "react";
 import { ELEMENT_BANK, ELEMENT_ORDER, type ElementKey } from "@/lib/result-engine/elements";
+import type { MatchTag } from "@/lib/result-engine/foxType";
 import FoxMascot from "./FoxMascot";
 
 interface FoxCardProps {
-  foxName: string;
-  tagline: string;
+  label: string;
   element: ElementKey;
+  matchTag?: MatchTag | null;
   distribution?: Record<ElementKey, number>;
 }
+
+const MATCH_TAG_STYLE: Record<MatchTag, string> = {
+  "타고난 결": "bg-lavender/40 text-lavender-dark",
+  "은은한 조화": "bg-mint/30 text-mint-dark",
+  "반전 매력": "bg-coral/25 text-coral-dark",
+};
 
 // 9:16 세로 카드 — 스토리 공유용. FoxMascot이 이모지 플레이스홀더이므로
 // 캡처(html-to-image)해도 별도 이미지 로딩 대기 없이 안전하다.
 const FoxCard = forwardRef<HTMLDivElement, FoxCardProps>(function FoxCard(
-  { foxName, tagline, element, distribution },
+  { label, element, matchTag, distribution },
   ref
 ) {
   const bank = ELEMENT_BANK[element];
@@ -27,14 +34,21 @@ const FoxCard = forwardRef<HTMLDivElement, FoxCardProps>(function FoxCard(
       <p className="text-[10px] font-bold tracking-widest text-brown-soft/40">나의 여우상</p>
       <div className="flex flex-1 flex-col items-center justify-center">
         <FoxMascot size={88} prop="star" />
-        <p className="mt-5 text-2xl font-extrabold text-brown">{foxName}</p>
-        <p className="mt-1 px-2 text-sm font-semibold text-coral-dark">{tagline}</p>
-        <span
-          className="mt-5 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold text-white"
-          style={{ backgroundColor: bank.color }}
-        >
-          {bank.label}({bank.hanja})
-        </span>
+        <p className="mt-5 px-2 text-xl font-extrabold leading-snug text-brown">{label}</p>
+
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5">
+          <span
+            className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold text-white"
+            style={{ backgroundColor: bank.color }}
+          >
+            {bank.label}({bank.hanja})
+          </span>
+          {matchTag && (
+            <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold ${MATCH_TAG_STYLE[matchTag]}`}>
+              {matchTag}
+            </span>
+          )}
+        </div>
 
         {distribution && (
           <div className="mt-5 w-full max-w-[160px] space-y-1">

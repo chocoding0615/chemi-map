@@ -1,64 +1,102 @@
 import { pickVariant, type ElementKey } from "./elements";
+import { getLuckyInfo } from "./sajuReading";
+import { FOX_TYPE_DESCRIPTIONS } from "@/lib/content/foxTypes";
 
-export interface FoxTypeEntry {
-  name: string;
-  tagline: string;
-  prop: "brush" | "scroll" | "heart" | "star";
-  descriptions: string[];
+export interface FoxTypeInput {
+  distribution: Record<ElementKey, number>;
+  /** 4글자 성격유형(예: "ENFP"). 없어도 오행만으로 5종 라벨이 나온다. */
+  mbti?: string;
 }
 
-// 오행별 여우상 5종. 생일만으로 결정되는 dominant 오행에 그대로 매핑해서,
-// 별도의 새 판정 로직 없이 기존 사주 엔진을 그대로 재사용한다.
-export const FOX_TYPE_BANK: Record<ElementKey, FoxTypeEntry> = {
-  wood: {
-    name: "새싹여우상",
-    tagline: "쑥쑥 자라나는 성장형 여우",
-    prop: "scroll",
-    descriptions: [
-      "호기심 많고 배우는 걸 좋아하는 여우예요. 한번 마음먹은 건 끝까지 밀고 나가는 뚝심이 있어서, 주변에서 '쟤 또 뭔가 시작했네' 소리를 자주 들어요.",
-      "새로운 걸 시도하는 데 겁이 없는 여우예요. 뿌리내린 관계는 오래 지켜가는 편이라, 오래된 인연일수록 더 깊어지는 타입이에요.",
-    ],
-  },
-  fire: {
-    name: "반짝불꽃여우상",
-    tagline: "에너지 넘치는 인기형 여우",
-    prop: "star",
-    descriptions: [
-      "가는 곳마다 분위기를 밝히는 여우예요. 감정에 솔직하고 리액션이 커서, 옆에 있으면 심심할 틈이 없어요.",
-      "좋아하는 일 앞에서는 누구보다 뜨거워지는 여우예요. 하고 싶은 말은 참지 않고 시원하게 표현하는 편이에요.",
-    ],
-  },
-  earth: {
-    name: "포근흙여우상",
-    tagline: "듬직하게 챙겨주는 여우",
-    prop: "heart",
-    descriptions: [
-      "묵묵히 중심을 잡아주는 여우예요. 화려하게 나서진 않지만, 힘든 일이 생기면 다들 가장 먼저 찾게 되는 존재예요.",
-      "누구든 편하게 받아주는 포용력 넓은 여우예요. 겉으론 무던해 보여도 속으론 은근히 세심하게 챙겨요.",
-    ],
-  },
-  metal: {
-    name: "칼끝여우상",
-    tagline: "야무지고 똑부러지는 여우",
-    prop: "brush",
-    descriptions: [
-      "맺고 끊는 게 분명한 여우예요. 디테일을 놓치지 않는 완벽주의 기질이 있어서, 한번 맡은 일은 확실하게 해내요.",
-      "판단이 빠르고 명확한 여우예요. 겉으로는 냉철해 보여도, 한번 믿은 사람은 끝까지 챙기는 의리파예요.",
-    ],
-  },
-  water: {
-    name: "잔잔물여우상",
-    tagline: "속 깊고 지혜로운 여우",
-    prop: "scroll",
-    descriptions: [
-      "겉은 조용해도 속엔 생각이 참 많은 여우예요. 상황 파악이 빨라서, 알아갈수록 매력이 깊어지는 타입이에요.",
-      "상황에 맞춰 유연하게 움직이는 여우예요. 부드러운 인상 뒤에 의외로 단단한 심지를 갖고 있어요.",
-    ],
-  },
+export type MatchTag = "타고난 결" | "은은한 조화" | "반전 매력";
+
+export interface FoxTypeResult {
+  element: ElementKey;
+  foxType: string;
+  label: string;
+  description: string;
+  luckyColor: string;
+  luckyItem: string;
+  matchTag: MatchTag | null;
+}
+
+// 동점이면 고정 우선순위(목>화>토>금>수)로 tie-break한다 — 결과가 매번 같아야
+// 하니 랜덤은 쓰지 않는다. 사주 상세(sajuReading.ts)가 쓰는 "일간 기준" dominant와는
+// 별개로, 여우상 전용으로 더 단순한 규칙을 쓴다(elements.ts 자체는 건드리지 않는다).
+const PRIORITY: ElementKey[] = ["wood", "fire", "earth", "metal", "water"];
+
+function dominantElement(distribution: Record<ElementKey, number>): ElementKey {
+  return PRIORITY.reduce((best, el) => (distribution[el] > distribution[best] ? el : best), PRIORITY[0]);
+}
+
+const FOX_BY_ELEMENT: Record<ElementKey, string> = {
+  wood: "새싹여우",
+  fire: "불꽃여우",
+  earth: "달빛여우",
+  metal: "서리여우",
+  water: "물안개여우",
 };
 
-export function getFoxType(element: ElementKey, seed: string): { entry: FoxTypeEntry; description: string } {
-  const entry = FOX_TYPE_BANK[element];
-  const description = entry.descriptions[pickVariant(seed, entry.descriptions.length)];
-  return { entry, description };
+interface MbtiModifiers {
+  activity: string; // E/I — 지금은 라벨에 안 쓰지만 나중 확장 대비로 계산해둔다
+  outlook: string; // N/S
+  logic: string; // T/F
+  pace: string; // J/P
+}
+
+function parseMbtiModifiers(mbti: string): MbtiModifiers | null {
+  const m = mbti.trim().toUpperCase();
+  if (m.length < 4) return null;
+  return {
+    activity: m[0] === "E" ? "활발한" : "조용한",
+    outlook: m[1] === "N" ? "꿈꾸는" : "현실적인",
+    logic: m[2] === "T" ? "냉철한" : "다정한",
+    pace: m[3] === "J" ? "계획적인" : "자유로운",
+  };
+}
+
+// 라벨이 너무 길어지지 않게 두 축(계획성·시선)만 골라 조합한다 — 예: "자유로운 꿈꾸는 새싹여우".
+function buildLabel(fox: string, modifiers: MbtiModifiers | null): string {
+  if (!modifiers) return fox;
+  return `${modifiers.pace} ${modifiers.outlook} ${fox}`;
+}
+
+// 오행별로 "이 기질과 잘 맞는" 성격유형 힌트 글자 — 궁합 태그 판정에만 쓰인다.
+const ELEMENT_MBTI_HINTS: Record<ElementKey, string[]> = {
+  wood: ["N", "P"],
+  fire: ["E", "F"],
+  earth: ["S"],
+  metal: ["T", "J"],
+  water: ["I", "N"],
+};
+
+function getMatchTag(element: ElementKey, mbti: string): MatchTag {
+  const letters = mbti.trim().toUpperCase().split("");
+  const hints = ELEMENT_MBTI_HINTS[element];
+  const matchCount = hints.filter((h) => letters.includes(h)).length;
+  if (matchCount === hints.length) return "타고난 결";
+  if (matchCount === 0) return "반전 매력";
+  return "은은한 조화";
+}
+
+export function getFoxType(input: FoxTypeInput): FoxTypeResult {
+  const element = dominantElement(input.distribution);
+  const fox = FOX_BY_ELEMENT[element];
+  const mbti = input.mbti?.trim().toUpperCase();
+  const modifiers = mbti ? parseMbtiModifiers(mbti) : null;
+
+  const descriptions = FOX_TYPE_DESCRIPTIONS[element];
+  const seed = `${element}-${mbti ?? "none"}`;
+  const description = descriptions[pickVariant(seed, descriptions.length)];
+  const lucky = getLuckyInfo(element);
+
+  return {
+    element,
+    foxType: fox,
+    label: buildLabel(fox, modifiers),
+    description,
+    luckyColor: lucky.color,
+    luckyItem: lucky.item,
+    matchTag: modifiers && mbti ? getMatchTag(element, mbti) : null,
+  };
 }
