@@ -4,43 +4,43 @@ import type { ElementKey } from "@/lib/result-engine/elements";
 // 이 데이터를 조합만 하고 문구를 직접 갖고 있지 않는다.
 
 export interface FoxBaseEntry {
-  name: string; // 기본 라벨(MBTI 없을 때 그대로 노출) — 회귀 방지를 위해 바꾸지 않는다.
-  tagline: string;
+  name: string; // 기본 라벨(MBTI 없을 때 그대로 노출) — 앱 원래 이름, 회귀 방지를 위해 바꾸지 않는다.
+  tagline: string[]; // 짧은 설명 변형들 — seed로 하나를 골라 쓴다(전부 같은 톤의 원본 문구).
   color: string;
   bg: string;
   prop: string; // 소품 이모지 — 캐릭터 이미지가 없을 때의 폴백이기도 하다.
   img: string; // public/ 경로. 파일이 없으면 FoxCharacterImage가 자동으로 prop 이모지로 대체한다.
 }
 
-// 오행 5종 기본 여우상(기존 유지) — 캐릭터 이미지(public/fox/*.png)는 별도 제공 예정.
+// 오행 5종 기본 여우상(앱 원래 이름) — 캐릭터 이미지(public/fox/*.png)는 별도 제공 예정.
 export const FOX_BASE: Record<ElementKey, FoxBaseEntry> = {
   wood: {
     name: "새싹여우상",
-    tagline: "쑥쑥 자라나는 성장형 여우",
+    tagline: ["쑥쑥 자라나는 성장형 여우"],
     color: "#6BBF59",
     bg: "#EAF6E6",
     prop: "🌱",
     img: "/fox/sprout.png",
   },
   fire: {
-    name: "불꽃여우상",
-    tagline: "반짝반짝 빛나는 열정형 여우",
+    name: "반짝불꽃여우상",
+    tagline: ["반짝반짝 빛나는 열정형 여우"],
     color: "#F0663F",
     bg: "#FDEAE2",
     prop: "🔥",
     img: "/fox/flame.png",
   },
   earth: {
-    name: "달빛여우상",
-    tagline: "든든하고 포근한 중심형 여우",
+    name: "포근흙여우상",
+    tagline: ["든든하고 포근한 중심형 여우"],
     color: "#E0A82E",
     bg: "#FBF1DA",
     prop: "🌙",
     img: "/fox/moon.png",
   },
   metal: {
-    name: "서리여우상",
-    tagline: "단단하고 야무진 결단형 여우",
+    name: "칼끝여우상",
+    tagline: ["야무지고 똑부러지는 여우", "맺고 끊는 게 분명한 여우", "판단이 빠르고 명확한 여우"],
     color: "#8FA3B0",
     bg: "#EEF2F5",
     prop: "❄️",
@@ -48,7 +48,7 @@ export const FOX_BASE: Record<ElementKey, FoxBaseEntry> = {
   },
   water: {
     name: "잔잔물여우상",
-    tagline: "속 깊고 지혜로운 여우",
+    tagline: ["속 깊고 지혜로운 여우"],
     color: "#3E92CC",
     bg: "#E6F1F9",
     prop: "💧",
@@ -87,10 +87,10 @@ export const MATCH_TAGS: { aligned: MatchTagEntry; reversed: MatchTagEntry } = {
 export const SPECIAL_COMBOS: Partial<Record<`${ElementKey}-${ModifierKey}`, string>> = {
   "wood-PN":
     "호기심이 이끄는 대로 뻗어나가는 새싹여우예요. 오늘 문득 떠오른 생각이 내일의 시작이 되는, 가능성으로 가득한 타입.",
-  "fire-JN": "뜨거운 마음에 또렷한 계획까지 얹은 불꽃여우예요. 한번 불붙으면 끝을 보는 추진력이 남달라요.",
+  "fire-JN": "뜨거운 마음에 또렷한 계획까지 얹은 반짝불꽃여우예요. 한번 불붙으면 끝을 보는 추진력이 남달라요.",
   "water-JN": "고요한 물결 아래 깊은 계획이 흐르는 잔잔물여우예요. 말수는 적어도 머릿속은 늘 몇 수 앞을 그리고 있어요.",
-  "metal-PS": "원칙은 뚜렷하지만 순간의 흐름도 즐길 줄 아는 서리여우예요. 단호함과 여유를 오가는 균형 감각이 매력이에요.",
-  "earth-PN": "든든한 중심에 상상력을 더한 달빛여우예요. 곁에 있으면 편안한데, 가끔 툭 던지는 아이디어가 신선해요.",
+  "metal-PS": "원칙은 뚜렷하지만 순간의 흐름도 즐길 줄 아는 칼끝여우예요. 단호함과 여유를 오가는 균형 감각이 매력이에요.",
+  "earth-PN": "든든한 중심에 상상력을 더한 포근흙여우예요. 곁에 있으면 편안한데, 가끔 툭 던지는 아이디어가 신선해요.",
 };
 
 // 기본 설명 뱅크(오행별 변형, 결정론적으로 하나 선택) — SPECIAL_COMBOS에 해당하지

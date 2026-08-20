@@ -82,6 +82,7 @@ export function getFoxType(input: FoxTypeInput): FoxTypeResult {
   const bank = FOX_TYPE_DESCRIPTIONS[element];
   const seed = `${element}-${mbti ?? "none"}`;
   const description = specialDescription ?? bank[pickVariant(seed, bank.length)];
+  const tagline = base.tagline[pickVariant(`${seed}-tagline`, base.tagline.length)];
 
   const lucky = getLuckyInfo(element);
 
@@ -89,7 +90,7 @@ export function getFoxType(input: FoxTypeInput): FoxTypeResult {
     element,
     baseName: base.name,
     label,
-    tagline: base.tagline,
+    tagline,
     description,
     color: base.color,
     bg: base.bg,
