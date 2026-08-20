@@ -15,6 +15,7 @@ import { getMbtiCompat } from "@/lib/result-engine/mbtiCompat";
 import { markFortuneSeen } from "@/lib/foxRewards";
 import type { FortuneSeenId } from "@/lib/progress";
 import { registerBackHandler } from "@/lib/backHandler";
+import { withJosa } from "@/lib/josa";
 
 interface FortuneFormProps {
   category: FortuneCategory;
@@ -234,7 +235,7 @@ export default function FortuneForm({ category }: FortuneFormProps) {
               {result.nameA || "나"} ♥ {result.nameB || "상대"} 궁합
             </p>
             <p className="mt-1 text-xs text-brown-soft/50">
-              {result.nameA || "나"}와(과) {result.nameB || "상대"}의 케미 {result.score}점
+              {withJosa(result.nameA || "나", "와/과")} {result.nameB || "상대"}의 케미 {result.score}점
             </p>
             <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
               <span className="inline-flex items-center gap-1 rounded-full bg-white/70 px-3 py-1 text-xs font-bold text-brown">
