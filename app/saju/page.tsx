@@ -6,6 +6,8 @@ import ElementDistributionChart from "@/components/ElementDistributionChart";
 import MockPayGate from "@/components/MockPayGate";
 import FoxMascot from "@/components/FoxMascot";
 import TodayScoreCard from "@/components/TodayScoreCard";
+import BirthDatePicker from "@/components/BirthDatePicker";
+import BirthTimePicker from "@/components/BirthTimePicker";
 import { addActivity } from "@/lib/localActivity";
 import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 import {
@@ -22,6 +24,7 @@ import { awardForAction, markFortuneSeen } from "@/lib/foxRewards";
 import { registerBackHandler } from "@/lib/backHandler";
 
 interface SajuResult {
+  name: string;
   dominant: ElementKey;
   teaser: string;
   distribution: Record<ElementKey, number>;
@@ -35,6 +38,7 @@ interface SajuResult {
 }
 
 export default function SajuPage() {
+  const [name, setName] = useState("");
   const [birthdate, setBirthdate] = useState("");
   const [gender, setGender] = useState<"male" | "female" | "">("");
   const [birthTime, setBirthTime] = useState("");
@@ -60,6 +64,7 @@ export default function SajuPage() {
     const teaser = personality.temperament.split(".")[0] + ".";
 
     setResult({
+      name: name.trim(),
       dominant: profile.dominant,
       teaser,
       distribution: profile.distribution,
@@ -89,13 +94,20 @@ export default function SajuPage() {
           className="mt-8 w-full space-y-5 rounded-3xl bg-white p-6 shadow-xl shadow-brown/5 ring-1 ring-brown/5"
         >
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
+            <label className="mb-1.5 block text-sm font-semibold text-brown">
+              이름 <span className="font-normal text-brown/40">(선택)</span>
+            </label>
             <input
-              type="date"
-              value={birthdate}
-              onChange={(e) => setBirthdate(e.target.value)}
-              className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={20}
+              placeholder="홍길동"
+              className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown placeholder:text-brown/30 focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
             />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
+            <BirthDatePicker value={birthdate} onChange={setBirthdate} />
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-brown">성별</label>
@@ -120,12 +132,7 @@ export default function SajuPage() {
             <label className="mb-1.5 block text-sm font-semibold text-brown">
               태어난 시간 <span className="font-normal text-brown/40">(선택, 모르면 비워두세요)</span>
             </label>
-            <input
-              type="time"
-              value={birthTime}
-              onChange={(e) => setBirthTime(e.target.value)}
-              className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
-            />
+            <BirthTimePicker value={birthTime} onChange={setBirthTime} />
           </div>
           {error && <p className="text-sm font-medium text-red-500">{error}</p>}
           <button
@@ -143,6 +150,7 @@ export default function SajuPage() {
             <div className="flex justify-center">
               <ElementIcon element={result.dominant} size={64} />
             </div>
+            {result.name && <p className="mt-2 text-sm font-bold text-coral-dark">{result.name}님의 사주예요</p>}
             <p className="mt-3 text-sm leading-relaxed text-brown-soft/70">{result.teaser}</p>
 
             <MockPayGate

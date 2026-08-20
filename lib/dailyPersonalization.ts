@@ -4,6 +4,7 @@
 import { notifyBirthdateChanged } from "./notify";
 
 const BIRTHDATE_KEY = "yeojujeom.today.birthdate";
+const NAME_KEY = "yeojujeom.today.name";
 const ANON_ID_KEY = "yeojujeom.anonId";
 
 function isBrowser() {
@@ -25,6 +26,17 @@ export function clearStoredBirthdate(): void {
   if (!isBrowser()) return;
   window.localStorage.removeItem(BIRTHDATE_KEY);
   notifyBirthdateChanged();
+}
+
+export function getStoredName(): string | null {
+  if (!isBrowser()) return null;
+  return window.localStorage.getItem(NAME_KEY);
+}
+
+export function setStoredName(value: string): void {
+  if (!isBrowser()) return;
+  if (value) window.localStorage.setItem(NAME_KEY, value);
+  else window.localStorage.removeItem(NAME_KEY);
 }
 
 // 생일을 저장 안 한 손님도 매일 결정론적인 결과를 볼 수 있도록, 최초 방문 시

@@ -1,6 +1,7 @@
 import type { EntryDoc } from "@/lib/types";
 import { AFFINITY_BANK } from "@/lib/result-engine/affinity";
 import { ELEMENT_BANK } from "@/lib/result-engine/elements";
+import { FOX_BASE } from "@/lib/content/foxTypes";
 import ElementIcon from "./ElementIcon";
 
 export default function ChemiRankList({ entries }: { entries: EntryDoc[] }) {
@@ -25,7 +26,7 @@ export default function ChemiRankList({ entries }: { entries: EntryDoc[] }) {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                   <span className="font-bold text-brown">{entry.visitorName}</span>
-                  <span className="text-xs text-brown-soft/40">{entry.seasonType}</span>
+                  <span className="text-xs text-brown-soft/40">{FOX_BASE[entry.visitorElement].name}</span>
                   <span className="ml-auto shrink-0 rounded-full bg-coral-dark px-2 py-0.5 text-[11px] font-bold text-white">
                     케미 {entry.affinityScore}
                   </span>

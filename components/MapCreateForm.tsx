@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import MbtiSelect from "./MbtiSelect";
+import BirthDatePicker from "./BirthDatePicker";
+import BirthTimePicker from "./BirthTimePicker";
 import { awardForAction } from "@/lib/foxRewards";
 import { setMyMapSlug } from "@/lib/myMap";
 
@@ -84,23 +86,13 @@ export default function MapCreateForm() {
       </div>
       <div>
         <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
-        <input
-          type="date"
-          value={birthdate}
-          onChange={(e) => setBirthdate(e.target.value)}
-          className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
-        />
+        <BirthDatePicker value={birthdate} onChange={setBirthdate} />
       </div>
       <div>
         <label className="mb-1.5 block text-sm font-semibold text-brown">
           출생 시간 <span className="font-normal text-brown/40">(선택, 모르면 비워두세요)</span>
         </label>
-        <input
-          type="time"
-          value={birthTime}
-          onChange={(e) => setBirthTime(e.target.value)}
-          className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
-        />
+        <BirthTimePicker value={birthTime} onChange={setBirthTime} />
       </div>
       {error && <p className="text-sm font-medium text-red-500">{error}</p>}
       <button

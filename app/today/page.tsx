@@ -5,14 +5,22 @@ import Link from "next/link";
 import FoxMascot from "@/components/FoxMascot";
 import ElementIcon from "@/components/ElementIcon";
 import TodayScoreCard from "@/components/TodayScoreCard";
+import BirthDatePicker from "@/components/BirthDatePicker";
 import { getDailyFortune } from "@/lib/result-engine/dailyFortune";
 import { awardForAction } from "@/lib/foxRewards";
-import { getStoredBirthdate, setStoredBirthdate, clearStoredBirthdate } from "@/lib/dailyPersonalization";
+import {
+  getStoredBirthdate,
+  setStoredBirthdate,
+  clearStoredBirthdate,
+  getStoredName,
+  setStoredName,
+} from "@/lib/dailyPersonalization";
 import { hasDrawnCharmToday } from "@/lib/dailyCharm";
 
 export default function TodayPage() {
   const [birthdate, setBirthdate] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState("");
+  const [name, setName] = useState("");
   const [hydrated, setHydrated] = useState(false);
   const [charmDrawnToday, setCharmDrawnToday] = useState(false);
 
@@ -24,6 +32,7 @@ export default function TodayPage() {
       setBirthdate(stored);
       setInputValue(stored);
     }
+    setName(getStoredName() ?? "");
     setCharmDrawnToday(hasDrawnCharmToday());
     setHydrated(true);
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -34,13 +43,16 @@ export default function TodayPage() {
     e.preventDefault();
     if (!inputValue) return;
     setStoredBirthdate(inputValue);
+    setStoredName(name.trim());
     setBirthdate(inputValue);
   }
 
   function handleClear() {
     clearStoredBirthdate();
+    setStoredName("");
     setBirthdate(null);
     setInputValue("");
+    setName("");
   }
 
   const todayISO = new Date().toISOString().slice(0, 10);
@@ -78,6 +90,7 @@ export default function TodayPage() {
                 <ElementIcon element={fortune.element} size={56} />
               </div>
             )}
+            {name && <p className="mt-2 text-sm font-bold text-coral-dark">{name}님, 오늘의 기운이에요</p>}
             <p className="mt-3 text-sm leading-relaxed text-brown-soft/70">{fortune.text}</p>
           </div>
 
@@ -90,11 +103,13 @@ export default function TodayPage() {
               <span className="font-normal text-brown/40">(선택)</span>
             </label>
             <input
-              type="date"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={20}
+              placeholder="이름(선택)"
+              className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown placeholder:text-brown/30 focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
             />
+            <BirthDatePicker value={inputValue} onChange={setInputValue} />
             <div className="flex gap-2">
               <button
                 type="submit"

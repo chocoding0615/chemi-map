@@ -5,6 +5,7 @@ import ElementDistributionChart from "./ElementDistributionChart";
 import MockPayGate from "./MockPayGate";
 import { addActivity } from "@/lib/localActivity";
 import type { ElementKey } from "@/lib/result-engine/elements";
+import { FOX_BASE } from "@/lib/content/foxTypes";
 
 interface ResultCardProps {
   title: string;
@@ -14,7 +15,6 @@ interface ResultCardProps {
   affinityEmoji: string;
   affinityScore: number;
   affinityBlurb: string;
-  seasonType: string;
   distribution: Record<ElementKey, number>;
   distributionBlurb: string;
   pillarText: string;
@@ -29,7 +29,6 @@ export default function ResultCard({
   affinityEmoji,
   affinityScore,
   affinityBlurb,
-  seasonType,
   distribution,
   distributionBlurb,
   pillarText,
@@ -40,7 +39,7 @@ export default function ResultCard({
       <div className="flex justify-center">
         <ElementIcon element={element} size={64} />
       </div>
-      <p className="mt-2 text-xs font-semibold text-brown-soft/50">{seasonType}</p>
+      <p className="mt-2 text-xs font-semibold text-brown-soft/50">{FOX_BASE[element].name}</p>
       <p className="mt-1 text-lg font-extrabold leading-snug text-brown">{title}</p>
 
       <div className="mt-3 flex items-center justify-center gap-2">

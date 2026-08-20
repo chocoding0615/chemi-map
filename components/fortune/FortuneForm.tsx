@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import ElementIcon from "@/components/ElementIcon";
 import MbtiSelect from "@/components/MbtiSelect";
 import MockPayGate from "@/components/MockPayGate";
+import BirthDatePicker from "@/components/BirthDatePicker";
+import BirthTimePicker from "@/components/BirthTimePicker";
 import { addActivity } from "@/lib/localActivity";
 import { getCategoryBlurb, type FortuneCategory } from "@/lib/content/fortuneCategories";
 import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
@@ -21,13 +23,14 @@ interface FortuneFormProps {
 type Gender = "male" | "female";
 
 interface PersonInput {
+  name: string;
   birthdate: string;
   gender: Gender | "";
   birthTime: string;
   mbti: string;
 }
 
-const EMPTY_PERSON: PersonInput = { birthdate: "", gender: "", birthTime: "", mbti: "" };
+const EMPTY_PERSON: PersonInput = { name: "", birthdate: "", gender: "", birthTime: "", mbti: "" };
 
 type FortuneResult =
   | {
@@ -41,6 +44,8 @@ type FortuneResult =
     }
   | {
       kind: "pair";
+      nameA: string;
+      nameB: string;
       elementA: ElementKey;
       elementB: ElementKey;
       label: string;
@@ -92,13 +97,20 @@ function PersonFields({
     <div className="space-y-4 rounded-2xl bg-cream/60 p-4">
       <p className="text-sm font-bold text-brown">{legend}</p>
       <div>
-        <label className="mb-1.5 block text-xs font-semibold text-brown-soft/70">생년월일</label>
+        <label className="mb-1.5 block text-xs font-semibold text-brown-soft/70">
+          이름 <span className="font-normal text-brown-soft/40">(선택)</span>
+        </label>
         <input
-          type="date"
-          value={value.birthdate}
-          onChange={(e) => onChange({ ...value, birthdate: e.target.value })}
-          className="w-full rounded-xl border border-brown/10 bg-white px-4 py-2.5 text-sm text-brown focus:border-coral focus:outline-none focus:ring-2 focus:ring-coral/30"
+          value={value.name}
+          onChange={(e) => onChange({ ...value, name: e.target.value })}
+          maxLength={20}
+          placeholder="홍길동"
+          className="w-full rounded-xl border border-brown/10 bg-white px-4 py-2.5 text-sm text-brown placeholder:text-brown/30 focus:border-coral focus:outline-none focus:ring-2 focus:ring-coral/30"
         />
+      </div>
+      <div>
+        <label className="mb-1.5 block text-xs font-semibold text-brown-soft/70">생년월일</label>
+        <BirthDatePicker value={value.birthdate} onChange={(birthdate) => onChange({ ...value, birthdate })} />
       </div>
       <div>
         <label className="mb-1.5 block text-xs font-semibold text-brown-soft/70">성별</label>
@@ -114,12 +126,7 @@ function PersonFields({
         <label className="mb-1.5 block text-xs font-semibold text-brown-soft/70">
           태어난 시간 <span className="font-normal text-brown-soft/40">(선택)</span>
         </label>
-        <input
-          type="time"
-          value={value.birthTime}
-          onChange={(e) => onChange({ ...value, birthTime: e.target.value })}
-          className="w-full rounded-xl border border-brown/10 bg-white px-4 py-2.5 text-sm text-brown focus:border-coral focus:outline-none focus:ring-2 focus:ring-coral/30"
-        />
+        <BirthTimePicker value={value.birthTime} onChange={(birthTime) => onChange({ ...value, birthTime })} />
       </div>
     </div>
   );
@@ -183,6 +190,8 @@ export default function FortuneForm({ category }: FortuneFormProps) {
 
     setResult({
       kind: "pair",
+      nameA: personA.name.trim(),
+      nameB: personB.name.trim(),
       elementA,
       elementB,
       label: affinity.label,
@@ -221,6 +230,12 @@ export default function FortuneForm({ category }: FortuneFormProps) {
               <ElementIcon element={result.elementA} size={48} />
               <ElementIcon element={result.elementB} size={48} />
             </div>
+            <p className="mt-2 text-sm font-bold text-coral-dark">
+              {result.nameA || "나"} ♥ {result.nameB || "상대"} 궁합
+            </p>
+            <p className="mt-1 text-xs text-brown-soft/50">
+              {result.nameA || "나"}와(과) {result.nameB || "상대"}의 케미 {result.score}점
+            </p>
             <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
               <span className="inline-flex items-center gap-1 rounded-full bg-white/70 px-3 py-1 text-xs font-bold text-brown">
                 {result.emoji} {result.label}
@@ -294,11 +309,9 @@ export default function FortuneForm({ category }: FortuneFormProps) {
         <>
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
-            <input
-              type="date"
+            <BirthDatePicker
               value={personA.birthdate}
-              onChange={(e) => setPersonA({ ...personA, birthdate: e.target.value })}
-              className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
+              onChange={(birthdate) => setPersonA({ ...personA, birthdate })}
             />
           </div>
           <div>
@@ -309,11 +322,9 @@ export default function FortuneForm({ category }: FortuneFormProps) {
             <label className="mb-1.5 block text-sm font-semibold text-brown">
               태어난 시간 <span className="font-normal text-brown/40">(선택, 모르면 비워두세요)</span>
             </label>
-            <input
-              type="time"
+            <BirthTimePicker
               value={personA.birthTime}
-              onChange={(e) => setPersonA({ ...personA, birthTime: e.target.value })}
-              className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
+              onChange={(birthTime) => setPersonA({ ...personA, birthTime })}
             />
           </div>
         </>

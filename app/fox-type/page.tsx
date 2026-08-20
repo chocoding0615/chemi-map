@@ -6,6 +6,7 @@ import FoxMascot from "@/components/FoxMascot";
 import FoxCharacterImage from "@/components/FoxCharacterImage";
 import FoxCard from "@/components/FoxCard";
 import MbtiSelect from "@/components/MbtiSelect";
+import BirthDatePicker from "@/components/BirthDatePicker";
 import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 import { getFoxType, type FoxTypeResult } from "@/lib/result-engine/foxType";
 import { captureNodeAsPng, downloadBlob, shareImageOrCopyLink } from "@/lib/shareCard";
@@ -92,12 +93,7 @@ export default function FoxTypePage() {
         >
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
-            <input
-              type="date"
-              value={birthdate}
-              onChange={(e) => setBirthdate(e.target.value)}
-              className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
-            />
+            <BirthDatePicker value={birthdate} onChange={setBirthdate} />
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-brown">

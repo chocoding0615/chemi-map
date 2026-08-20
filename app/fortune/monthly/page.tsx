@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import FoxMascot from "@/components/FoxMascot";
 import ElementIcon from "@/components/ElementIcon";
+import BirthDatePicker from "@/components/BirthDatePicker";
 import { getMonthlyFortune } from "@/lib/result-engine/monthlyFortune";
 import { getStoredBirthdate, setStoredBirthdate, clearStoredBirthdate } from "@/lib/dailyPersonalization";
 
@@ -68,12 +69,7 @@ export default function MonthlyFortunePage() {
               생일을 넣으면 나만의 기운으로 볼 수 있어요{" "}
               <span className="font-normal text-brown/40">(선택)</span>
             </label>
-            <input
-              type="date"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
-            />
+            <BirthDatePicker value={inputValue} onChange={setInputValue} />
             <div className="flex gap-2">
               <button
                 type="submit"

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import MbtiSelect from "./MbtiSelect";
 import ResultCard from "./ResultCard";
+import BirthDatePicker from "./BirthDatePicker";
+import BirthTimePicker from "./BirthTimePicker";
 import type { ElementKey } from "@/lib/result-engine/elements";
 
 interface EntryFormProps {
@@ -78,7 +80,6 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
           affinityEmoji={result.affinityEmoji}
           affinityScore={result.affinityScore}
           affinityBlurb={result.affinityBlurb}
-          seasonType={result.seasonType}
           distribution={result.distribution}
           distributionBlurb={result.distributionBlurb}
           pillarText={result.pillarText}
@@ -115,23 +116,13 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
       </div>
       <div>
         <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
-        <input
-          type="date"
-          value={birthdate}
-          onChange={(e) => setBirthdate(e.target.value)}
-          className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
-        />
+        <BirthDatePicker value={birthdate} onChange={setBirthdate} />
       </div>
       <div>
         <label className="mb-1.5 block text-sm font-semibold text-brown">
           출생 시간 <span className="font-normal text-brown/40">(선택, 모르면 비워두세요)</span>
         </label>
-        <input
-          type="time"
-          value={birthTime}
-          onChange={(e) => setBirthTime(e.target.value)}
-          className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
-        />
+        <BirthTimePicker value={birthTime} onChange={setBirthTime} />
       </div>
       {error && <p className="text-sm font-medium text-red-500">{error}</p>}
       <button
