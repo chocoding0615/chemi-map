@@ -3,20 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import FoxMascot from "@/components/FoxMascot";
-import ElementIcon from "@/components/ElementIcon";
+import FoxCharacterImage from "@/components/FoxCharacterImage";
 import FoxCard from "@/components/FoxCard";
 import MbtiSelect from "@/components/MbtiSelect";
-import { calculateElementProfile, type ElementKey } from "@/lib/result-engine/elements";
+import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 import { getFoxType, type FoxTypeResult } from "@/lib/result-engine/foxType";
 import { captureNodeAsPng, downloadBlob, shareImageOrCopyLink } from "@/lib/shareCard";
 import { awardForAction } from "@/lib/foxRewards";
 import { registerBackHandler } from "@/lib/backHandler";
-
-const MATCH_TAG_STYLE: Record<string, string> = {
-  "타고난 결": "bg-lavender/40 text-lavender-dark",
-  "은은한 조화": "bg-mint/30 text-mint-dark",
-  "반전 매력": "bg-coral/25 text-coral-dark",
-};
 
 interface PageResult extends FoxTypeResult {
   distribution: Record<ElementKey, number>;
@@ -28,7 +22,14 @@ export default function FoxTypePage() {
   const [error, setError] = useState("");
   const [result, setResult] = useState<PageResult | null>(null);
   const [shareStatus, setShareStatus] = useState<"idle" | "working" | "copied">("idle");
+  const [siteUrl, setSiteUrl] = useState("");
   const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // 서버 렌더와의 하이드레이션 불일치를 피하려고 마운트 후에만 origin을 읽는다.
+    /* eslint-disable-next-line react-hooks/set-state-in-effect */
+    setSiteUrl(window.location.origin.replace(/^https?:\/\//, ""));
+  }, []);
 
   useEffect(() => {
     if (!result) return;
@@ -113,19 +114,29 @@ export default function FoxTypePage() {
           </button>
         </form>
       ) : (
-        <div className="mt-8 w-full rounded-2xl bg-gradient-to-b from-apricot to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
-          <div className="flex justify-center gap-2">
-            <ElementIcon element={result.element} size={64} />
+        <div
+          className="mt-8 w-full rounded-2xl p-6 text-center shadow-inner ring-1 ring-brown/10"
+          style={{ background: `linear-gradient(180deg, ${result.bg} 0%, #fff8f0 100%)` }}
+        >
+          <div className="flex justify-center">
+            <FoxCharacterImage src={result.img} fallbackEmoji={result.prop} size={72} alt={result.label} />
           </div>
           <p className="mt-3 text-xl font-extrabold text-brown">{result.label}</p>
+          <p className="mt-1 text-sm font-semibold" style={{ color: result.color }}>
+            {result.tagline}
+          </p>
           {result.matchTag && (
             <span
-              className={`mt-2 inline-flex items-center rounded-full px-3 py-1 text-xs font-bold ${MATCH_TAG_STYLE[result.matchTag]}`}
+              className="mt-2 inline-flex items-center rounded-full px-3 py-1 text-xs font-bold text-white"
+              style={{ backgroundColor: result.color }}
             >
-              {result.matchTag}
+              {result.matchTag.label}
             </span>
           )}
           <p className="mt-4 text-sm leading-relaxed text-brown-soft/70">{result.description}</p>
+          {result.matchTag && (
+            <p className="mt-2 text-xs leading-relaxed text-brown-soft/50">{result.matchTag.desc}</p>
+          )}
 
           <div className="mt-4 grid grid-cols-2 gap-2 text-center text-xs">
             <div className="rounded-lg bg-cream p-2">
@@ -138,13 +149,23 @@ export default function FoxTypePage() {
             </div>
           </div>
 
+          <p className="mt-4 text-[11px] text-brown-soft/40">
+            {ELEMENT_BANK[result.element].label}({ELEMENT_BANK[result.element].hanja}) 기운이 가장 강해요
+          </p>
+
           <div className="mt-5">
             <FoxCard
               ref={cardRef}
               label={result.label}
+              tagline={result.tagline}
               element={result.element}
+              color={result.color}
+              bg={result.bg}
+              img={result.img}
+              prop={result.prop}
               matchTag={result.matchTag}
               distribution={result.distribution}
+              siteUrl={siteUrl}
             />
           </div>
 
@@ -168,10 +189,10 @@ export default function FoxTypePage() {
           </div>
 
           <Link
-            href="/fortune/love"
+            href="/saju"
             className="mt-3 block w-full rounded-xl bg-lavender/30 py-3 text-sm font-bold text-lavender-dark transition active:scale-95 hover:bg-lavender/40"
           >
-            🔮 이 여우의 올해 인연운 자세히 보기
+            🔮 이 여우의 올해 인연운 보러가기
           </Link>
 
           <button

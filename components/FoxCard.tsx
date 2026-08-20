@@ -1,54 +1,52 @@
 import { forwardRef } from "react";
-import { ELEMENT_BANK, ELEMENT_ORDER, type ElementKey } from "@/lib/result-engine/elements";
-import type { MatchTag } from "@/lib/result-engine/foxType";
-import FoxMascot from "./FoxMascot";
+import { ELEMENT_ORDER, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
+import type { MatchTagEntry } from "@/lib/content/foxTypes";
+import FoxCharacterImage from "./FoxCharacterImage";
 
 interface FoxCardProps {
   label: string;
+  tagline: string;
   element: ElementKey;
-  matchTag?: MatchTag | null;
+  color: string;
+  bg: string;
+  img: string;
+  prop: string;
+  matchTag?: MatchTagEntry | null;
   distribution?: Record<ElementKey, number>;
+  /** 공유 이미지 안에 찍히는 안내 문구용 사이트 주소(없으면 그 줄은 생략). */
+  siteUrl?: string;
 }
 
-const MATCH_TAG_STYLE: Record<MatchTag, string> = {
-  "타고난 결": "bg-lavender/40 text-lavender-dark",
-  "은은한 조화": "bg-mint/30 text-mint-dark",
-  "반전 매력": "bg-coral/25 text-coral-dark",
-};
-
-// 9:16 세로 카드 — 스토리 공유용. FoxMascot이 이모지 플레이스홀더이므로
-// 캡처(html-to-image)해도 별도 이미지 로딩 대기 없이 안전하다.
+// 9:16 세로 카드 — 스토리 공유용. 캐릭터 이미지는 오행별로 다르게(없으면 이모지로
+// 자동 대체) 보여줘서 5종이 서로 다르게 보이도록 한다.
 const FoxCard = forwardRef<HTMLDivElement, FoxCardProps>(function FoxCard(
-  { label, element, matchTag, distribution },
+  { label, tagline, element, color, bg, img, prop, matchTag, distribution, siteUrl },
   ref
 ) {
-  const bank = ELEMENT_BANK[element];
   const max = distribution ? Math.max(1, ...ELEMENT_ORDER.map((key) => distribution[key])) : 1;
 
   return (
     <div
       ref={ref}
       className="relative mx-auto flex aspect-[9/16] w-full max-w-[280px] flex-col items-center overflow-hidden rounded-3xl px-6 py-8 text-center"
-      style={{ background: "linear-gradient(180deg, #FFF8F0 0%, #FFEEDD 55%, #FFE3C4 100%)" }}
+      style={{ background: `linear-gradient(180deg, ${bg} 0%, #FFFFFF 100%)` }}
     >
       <p className="text-[10px] font-bold tracking-widest text-brown-soft/40">나의 여우상</p>
       <div className="flex flex-1 flex-col items-center justify-center">
-        <FoxMascot size={88} prop="star" />
+        <FoxCharacterImage src={img} fallbackEmoji={prop} size={88} alt={label} />
         <p className="mt-5 px-2 text-xl font-extrabold leading-snug text-brown">{label}</p>
+        <p className="mt-1 px-2 text-sm font-semibold" style={{ color }}>
+          {tagline}
+        </p>
 
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5">
+        {matchTag && (
           <span
-            className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold text-white"
-            style={{ backgroundColor: bank.color }}
+            className="mt-3 inline-flex items-center rounded-full px-3 py-1 text-xs font-bold text-white"
+            style={{ backgroundColor: color }}
           >
-            {bank.label}({bank.hanja})
+            {matchTag.label}
           </span>
-          {matchTag && (
-            <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold ${MATCH_TAG_STYLE[matchTag]}`}>
-              {matchTag}
-            </span>
-          )}
-        </div>
+        )}
 
         {distribution && (
           <div className="mt-5 w-full max-w-[160px] space-y-1">
@@ -60,7 +58,7 @@ const FoxCard = forwardRef<HTMLDivElement, FoxCardProps>(function FoxCard(
                     className="h-full rounded-full"
                     style={{
                       width: `${(distribution[key] / max) * 100}%`,
-                      backgroundColor: ELEMENT_BANK[key].color,
+                      backgroundColor: key === element ? color : ELEMENT_BANK[key].color,
                     }}
                   />
                 </div>
@@ -69,7 +67,10 @@ const FoxCard = forwardRef<HTMLDivElement, FoxCardProps>(function FoxCard(
           </div>
         )}
       </div>
-      <p className="text-[10px] font-semibold tracking-widest text-brown-soft/40">여우점 · FOXJUM</p>
+      <p className="text-[10px] font-semibold tracking-widest text-brown-soft/40">
+        여우점에서 내 여우상 확인하기
+      </p>
+      {siteUrl && <p className="mt-0.5 text-[9px] text-brown-soft/30">{siteUrl}</p>}
     </div>
   );
 });
