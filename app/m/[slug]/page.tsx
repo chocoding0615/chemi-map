@@ -112,7 +112,7 @@ export default async function MapPage({ params, searchParams }: MapPageProps) {
         <p className="mt-2 max-w-xs text-sm leading-relaxed text-brown-soft/60">{villageVibe}</p>
       </div>
 
-      <FoxMapScreen ownerName={data.ownerName} entries={data.entries} />
+      <FoxMapScreen ownerName={data.ownerName} ownerElement={data.ownerElement} entries={data.entries} />
 
       <div
         id="entry-form"

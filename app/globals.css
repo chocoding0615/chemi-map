@@ -22,6 +22,22 @@
   background-size: 18px 18px;
 }
 
+.village-particle {
+  animation: village-float 6s ease-in-out infinite;
+}
+
+@keyframes village-float {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateY(-8px);
+    opacity: 0.9;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

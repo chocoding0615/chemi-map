@@ -2,7 +2,8 @@ import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { getDb } from "@/lib/firebaseAdmin";
-import { ELEMENT_BANK, ELEMENT_ORDER, getVillageName } from "@/lib/result-engine/elements";
+import { ELEMENT_BANK, ELEMENT_ORDER, getVillageName, type ElementKey } from "@/lib/result-engine/elements";
+import { VILLAGE_THEME } from "@/lib/content/villageTheme";
 
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
@@ -16,6 +17,7 @@ export default async function OpengraphImage({ params }: { params: Promise<{ slu
   const villageName = mapData
     ? getVillageName(mapData.ownerElement, mapData.ownerName, mapData.ownerBirthdate)
     : "케미 마을";
+  const theme = VILLAGE_THEME[(mapData?.ownerElement as ElementKey | undefined) ?? "wood"];
 
   const fontData = await readFile(path.join(process.cwd(), "public/fonts/Pretendard-Bold.ttf"));
 
@@ -29,7 +31,7 @@ export default async function OpengraphImage({ params }: { params: Promise<{ slu
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#fff8f0",
+          backgroundColor: theme.bgColor,
           fontFamily: "Pretendard",
         }}
       >

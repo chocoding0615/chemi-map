@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import type { EntryDoc } from "@/lib/types";
-import { ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
+import { ELEMENT_BANK, pickVariant, type ElementKey } from "@/lib/result-engine/elements";
 import { AFFINITY_BANK, AFFINITY_ORDER, type AffinityCategory } from "@/lib/result-engine/affinity";
+import { VILLAGE_THEME } from "@/lib/content/villageTheme";
 import FoxMascot from "./FoxMascot";
 
 interface FoxMapScreenProps {
   ownerName: string;
+  ownerElement: ElementKey;
   entries: EntryDoc[];
 }
 
@@ -30,6 +32,7 @@ const CENTER = 50;
 const MIN_DIST = 20; // % — 캐릭터에 가장 가까이 붙는 거리
 const MAX_DIST = 36; // % — 가장 멀리 떨어지는 거리
 const ZONE_HALF_WIDTH = 22; // ° — 같은 슬롯 안에서 퍼질 수 있는 각도 범위
+const HIGH_CHEMI_THRESHOLD = 85; // 이 이상이면 관계선이 하트 톤이 된다
 
 const SLOT_ANGLE: Record<Slot, number> = {
   head: 0,
@@ -38,6 +41,10 @@ const SLOT_ANGLE: Record<Slot, number> = {
   leftFoot: 230,
   leftHand: 305,
 };
+
+// 사람 슬롯들 "사이 빈 공간" — 나무 등 배경 장식을 여기 두면 방문자 노드와 안 겹친다.
+const GAP_ANGLES = [92, 180, 267, 332];
+const TREES = ["🌳", "🌲", "🌳", "🌲"];
 
 function compassToXY(angleDeg: number, radius: number) {
   const rad = (angleDeg * Math.PI) / 180;
@@ -63,6 +70,71 @@ function layoutPositions(entries: EntryDoc[]) {
       return { entry, iconSize, ...compassToXY(angle, distance) };
     });
   });
+}
+
+// 파티클·나무 같은 순수 장식 요소의 위치를 지도 주인 이름으로 시드해서, 같은
+// 지도는 새로고침해도 항상 같은 자리에 장식이 뜬다(무작위로 계속 안 바뀜).
+function seededPercent(seed: string, salt: string, min: number, max: number) {
+  return min + (pickVariant(`${seed}-${salt}`, 1000) / 1000) * (max - min);
+}
+
+interface VillageBackdropProps {
+  ownerName: string;
+  theme: (typeof VILLAGE_THEME)[ElementKey];
+}
+
+function VillageBackdrop({ ownerName, theme }: VillageBackdropProps) {
+  const particles = Array.from({ length: 6 }, (_, i) => ({
+    x: seededPercent(ownerName, `particle-x-${i}`, 8, 92),
+    y: seededPercent(ownerName, `particle-y-${i}`, 8, 90),
+    delay: seededPercent(ownerName, `particle-delay-${i}`, 0, 4),
+  }));
+
+  return (
+    <>
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 h-full w-full">
+        <path d="M0 24 L16 6 L32 24 Z" fill={theme.mountainColor} opacity={0.22} />
+        <path d="M22 26 L42 4 L64 26 Z" fill={theme.mountainColor} opacity={0.18} />
+        <path d="M56 24 L76 8 L100 24 Z" fill={theme.mountainColor} opacity={0.22} />
+        <path
+          d="M0 100 L0 80 Q 25 70 50 78 T 100 76 L100 100 Z"
+          fill={theme.groundColor}
+          opacity={0.32}
+        />
+        <path
+          d="M50 100 C 47 88, 56 74, 50 60"
+          stroke="#fff8f0"
+          strokeWidth="1.6"
+          strokeOpacity={0.4}
+          fill="none"
+          strokeLinecap="round"
+        />
+      </svg>
+
+      {GAP_ANGLES.map((angle, i) => {
+        const { x, y } = compassToXY(angle, 43);
+        return (
+          <span
+            key={angle}
+            className="pointer-events-none absolute text-lg opacity-70"
+            style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%, -50%)" }}
+          >
+            {TREES[i % TREES.length]}
+          </span>
+        );
+      })}
+
+      {particles.map((p, i) => (
+        <span
+          key={i}
+          className="village-particle pointer-events-none absolute text-sm"
+          style={{ left: `${p.x}%`, top: `${p.y}%`, animationDelay: `${p.delay}s` }}
+        >
+          {theme.particle}
+        </span>
+      ))}
+    </>
+  );
 }
 
 function SelectedCard({ entry, onClose }: { entry: EntryDoc; onClose: () => void }) {
@@ -104,11 +176,12 @@ function SelectedCard({ entry, onClose }: { entry: EntryDoc; onClose: () => void
   );
 }
 
-export default function FoxMapScreen({ ownerName, entries }: FoxMapScreenProps) {
+export default function FoxMapScreen({ ownerName, ownerElement, entries }: FoxMapScreenProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const positions = layoutPositions(entries);
   const selected = positions.find((p) => p.entry.id === selectedId);
+  const theme = VILLAGE_THEME[ownerElement];
 
   const affinityCounts: Record<AffinityCategory, number> = {
     guin: 0,
@@ -123,14 +196,37 @@ export default function FoxMapScreen({ ownerName, entries }: FoxMapScreenProps) 
     <div className="w-full max-w-sm">
       <div
         className="relative aspect-square w-full overflow-hidden rounded-2xl ring-1 ring-brown/10"
-        style={{
-          backgroundImage: "radial-gradient(circle at 50% 45%, #fffaf3 0%, #fff1e0 60%, #ffe3c4 100%)",
-        }}
+        style={{ backgroundImage: theme.skyGradient }}
       >
+        <VillageBackdrop ownerName={ownerName} theme={theme} />
+
+        {/* 케미가 높을수록 하트 톤으로 짙어지는, 나(복실이)와 각 방문자를 잇는 관계선 */}
+        <svg viewBox="0 0 100 100" className="pointer-events-none absolute inset-0 h-full w-full">
+          {positions.map(({ entry, x, y }) => {
+            const isHighChemi = entry.affinityScore >= HIGH_CHEMI_THRESHOLD;
+            return (
+              <line
+                key={entry.id}
+                x1={CENTER}
+                y1={CENTER}
+                x2={x}
+                y2={y}
+                stroke={isHighChemi ? "#ff6f91" : theme.accentColor}
+                strokeOpacity={isHighChemi ? 0.5 : 0.18}
+                strokeWidth={isHighChemi ? 0.9 : 0.45}
+                strokeLinecap="round"
+              />
+            );
+          })}
+        </svg>
+
         <div
           className="absolute flex flex-col items-center"
           style={{ left: `${CENTER}%`, top: `${CENTER}%`, transform: "translate(-50%, -50%)" }}
         >
+          <span className="pointer-events-none absolute -left-7 -top-2 text-xs opacity-70">🐾</span>
+          <span className="pointer-events-none absolute -right-6 -top-4 text-xs opacity-80">✨</span>
+          <span className="pointer-events-none absolute -bottom-1 -right-7 text-xs opacity-70">🔔</span>
           <FoxMascot size={92} />
           <span className="mt-1 whitespace-nowrap rounded-full bg-white/95 px-2 py-0.5 text-[11px] font-bold text-brown shadow-sm">
             {ownerName}
