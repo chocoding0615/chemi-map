@@ -19,7 +19,7 @@ function fromCategory(slug: CategorySlug): FortuneGroupItem {
   return {
     icon: category.icon,
     label: category.nameKo,
-    desc: FORTUNE_FREE_PREVIEW ? "지금은 무료" : `${category.priceKrw.toLocaleString()}원`,
+    desc: FORTUNE_FREE_PREVIEW ? "지금은 무료" : `🌱${category.priceKrw.toLocaleString()}`,
     href: `/fortune/${slug}`,
   };
 }

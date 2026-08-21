@@ -3,7 +3,7 @@ import { FieldValue } from "firebase-admin/firestore";
 
 export type ChargeResult = { ok: true; balance: number } | { ok: false; balance: number; required: number };
 
-// 질문권 잔액 차감 + 활동 기록의 유일한 지점. 사주/궁합/인연지도(MockPayGate)든
+// 잔디 잔액 차감 + 활동 기록의 유일한 지점. 사주/궁합/인연지도(MockPayGate)든
 // 비밀편지든 유료 콘텐츠를 여는 모든 경로가 이 함수 하나만 거쳐야, 화면에 보이는
 // 잔액과 실제 차감이 어긋나지 않는다.
 export async function chargeWallet(

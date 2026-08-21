@@ -3,7 +3,7 @@ import { getSession } from "@/lib/session";
 import { getDb } from "@/lib/firebaseAdmin";
 import { FieldValue } from "firebase-admin/firestore";
 
-const CHARGE_AMOUNT_KRW = 1000;
+const CHARGE_AMOUNT = 7;
 
 export async function POST() {
   const session = await getSession();
@@ -14,7 +14,7 @@ export async function POST() {
   await getDb()
     .collection("users")
     .doc(session.uid)
-    .update({ ticketBalance: FieldValue.increment(CHARGE_AMOUNT_KRW) });
+    .update({ ticketBalance: FieldValue.increment(CHARGE_AMOUNT) });
 
   return new NextResponse(null, { status: 204 });
 }

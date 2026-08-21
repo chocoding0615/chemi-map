@@ -78,9 +78,9 @@ export default function WalletPayButton({
         href="/my"
         className="mt-5 flex w-full flex-col items-center justify-center rounded-2xl border border-dashed border-coral bg-white/50 py-3 text-center text-sm font-bold text-coral-dark transition active:scale-95 hover:bg-white"
       >
-        <span>질문권이 부족해요</span>
+        <span>🌱 잔디가 부족해요</span>
         <span className="mt-0.5 text-[11px] font-normal text-brown-soft/50">
-          보유 {insufficient.balance.toLocaleString()}원 · 필요 {insufficient.required.toLocaleString()}원 · 충전하러 가기
+          보유 🌱{insufficient.balance.toLocaleString()} · 필요 🌱{insufficient.required.toLocaleString()} · 충전하러 가기
         </span>
       </Link>
     );
@@ -99,7 +99,7 @@ export default function WalletPayButton({
           ? "처리 중..."
           : priceKrw === 0
             ? "🎁 무료로 열어보기"
-            : `🔓 질문권으로 열기 (${priceKrw.toLocaleString()}원)`}
+            : `🔓 잔디로 열기 (🌱${priceKrw.toLocaleString()})`}
       </button>
     </div>
   );

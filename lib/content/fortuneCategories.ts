@@ -44,7 +44,7 @@ export const FORTUNE_CATEGORIES: Record<CategorySlug, FortuneCategory> = {
     slug: "love",
     nameKo: "애정운",
     description: "연애·결혼의 흐름을 복실이가 봐드려요",
-    priceKrw: 990,
+    priceKrw: 7,
     icon: "💕",
     inputKind: "birthdate",
     blurbs: {
@@ -74,7 +74,7 @@ export const FORTUNE_CATEGORIES: Record<CategorySlug, FortuneCategory> = {
     slug: "marriage",
     nameKo: "결혼운",
     description: "결혼으로 이어지는 흐름을 복실이가 봐드려요",
-    priceKrw: 990,
+    priceKrw: 7,
     icon: "💍",
     inputKind: "birthdate",
     blurbs: {
@@ -104,7 +104,7 @@ export const FORTUNE_CATEGORIES: Record<CategorySlug, FortuneCategory> = {
     slug: "career",
     nameKo: "직업운",
     description: "일의 방향과 기회를 복실이가 봐드려요",
-    priceKrw: 990,
+    priceKrw: 7,
     icon: "💼",
     inputKind: "birthdate",
     blurbs: {
@@ -134,7 +134,7 @@ export const FORTUNE_CATEGORIES: Record<CategorySlug, FortuneCategory> = {
     slug: "wealth",
     nameKo: "재물운",
     description: "돈의 흐름을 복실이가 봐드려요",
-    priceKrw: 990,
+    priceKrw: 7,
     icon: "💰",
     inputKind: "birthdate",
     blurbs: {
@@ -164,7 +164,7 @@ export const FORTUNE_CATEGORIES: Record<CategorySlug, FortuneCategory> = {
     slug: "gunghap",
     nameKo: "궁합",
     description: "두 사람의 궁합을 오행과 MBTI로 함께 봐드려요",
-    priceKrw: 990,
+    priceKrw: 7,
     icon: "🤝",
     inputKind: "twoBirthdates",
     needsMbti: true,
@@ -173,7 +173,7 @@ export const FORTUNE_CATEGORIES: Record<CategorySlug, FortuneCategory> = {
     slug: "yearly",
     nameKo: "한 해 운세",
     description: "올해 전체 운의 흐름을 복실이가 봐드려요",
-    priceKrw: 990,
+    priceKrw: 7,
     icon: "🎊",
     inputKind: "birthdate",
     blurbs: {
@@ -203,7 +203,7 @@ export const FORTUNE_CATEGORIES: Record<CategorySlug, FortuneCategory> = {
     slug: "daeun",
     nameKo: "대운",
     description: "10년 단위 큰 흐름을 복실이가 봐드려요",
-    priceKrw: 990,
+    priceKrw: 7,
     icon: "🌊",
     inputKind: "birthdate",
     blurbs: {
@@ -233,7 +233,7 @@ export const FORTUNE_CATEGORIES: Record<CategorySlug, FortuneCategory> = {
     slug: "taekil",
     nameKo: "택일",
     description: "좋은 날을 고르는 걸 복실이가 도와드려요",
-    priceKrw: 990,
+    priceKrw: 7,
     icon: "📅",
     inputKind: "birthdate",
     blurbs: {
@@ -263,7 +263,7 @@ export const FORTUNE_CATEGORIES: Record<CategorySlug, FortuneCategory> = {
     slug: "sogaeting",
     nameKo: "소개팅운",
     description: "첫 만남의 기운을 복실이가 봐드려요",
-    priceKrw: 990,
+    priceKrw: 7,
     icon: "🌸",
     inputKind: "birthdate",
     blurbs: {

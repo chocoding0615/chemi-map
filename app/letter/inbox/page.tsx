@@ -9,7 +9,7 @@ import { hasUnlockedAnyLetter } from "@/lib/letters";
 import { getDb } from "@/lib/firebaseAdmin";
 
 const PREVIEW_LEN = 15;
-const UNLOCK_PRICE_KRW = 300;
+const UNLOCK_PRICE_KRW = 2;
 
 interface LetterRow {
   id: string;

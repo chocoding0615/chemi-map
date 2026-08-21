@@ -153,7 +153,7 @@ export default function SajuPage() {
             <p className="mt-3 text-sm leading-relaxed text-brown-soft/70">{result.teaser}</p>
 
             <MockPayGate
-              priceKrw={990}
+              priceKrw={7}
               category="내 사주 풀이"
               title={`${ELEMENT_BANK[result.dominant].label}(${ELEMENT_BANK[result.dominant].hanja}) 기운 상세 풀이`}
             >

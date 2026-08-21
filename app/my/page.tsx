@@ -68,7 +68,7 @@ export default async function MyPage({ searchParams }: MyPageProps) {
       {!session ? (
         <>
           <p className="mt-2 text-center text-sm text-brown-soft/60">
-            로그인하면 구매내역과 질문권 잔액이 저장돼요.
+            로그인하면 구매내역과 잔디 잔액이 저장돼요.
           </p>
           {error === "login_failed" && (
             <p className="mt-3 text-center text-xs font-semibold text-coral-dark">
@@ -105,8 +105,8 @@ export default async function MyPage({ searchParams }: MyPageProps) {
           <LetterInboxBanner uid={session.uid} />
 
           <div className="mt-8 w-full rounded-2xl bg-gradient-to-b from-lavender/30 to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
-            <p className="text-xs font-semibold text-brown-soft/50">질문권 잔액</p>
-            <p className="mt-1 text-3xl font-extrabold text-brown">{session.ticketBalance.toLocaleString()}원</p>
+            <p className="text-xs font-semibold text-brown-soft/50">🌱 잔디</p>
+            <p className="mt-1 text-3xl font-extrabold text-brown">{session.ticketBalance.toLocaleString()}개</p>
             <ChargeButton />
           </div>
 
@@ -175,7 +175,7 @@ async function MyActivityList({ uid }: { uid: string }) {
                 </p>
               </div>
               <span className="shrink-0 rounded-full bg-cream px-2.5 py-1 text-xs font-bold text-brown-soft/60">
-                {item.priceKrw > 0 ? `${item.priceKrw.toLocaleString()}원` : "무료"}
+                {item.priceKrw > 0 ? `🌱${item.priceKrw.toLocaleString()}` : "무료"}
               </span>
             </div>
           ))}

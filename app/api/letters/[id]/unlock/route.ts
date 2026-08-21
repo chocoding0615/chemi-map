@@ -20,7 +20,7 @@ export async function POST(_request: Request, { params }: RouteParams) {
   if (!letterSnap.exists) return NextResponse.json({ error: "편지를 찾을 수 없어요." }, { status: 404 });
 
   const letter = letterSnap.data() as { senderName: string };
-  const priceKrw = (await hasUnlockedAnyLetter(session.uid)) ? 300 : 0;
+  const priceKrw = (await hasUnlockedAnyLetter(session.uid)) ? 2 : 0;
 
   const result = await chargeWallet(session.uid, priceKrw, {
     category: "비밀 편지",
