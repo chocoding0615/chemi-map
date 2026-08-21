@@ -37,7 +37,7 @@ export default function TailProgress() {
         <div className="flex items-center justify-between text-xs">
           <span className="font-bold text-coral-dark">꼬리 x{tails}</span>
           <Link
-            href="/collection"
+            href="/my?tab=collection"
             aria-label="부적 주머니 보기"
             className="text-brown-soft/40 transition active:scale-95 hover:text-brown-soft/60"
           >

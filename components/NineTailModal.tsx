@@ -71,7 +71,7 @@ export default function NineTailModal() {
             type="button"
             onClick={() => {
               setOpen(false);
-              router.push("/collection");
+              router.push("/my?tab=collection");
             }}
             className="rounded-xl bg-cream py-2.5 text-sm font-bold text-brown-soft/70 ring-1 ring-brown/10 transition active:scale-95"
           >

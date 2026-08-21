@@ -5,11 +5,9 @@ export interface TabDef {
 }
 
 export const TABS: TabDef[] = [
+  { label: "홈", href: "/", icon: "🏠" },
   { label: "내 사주", href: "/saju", icon: "📜" },
-  { label: "여우 마을", href: "/connections", icon: "🏘️" },
-  { label: "오늘", href: "/today", icon: "☀️" },
-  { label: "부적 주머니", href: "/collection", icon: "👝" },
-  { label: "여우상", href: "/fox-type", icon: "🦊" },
+  { label: "비밀편지함", href: "/letter/inbox", icon: "🔒" },
   { label: "마이페이지", href: "/my", icon: "👤" },
 ];
 

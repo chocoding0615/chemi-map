@@ -4,6 +4,7 @@ import LoginButtons from "@/components/LoginButtons";
 import LogoutButton from "@/components/LogoutButton";
 import ChargeButton from "@/components/ChargeButton";
 import NicknameEditForm from "@/components/NicknameEditForm";
+import MyPageTabs from "@/components/MyPageTabs";
 import { getSession, type Provider } from "@/lib/session";
 import { getDb } from "@/lib/firebaseAdmin";
 
@@ -65,66 +66,73 @@ export default async function MyPage({ searchParams }: MyPageProps) {
       <FoxMascot size={56} />
       <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-brown">마이페이지</h1>
 
-      {!session ? (
-        <>
-          <p className="mt-2 text-center text-sm text-brown-soft/60">
-            로그인하면 구매내역과 잔디 잔액이 저장돼요.
-          </p>
-          {error === "login_failed" && (
-            <p className="mt-3 text-center text-xs font-semibold text-coral-dark">
-              로그인에 실패했어요. 다시 시도해주세요.
-            </p>
-          )}
-          <LoginButtons />
-        </>
-      ) : (
-        <>
-          <NicknameEditForm nickname={session.nickname} />
+      <MyPageTabs
+        accountTab={
+          !session ? (
+            <>
+              <p className="mt-2 text-center text-sm text-brown-soft/60">
+                로그인하면 구매내역과 잔디 잔액이 저장돼요.
+              </p>
+              {error === "login_failed" && (
+                <p className="mt-3 text-center text-xs font-semibold text-coral-dark">
+                  로그인에 실패했어요. 다시 시도해주세요.
+                </p>
+              )}
+              <LoginButtons />
+            </>
+          ) : (
+            <>
+              <NicknameEditForm nickname={session.nickname} />
 
-          <div className="mt-2 flex items-center gap-2">
-            <span
-              className="rounded-full px-2.5 py-1 text-[11px] font-bold"
-              style={{ backgroundColor: PROVIDER_BADGE[session.provider].bg, color: PROVIDER_BADGE[session.provider].fg }}
-            >
-              {PROVIDER_BADGE[session.provider].label}
-            </span>
-            <span className="text-[11px] text-brown-soft/40">
-              {new Date(session.createdAt).toLocaleDateString("ko-KR", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}{" "}
-              가입
-            </span>
-          </div>
+              <div className="mt-2 flex items-center gap-2">
+                <span
+                  className="rounded-full px-2.5 py-1 text-[11px] font-bold"
+                  style={{
+                    backgroundColor: PROVIDER_BADGE[session.provider].bg,
+                    color: PROVIDER_BADGE[session.provider].fg,
+                  }}
+                >
+                  {PROVIDER_BADGE[session.provider].label}
+                </span>
+                <span className="text-[11px] text-brown-soft/40">
+                  {new Date(session.createdAt).toLocaleDateString("ko-KR", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}{" "}
+                  가입
+                </span>
+              </div>
 
-          <div className="mt-2">
-            <LogoutButton />
-          </div>
+              <div className="mt-2">
+                <LogoutButton />
+              </div>
 
-          <LetterInboxBanner uid={session.uid} />
+              <LetterInboxBanner uid={session.uid} />
 
-          <div className="mt-8 w-full rounded-2xl bg-gradient-to-b from-lavender/30 to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
-            <p className="text-xs font-semibold text-brown-soft/50">🌱 잔디</p>
-            <p className="mt-1 text-3xl font-extrabold text-brown">{session.ticketBalance.toLocaleString()}개</p>
-            <ChargeButton />
-          </div>
+              <div className="mt-8 w-full rounded-2xl bg-gradient-to-b from-lavender/30 to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
+                <p className="text-xs font-semibold text-brown-soft/50">🌱 잔디</p>
+                <p className="mt-1 text-3xl font-extrabold text-brown">{session.ticketBalance.toLocaleString()}개</p>
+                <ChargeButton />
+              </div>
 
-          <MyActivityList uid={session.uid} />
+              <MyActivityList uid={session.uid} />
 
-          <div className="mt-10 w-full space-y-2 rounded-2xl bg-white p-5 text-center ring-1 ring-brown/5">
-            <p className="text-xs font-semibold text-brown-soft/50">고객센터: 준비 중</p>
-            <div className="flex items-center justify-center gap-3 text-[11px] font-semibold text-brown-soft/40">
-              <Link href="/terms" className="underline underline-offset-2">
-                이용약관
-              </Link>
-              <Link href="/privacy" className="underline underline-offset-2">
-                개인정보처리방침
-              </Link>
-            </div>
-          </div>
-        </>
-      )}
+              <div className="mt-10 w-full space-y-2 rounded-2xl bg-white p-5 text-center ring-1 ring-brown/5">
+                <p className="text-xs font-semibold text-brown-soft/50">고객센터: 준비 중</p>
+                <div className="flex items-center justify-center gap-3 text-[11px] font-semibold text-brown-soft/40">
+                  <Link href="/terms" className="underline underline-offset-2">
+                    이용약관
+                  </Link>
+                  <Link href="/privacy" className="underline underline-offset-2">
+                    개인정보처리방침
+                  </Link>
+                </div>
+              </div>
+            </>
+          )
+        }
+      />
     </div>
   );
 }
