@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const MAX_LEN = 300;
+const MAX_LEN = 50;
 
 export default function SecretLetterForm({ handle }: { handle: string }) {
   const [senderName, setSenderName] = useState("");
@@ -55,8 +55,8 @@ export default function SecretLetterForm({ handle }: { handle: string }) {
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value.slice(0, MAX_LEN))}
-          rows={5}
-          placeholder="하고 싶은 말을 편하게 적어주세요."
+          rows={3}
+          placeholder="짧게, 하고 싶은 말을 적어주세요."
           className="w-full resize-none rounded-xl bg-white px-4 py-3 text-sm text-brown shadow-sm ring-1 ring-brown/10 placeholder:text-brown-soft/30"
         />
         <span className="absolute bottom-2 right-3 text-[11px] text-brown-soft/30">

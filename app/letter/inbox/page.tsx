@@ -5,6 +5,7 @@ import SecretLetterCard from "@/components/SecretLetterCard";
 import DeleteLetterButton from "@/components/DeleteLetterButton";
 import { getSession } from "@/lib/session";
 import { getOrCreateLetterHandle } from "@/lib/letterHandle";
+import { hasUnlockedAnyLetter } from "@/lib/letters";
 import { getDb } from "@/lib/firebaseAdmin";
 
 const PREVIEW_LEN = 15;
@@ -66,6 +67,7 @@ async function LetterInboxBody({ uid }: { uid: string }) {
   const handle = await getOrCreateLetterHandle(uid);
   const letters = await loadLetters(uid);
   const unreadCount = letters.filter((l) => !l.isUnlocked).length;
+  const nextUnlockIsFree = !(await hasUnlockedAnyLetter(uid));
 
   return (
     <>
@@ -100,7 +102,7 @@ async function LetterInboxBody({ uid }: { uid: string }) {
                   id={letter.id}
                   senderName={letter.senderName}
                   preview={letter.preview}
-                  priceKrw={UNLOCK_PRICE_KRW}
+                  priceKrw={nextUnlockIsFree ? 0 : UNLOCK_PRICE_KRW}
                 />
               )
             )}

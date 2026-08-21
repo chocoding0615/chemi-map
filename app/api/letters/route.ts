@@ -12,8 +12,8 @@ export async function POST(request: NextRequest) {
   if (!handle) {
     return NextResponse.json({ error: "잘못된 링크예요." }, { status: 400 });
   }
-  if (!content || content.length > 300) {
-    return NextResponse.json({ error: "편지 내용을 1~300자로 입력해주세요." }, { status: 400 });
+  if (!content || content.length > 50) {
+    return NextResponse.json({ error: "편지 내용을 1~50자로 입력해주세요." }, { status: 400 });
   }
 
   const db = getDb();

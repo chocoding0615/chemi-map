@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { awardForAction } from "@/lib/foxRewards";
 import DeleteLetterButton from "./DeleteLetterButton";
@@ -12,6 +13,7 @@ interface SecretLetterCardProps {
 }
 
 export default function SecretLetterCard({ id, senderName, preview, priceKrw }: SecretLetterCardProps) {
+  const router = useRouter();
   const [content, setContent] = useState<string | null>(null);
   const [unlocking, setUnlocking] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,6 +29,7 @@ export default function SecretLetterCard({ id, senderName, preview, priceKrw }: 
       const data = (await contentRes.json()) as { content: string };
       setContent(data.content);
       awardForAction("letter");
+      router.refresh();
     } catch {
       setError("열람에 실패했어요. 다시 시도해주세요.");
     } finally {
@@ -58,7 +61,9 @@ export default function SecretLetterCard({ id, senderName, preview, priceKrw }: 
           >
             {unlocking
               ? "열람 처리 중..."
-              : `🔒 테스트 결제로 전체보기 (${priceKrw.toLocaleString()}원 · 실제 결제 아님)`}
+              : priceKrw === 0
+                ? "🎁 첫 편지는 무료로 전체보기"
+                : `🔒 테스트 결제로 전체보기 (${priceKrw.toLocaleString()}원 · 실제 결제 아님)`}
           </button>
         </>
       )}
