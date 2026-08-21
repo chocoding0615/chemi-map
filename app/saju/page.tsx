@@ -8,7 +8,7 @@ import FoxMascot from "@/components/FoxMascot";
 import TodayScoreCard from "@/components/TodayScoreCard";
 import BirthDatePicker from "@/components/BirthDatePicker";
 import BirthTimePicker from "@/components/BirthTimePicker";
-import { addActivity } from "@/lib/localActivity";
+import { recordActivity } from "@/lib/recordActivity";
 import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 import {
   getPersonalityReading,
@@ -156,7 +156,7 @@ export default function SajuPage() {
             <MockPayGate
               priceKrw={990}
               onUnlock={() =>
-                addActivity({
+                recordActivity({
                   category: "내 사주 풀이",
                   title: `${ELEMENT_BANK[result.dominant].label}(${ELEMENT_BANK[result.dominant].hanja}) 기운 상세 풀이`,
                   priceKrw: 990,
