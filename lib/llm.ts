@@ -1,9 +1,11 @@
 // OpenRouter(https://openrouter.ai) 경유 LLM 호출. 서버(API 라우트)에서만 불러야 한다 —
 // OPENROUTER_API_KEY는 절대 클라이언트 번들에 들어가면 안 된다.
-// 모델은 OPENROUTER_MODEL env로 바꿀 수 있다(기본값은 저렴한 Kimi K2).
-
+// 모델은 OPENROUTER_MODEL env로 바꿀 수 있다. 기본값은 deepseek-chat(DeepSeek V3) —
+// 출력 위주(긴 한국어 리포트)인 이 워크로드에서 kimi-k2보다 출력 단가가 절반 이하라
+// 2026-08 기준 OpenRouter 가격표로 비교해 골랐다(각 $/1M): kimi-k2 0.57/2.30 vs
+// deepseek-chat 0.26/1.03. 가격은 수시로 바뀌니 나중에 다시 비교해볼 가치가 있다.
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_MODEL = "moonshotai/kimi-k2";
+const DEFAULT_MODEL = "deepseek/deepseek-chat";
 
 export interface ChatMessage {
   role: "system" | "user" | "assistant";
