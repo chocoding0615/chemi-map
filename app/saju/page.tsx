@@ -11,6 +11,7 @@ import BirthTimePicker from "@/components/BirthTimePicker";
 import MbtiSelect from "@/components/MbtiSelect";
 import SajuDetailReport from "@/components/SajuDetailReport";
 import MbtiBehaviorSection from "@/components/MbtiBehaviorSection";
+import SajuLlmReportSection from "@/components/SajuLlmReportSection";
 import type { MbtiType } from "@/lib/result-engine/temperament";
 import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 import {
@@ -241,6 +242,16 @@ export default function SajuPage() {
 
               {result.mbti && <MbtiBehaviorSection mbti={result.mbti} seed={`${result.birthdate}-${result.mbti}`} />}
             </MockPayGate>
+
+            <SajuLlmReportSection
+              input={{
+                name: result.name || undefined,
+                birthdate: result.birthdate,
+                birthTime: result.birthTime || undefined,
+                gender: result.gender,
+                mbti: result.mbti || undefined,
+              }}
+            />
 
             <button
               type="button"
