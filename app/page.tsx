@@ -57,6 +57,20 @@ export default function Home() {
         <span className="text-lg text-brown-soft/30">→</span>
       </Link>
 
+      <Link
+        href="/letter/inbox"
+        className="mt-3 flex w-full items-center justify-between rounded-2xl bg-gradient-to-b from-mint/30 to-cream p-4 shadow-sm ring-1 ring-brown/5 transition active:scale-[0.98] hover:bg-mint/20"
+      >
+        <span className="flex items-center gap-3">
+          <span className="text-2xl">🔒</span>
+          <span>
+            <span className="block text-sm font-bold text-brown">비밀 편지함</span>
+            <span className="block text-[11px] text-mint-dark">나한테 온 편지가 있을지도?</span>
+          </span>
+        </span>
+        <span className="text-lg text-brown-soft/30">→</span>
+      </Link>
+
       {/* 운세 더 보기 — 그룹별 섹션 */}
       <div className="mt-10 w-full space-y-8">
         {FORTUNE_GROUPS.map((group) => (

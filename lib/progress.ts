@@ -4,7 +4,7 @@ import { notifyProgressChanged } from "./notify";
 // localStorage뿐이라 손상되거나 스키마가 바뀌어도 깨지지 않도록 항상
 // version 체크 후 파싱 실패 시 빈 진행도로 안전하게 초기화한다.
 
-export type ActionId = "saju" | "foxtype" | "connections" | "daily" | "share";
+export type ActionId = "saju" | "foxtype" | "connections" | "daily" | "share" | "letter";
 export type FortuneSeenId = "saju" | "love" | "career" | "compat";
 
 export interface FoxProgress {
@@ -29,6 +29,7 @@ const ONE_TIME_EXP: Partial<Record<ActionId, number>> = {
   foxtype: 20,
   connections: 20,
   share: 15,
+  letter: 20,
 };
 const DAILY_EXP = 10;
 

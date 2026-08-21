@@ -1,9 +1,21 @@
+import Link from "next/link";
 import FoxMascot from "@/components/FoxMascot";
 import LoginButtons from "@/components/LoginButtons";
 import LogoutButton from "@/components/LogoutButton";
 import ChargeButton from "@/components/ChargeButton";
 import { getSession } from "@/lib/session";
 import { getDb } from "@/lib/firebaseAdmin";
+
+async function countUnreadLetters(uid: string): Promise<number> {
+  const snap = await getDb()
+    .collection("users")
+    .doc(uid)
+    .collection("letters")
+    .where("unlockedAt", "==", null)
+    .count()
+    .get();
+  return snap.data().count;
+}
 
 interface MyPageProps {
   searchParams: Promise<{ error?: string }>;
@@ -66,6 +78,8 @@ export default async function MyPage({ searchParams }: MyPageProps) {
             <LogoutButton />
           </div>
 
+          <LetterInboxBanner uid={session.uid} />
+
           <div className="mt-8 w-full rounded-2xl bg-gradient-to-b from-lavender/30 to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
             <p className="text-xs font-semibold text-brown-soft/50">질문권 잔액</p>
             <p className="mt-1 text-3xl font-extrabold text-brown">{session.ticketBalance.toLocaleString()}원</p>
@@ -76,6 +90,27 @@ export default async function MyPage({ searchParams }: MyPageProps) {
         </>
       )}
     </div>
+  );
+}
+
+async function LetterInboxBanner({ uid }: { uid: string }) {
+  const unreadCount = await countUnreadLetters(uid);
+
+  return (
+    <Link
+      href="/letter/inbox"
+      className="mt-6 flex w-full items-center justify-between rounded-2xl bg-gradient-to-b from-mint/30 to-cream p-4 shadow-sm ring-1 ring-brown/5 transition active:scale-[0.98] hover:bg-mint/20"
+    >
+      <span className="flex items-center gap-3">
+        <span className="text-2xl">🔒</span>
+        <span className="text-sm font-bold text-brown">나에게 온 비밀 편지</span>
+      </span>
+      {unreadCount > 0 ? (
+        <span className="rounded-full bg-coral px-2.5 py-1 text-xs font-bold text-white">{unreadCount}</span>
+      ) : (
+        <span className="text-lg text-brown-soft/30">→</span>
+      )}
+    </Link>
   );
 }
 
