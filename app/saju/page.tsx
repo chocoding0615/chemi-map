@@ -8,7 +8,6 @@ import FoxMascot from "@/components/FoxMascot";
 import TodayScoreCard from "@/components/TodayScoreCard";
 import BirthDatePicker from "@/components/BirthDatePicker";
 import BirthTimePicker from "@/components/BirthTimePicker";
-import { recordActivity } from "@/lib/recordActivity";
 import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 import {
   getPersonalityReading,
@@ -155,13 +154,8 @@ export default function SajuPage() {
 
             <MockPayGate
               priceKrw={990}
-              onUnlock={() =>
-                recordActivity({
-                  category: "내 사주 풀이",
-                  title: `${ELEMENT_BANK[result.dominant].label}(${ELEMENT_BANK[result.dominant].hanja}) 기운 상세 풀이`,
-                  priceKrw: 990,
-                })
-              }
+              category="내 사주 풀이"
+              title={`${ELEMENT_BANK[result.dominant].label}(${ELEMENT_BANK[result.dominant].hanja}) 기운 상세 풀이`}
             >
               <div className="mt-5 space-y-4 rounded-xl bg-white/60 p-4 text-left">
                 <div>

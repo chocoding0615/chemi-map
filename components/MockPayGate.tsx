@@ -2,29 +2,20 @@
 
 import { useState } from "react";
 import { FORTUNE_FREE_PREVIEW } from "@/lib/config";
+import WalletPayButton from "./WalletPayButton";
 
 interface MockPayGateProps {
   priceKrw: number;
-  unlockLabel?: string;
-  onUnlock?: () => void;
+  category: string;
+  title: string;
   children: React.ReactNode;
 }
 
-// 실제 PG 연동 전 공용 모의 결제 UI. 나중에 real PG로 교체할 땐 handleTestPay
-// 내부만 실제 결제 위젯 호출로 바꾸면 되고, 이 컴포넌트를 쓰는 화면들은 그대로 둬도 된다.
+// 실제 PG 연동 전 공용 잠금 UI. 잠금 해제는 WalletPayButton(질문권 지갑 차감)이
+// 전담하고, 여기는 FORTUNE_FREE_PREVIEW 캠페인 오버라이드만 담당한다.
 // 지금은 lib/config.ts의 FORTUNE_FREE_PREVIEW로 전부 무료 공개 중.
-export default function MockPayGate({ priceKrw, unlockLabel, onUnlock, children }: MockPayGateProps) {
+export default function MockPayGate({ priceKrw, category, title, children }: MockPayGateProps) {
   const [unlocked, setUnlocked] = useState(FORTUNE_FREE_PREVIEW);
-  const [paying, setPaying] = useState(false);
-
-  function handleTestPay() {
-    setPaying(true);
-    setTimeout(() => {
-      setPaying(false);
-      setUnlocked(true);
-      onUnlock?.();
-    }, 900);
-  }
 
   if (unlocked) {
     return (
@@ -40,15 +31,6 @@ export default function MockPayGate({ priceKrw, unlockLabel, onUnlock, children 
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleTestPay}
-      disabled={paying}
-      className="mt-5 w-full rounded-2xl border border-dashed border-coral bg-white/50 py-3 text-sm font-bold text-coral-dark transition active:scale-95 hover:bg-white disabled:opacity-60"
-    >
-      {paying
-        ? "결제 처리 중..."
-        : unlockLabel ?? `🔒 테스트 결제로 열어보기 (${priceKrw.toLocaleString()}원 · 실제 결제 아님)`}
-    </button>
+    <WalletPayButton priceKrw={priceKrw} category={category} title={title} onSuccess={() => setUnlocked(true)} />
   );
 }

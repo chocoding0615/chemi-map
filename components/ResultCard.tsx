@@ -3,7 +3,6 @@
 import ElementIcon from "./ElementIcon";
 import ElementDistributionChart from "./ElementDistributionChart";
 import MockPayGate from "./MockPayGate";
-import { recordActivity } from "@/lib/recordActivity";
 import type { ElementKey } from "@/lib/result-engine/elements";
 import { FOX_BASE } from "@/lib/content/foxTypes";
 
@@ -54,11 +53,7 @@ export default function ResultCard({
       <p className="mt-4 text-sm leading-relaxed text-brown-soft/70">{affinityBlurb}</p>
       <p className="mt-2 text-sm leading-relaxed text-brown-soft/70">{elementBlurb}</p>
 
-      <MockPayGate
-        priceKrw={0}
-        unlockLabel="🔒 테스트 결제로 상세 결과 열어보기 (실제 결제 아님)"
-        onUnlock={() => recordActivity({ category: "인연 매칭", title, priceKrw: 0 })}
-      >
+      <MockPayGate priceKrw={0} category="인연 매칭" title={title}>
         <div className="mt-5 space-y-3 rounded-xl bg-white/60 p-4 text-left">
           <p className="text-center text-xs font-semibold text-brown-soft/50">
             사주 상세 · {hasTimeInput ? "출생시간 포함" : "출생시간 미입력 (참고용)"}

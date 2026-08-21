@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { getDb } from "@/lib/firebaseAdmin";
 import { hasUnlockedAnyLetter } from "@/lib/letters";
+import { chargeWallet } from "@/lib/wallet";
 import { FieldValue } from "firebase-admin/firestore";
 
 interface RouteParams {
@@ -21,14 +22,15 @@ export async function POST(_request: Request, { params }: RouteParams) {
   const letter = letterSnap.data() as { senderName: string };
   const priceKrw = (await hasUnlockedAnyLetter(session.uid)) ? 300 : 0;
 
-  await letterRef.update({ unlockedAt: FieldValue.serverTimestamp() });
-
-  await db.collection("users").doc(session.uid).collection("activity").add({
+  const result = await chargeWallet(session.uid, priceKrw, {
     category: "비밀 편지",
     title: `${letter.senderName}님이 보낸 편지`,
-    priceKrw,
-    unlockedAt: FieldValue.serverTimestamp(),
   });
+  if (!result.ok) {
+    return NextResponse.json({ ok: false, balance: result.balance, required: result.required }, { status: 402 });
+  }
 
-  return new NextResponse(null, { status: 204 });
+  await letterRef.update({ unlockedAt: FieldValue.serverTimestamp() });
+
+  return NextResponse.json({ ok: true, balance: result.balance });
 }

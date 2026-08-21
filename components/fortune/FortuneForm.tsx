@@ -6,7 +6,6 @@ import MbtiSelect from "@/components/MbtiSelect";
 import MockPayGate from "@/components/MockPayGate";
 import BirthDatePicker from "@/components/BirthDatePicker";
 import BirthTimePicker from "@/components/BirthTimePicker";
-import { recordActivity } from "@/lib/recordActivity";
 import { getCategoryBlurb, type FortuneCategory } from "@/lib/content/fortuneCategories";
 import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 import { getAffinityCategory, AFFINITY_BANK, calculateAffinityScore } from "@/lib/result-engine/affinity";
@@ -255,9 +254,8 @@ export default function FortuneForm({ category }: FortuneFormProps) {
 
         <MockPayGate
           priceKrw={category.priceKrw}
-          onUnlock={() =>
-            recordActivity({ category: category.nameKo, title: `${category.nameKo} 상세 풀이`, priceKrw: category.priceKrw })
-          }
+          category={category.nameKo}
+          title={`${category.nameKo} 상세 풀이`}
         >
           <div className="mt-4 space-y-3 text-left">
             <p className="text-sm leading-relaxed text-brown-soft/70">{result.blurb}</p>
