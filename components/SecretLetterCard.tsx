@@ -42,7 +42,7 @@ export default function SecretLetterCard({ id, senderName, preview, priceKrw }: 
         <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed text-brown">{content}</p>
       ) : (
         <>
-          <p className="mt-1.5 text-sm text-brown-soft/60">
+          <p className="mt-1.5 text-sm text-brown-soft">
             {preview}
             <span className="text-brown-soft/30">…</span>
           </p>

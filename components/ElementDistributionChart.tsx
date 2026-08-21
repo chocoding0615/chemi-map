@@ -14,7 +14,7 @@ export default function ElementDistributionChart({
         const count = distribution[key];
         return (
           <div key={key} className="flex items-center gap-2 text-xs">
-            <span className="w-12 shrink-0 text-brown-soft/60">
+            <span className="w-12 shrink-0 text-brown-soft">
               {entry.label}({entry.hanja})
             </span>
             <div className="h-2 flex-1 overflow-hidden rounded-full bg-brown/10">

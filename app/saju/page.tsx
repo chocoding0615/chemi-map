@@ -96,7 +96,7 @@ export default function SajuPage() {
     <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16">
       <FoxMascot size={56} prop="scroll" />
       <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-brown">내 사주 풀이</h1>
-      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft/60">
+      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft">
         생년월일·성별·태어난 시간을 넣으면 복실이가 사주를 풀어드려요
       </p>
 
@@ -132,7 +132,7 @@ export default function SajuPage() {
                   className={`rounded-xl py-2.5 text-sm font-semibold transition active:scale-95 ${
                     gender === g
                       ? "bg-gradient-to-b from-coral to-coral-dark text-white shadow-md shadow-coral-dark/25"
-                      : "bg-cream text-brown-soft/70 ring-1 ring-brown/10 hover:bg-apricot"
+                      : "bg-cream text-brown-soft ring-1 ring-brown/10 hover:bg-apricot"
                   }`}
                 >
                   {g === "male" ? "남자" : "여자"}
@@ -169,7 +169,7 @@ export default function SajuPage() {
               <ElementIcon element={result.dominant} size={64} />
             </div>
             {result.name && <p className="mt-2 text-sm font-bold text-coral-dark">{result.name}님의 사주예요</p>}
-            <p className="mt-3 text-sm leading-relaxed text-brown-soft/70">{result.teaser}</p>
+            <p className="mt-3 text-sm leading-relaxed text-brown-soft">{result.teaser}</p>
 
             <MockPayGate
               priceKrw={7}
@@ -181,53 +181,53 @@ export default function SajuPage() {
                   <p className="text-center text-xs font-semibold text-brown-soft/50">
                     사주 상세 · {result.hasTimeInput ? "출생시간 포함" : "출생시간 미입력 (참고용)"}
                   </p>
-                  <p className="mt-1 text-center text-xs text-brown-soft/70">{result.pillarText}</p>
+                  <p className="mt-1 text-center text-xs text-brown-soft">{result.pillarText}</p>
                 </div>
 
                 <ElementDistributionChart distribution={result.distribution} />
-                <p className="text-sm leading-relaxed text-brown-soft/70">{result.balance.strongText}</p>
-                <p className="text-sm leading-relaxed text-brown-soft/70">{result.balance.weakText}</p>
+                <p className="text-sm leading-relaxed text-brown-soft">{result.balance.strongText}</p>
+                <p className="text-sm leading-relaxed text-brown-soft">{result.balance.weakText}</p>
 
                 <div className="space-y-3 border-t border-brown/10 pt-4">
                   <div>
                     <p className="text-xs font-bold text-coral-dark">🌱 타고난 기질</p>
-                    <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{result.personality.temperament}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-brown-soft">{result.personality.temperament}</p>
                   </div>
                   <div>
                     <p className="text-xs font-bold text-coral-dark">💞 관계·인연에서의 성향</p>
-                    <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{result.personality.relationships}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-brown-soft">{result.personality.relationships}</p>
                   </div>
                   <div>
                     <p className="text-xs font-bold text-coral-dark">🌤️ 일·성장에서의 성향</p>
-                    <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{result.personality.growth}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-brown-soft">{result.personality.growth}</p>
                   </div>
                 </div>
 
                 <div className="rounded-lg bg-mint/15 p-3">
                   <p className="text-xs font-bold text-mint-dark">💡 복실이의 조언</p>
-                  <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{result.advice}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-brown-soft">{result.advice}</p>
                 </div>
                 <div className="rounded-lg bg-lavender/15 p-3">
                   <p className="text-xs font-bold text-lavender-dark">⚠️ 이런 점은 조심하세요</p>
-                  <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{result.caution}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-brown-soft">{result.caution}</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-center text-xs">
                   <div className="rounded-lg bg-cream p-2">
                     <p className="font-bold text-coral-dark">행운의 색</p>
-                    <p className="mt-0.5 text-brown-soft/70">{result.lucky.color}</p>
+                    <p className="mt-0.5 text-brown-soft">{result.lucky.color}</p>
                   </div>
                   <div className="rounded-lg bg-cream p-2">
                     <p className="font-bold text-coral-dark">행운의 아이템</p>
-                    <p className="mt-0.5 text-brown-soft/70">{result.lucky.item}</p>
+                    <p className="mt-0.5 text-brown-soft">{result.lucky.item}</p>
                   </div>
                   <div className="rounded-lg bg-cream p-2">
                     <p className="font-bold text-coral-dark">행운의 방향</p>
-                    <p className="mt-0.5 text-brown-soft/70">{result.lucky.direction}</p>
+                    <p className="mt-0.5 text-brown-soft">{result.lucky.direction}</p>
                   </div>
                   <div className="rounded-lg bg-cream p-2">
                     <p className="font-bold text-coral-dark">잘 맞는 시간대</p>
-                    <p className="mt-0.5 text-brown-soft/70">{result.lucky.time}</p>
+                    <p className="mt-0.5 text-brown-soft">{result.lucky.time}</p>
                   </div>
                 </div>
               </div>

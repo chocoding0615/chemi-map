@@ -18,7 +18,7 @@ export default function Home() {
         안녕, 나는 복실이야!
       </p>
       <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-brown">여우점</h1>
-      <p className="mt-3 text-center text-sm leading-relaxed text-brown-soft/60">
+      <p className="mt-3 text-center text-sm leading-relaxed text-brown-soft">
         아기 구미호 복실이가 그려주는 나의 사주
       </p>
 

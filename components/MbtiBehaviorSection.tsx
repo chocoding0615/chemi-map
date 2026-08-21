@@ -18,11 +18,11 @@ export default function MbtiBehaviorSection({ mbti, seed }: MbtiBehaviorSectionP
       <div className="mt-3 space-y-2">
         <div className="rounded-lg bg-cream/60 p-3">
           <p className="text-xs font-bold text-coral-dark">🙅 이런 행동은 자제해보세요</p>
-          <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{avoid}</p>
+          <p className="mt-1 text-sm leading-relaxed text-brown-soft">{avoid}</p>
         </div>
         <div className="rounded-lg bg-cream/60 p-3">
           <p className="text-xs font-bold text-mint-dark">🙆 이렇게 행동하면 좋아요</p>
-          <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{embrace}</p>
+          <p className="mt-1 text-sm leading-relaxed text-brown-soft">{embrace}</p>
         </div>
       </div>
     </div>

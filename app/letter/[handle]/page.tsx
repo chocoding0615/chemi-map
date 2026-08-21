@@ -27,7 +27,7 @@ export default async function LetterHandlePage({ params }: LetterHandlePageProps
         <br />
         비밀 편지 쓰기
       </h1>
-      <p className="mt-2 text-center text-sm text-brown-soft/60">
+      <p className="mt-2 text-center text-sm text-brown-soft">
         누가 보냈는지는 본인이 원할 때만 알 수 있어요.
       </p>
 

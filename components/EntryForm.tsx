@@ -97,7 +97,7 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-5">
-      <p className="text-center text-sm leading-relaxed text-brown-soft/60">
+      <p className="text-center text-sm leading-relaxed text-brown-soft">
         생일과 MBTI만 넣으면, 내가 {ownerName}님에게 어떤 사람인지 나와요
       </p>
       <div>

@@ -72,7 +72,7 @@ export default function MapCreateForm() {
               className={`rounded-xl py-2.5 text-sm font-semibold transition active:scale-95 ${
                 gender === g
                   ? "bg-gradient-to-b from-coral to-coral-dark text-white shadow-md shadow-coral-dark/25"
-                  : "bg-cream text-brown-soft/70 ring-1 ring-brown/10 hover:bg-apricot"
+                  : "bg-cream text-brown-soft ring-1 ring-brown/10 hover:bg-apricot"
               }`}
             >
               {g === "male" ? "남자" : "여자"}

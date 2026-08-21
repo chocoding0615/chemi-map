@@ -31,7 +31,7 @@ export default function BottomTabBar() {
                 {tab.icon}
               </span>
               <span
-                className={`text-[11px] ${active ? "font-semibold text-coral-dark" : "font-normal text-brown-soft/60"}`}
+                className={`text-[11px] ${active ? "font-semibold text-coral-dark" : "font-normal text-brown-soft"}`}
               >
                 {tab.label}
               </span>

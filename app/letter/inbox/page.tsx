@@ -51,7 +51,7 @@ export default async function LetterInboxPage() {
 
       {!session ? (
         <>
-          <p className="mt-2 text-center text-sm text-brown-soft/60">
+          <p className="mt-2 text-center text-sm text-brown-soft">
             로그인하면 나만의 편지함 링크가 생겨요.
           </p>
           <LoginButtons />

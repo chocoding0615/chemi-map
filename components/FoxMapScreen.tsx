@@ -171,7 +171,7 @@ function SelectedCard({ entry, onClose }: { entry: EntryDoc; onClose: () => void
       <p className="mt-2 text-xs font-semibold text-coral-dark">
         복실이가 보기엔 {entry.visitorName}님은 너의 {affinity.label} {affinity.emoji}이에요.
       </p>
-      <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{entry.resultAffinityBlurb}</p>
+      <p className="mt-1 text-sm leading-relaxed text-brown-soft">{entry.resultAffinityBlurb}</p>
     </div>
   );
 }

@@ -109,7 +109,7 @@ export default async function MapPage({ params, searchParams }: MapPageProps) {
           {data.ownerName}님의 {villageName}
         </h1>
         <p className="mt-1 text-sm font-semibold text-brown-soft/50">{data.entryCount}명이 다녀갔어요</p>
-        <p className="mt-2 max-w-xs text-sm leading-relaxed text-brown-soft/60">{villageVibe}</p>
+        <p className="mt-2 max-w-xs text-sm leading-relaxed text-brown-soft">{villageVibe}</p>
       </div>
 
       <FoxMapScreen ownerName={data.ownerName} ownerElement={data.ownerElement} entries={data.entries} />

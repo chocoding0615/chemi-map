@@ -75,7 +75,7 @@ export default function DailyCharmPage() {
     <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16">
       <FoxMascot size={56} prop="scroll" />
       <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-brown">오늘의 부적</h1>
-      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft/60">
+      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft">
         하루 한 번, 복실이가 부적을 뽑아드려요
       </p>
 
@@ -84,7 +84,7 @@ export default function DailyCharmPage() {
       ) : !result ? (
         <div className="mt-10 flex w-full flex-col items-center">
           <CharmFlipCard emoji="" revealed={false} />
-          <p className="mt-6 text-sm leading-relaxed text-brown-soft/60">오늘은 어떤 부적이 나올까요?</p>
+          <p className="mt-6 text-sm leading-relaxed text-brown-soft">오늘은 어떤 부적이 나올까요?</p>
           <button
             type="button"
             onClick={handleDraw}
@@ -105,12 +105,12 @@ export default function DailyCharmPage() {
           <div ref={cardRef} className="mt-4 w-full rounded-2xl bg-gradient-to-b from-apricot to-cream p-5 text-center">
             <p className="text-lg font-extrabold text-brown">{charm?.name}</p>
             {charm && (
-              <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] font-bold text-brown-soft/60">
+              <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] font-bold text-brown-soft">
                 <span className={`h-2 w-2 rounded-full ${RARITY_DOT[charm.rarity]}`} />
                 {RARITY_LABEL[charm.rarity]}
               </span>
             )}
-            <p className="mt-3 text-sm leading-relaxed text-brown-soft/70">{result.message}</p>
+            <p className="mt-3 text-sm leading-relaxed text-brown-soft">{result.message}</p>
             <p className="mt-4 text-[10px] font-semibold tracking-widest text-brown-soft/30">여우점 · FOXJUM</p>
           </div>
 

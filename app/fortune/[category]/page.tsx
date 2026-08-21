@@ -34,7 +34,7 @@ export default async function FortuneCategoryPage({ params }: FortuneCategoryPag
       <FoxMascot size={56} prop={entry.inputKind === "twoBirthdates" ? "heart" : "brush"} />
       <span className="mt-3 text-3xl">{entry.icon}</span>
       <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-brown">{entry.nameKo}</h1>
-      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft/60">{entry.description}</p>
+      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft">{entry.description}</p>
       <span className="mt-3 inline-flex items-center rounded-full bg-lavender/40 px-3 py-1 text-xs font-bold text-lavender-dark">
         {FORTUNE_FREE_PREVIEW ? "🎁 지금은 무료로 볼 수 있어요" : `🌱${entry.priceKrw.toLocaleString()} · 요약 무료`}
       </span>

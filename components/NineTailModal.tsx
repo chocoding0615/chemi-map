@@ -56,7 +56,7 @@ export default function NineTailModal() {
         <p id="nine-tail-title" className="mt-3 text-lg font-extrabold text-brown">
           복실이가 진짜 구미호가 됐어요! ✨
         </p>
-        <p className="mt-2 text-sm leading-relaxed text-brown-soft/70">
+        <p className="mt-2 text-sm leading-relaxed text-brown-soft">
           여기까지 함께 와줘서 고마워요. 아홉 꼬리 인장을 선물할게요.
         </p>
         <div className="mt-5 grid grid-cols-2 gap-2">
@@ -73,7 +73,7 @@ export default function NineTailModal() {
               setOpen(false);
               router.push("/my?tab=collection");
             }}
-            className="rounded-xl bg-cream py-2.5 text-sm font-bold text-brown-soft/70 ring-1 ring-brown/10 transition active:scale-95"
+            className="rounded-xl bg-cream py-2.5 text-sm font-bold text-brown-soft ring-1 ring-brown/10 transition active:scale-95"
           >
             부적 보러 가기
           </button>

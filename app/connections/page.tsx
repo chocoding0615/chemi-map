@@ -10,7 +10,7 @@ export default function ConnectionsPage() {
     <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16">
       <FoxMascot size={64} prop="heart" />
       <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-brown">여우 마을</h1>
-      <p className="mt-3 text-center text-sm leading-relaxed text-brown-soft/60">
+      <p className="mt-3 text-center text-sm leading-relaxed text-brown-soft">
         복실이랑 같이 가꾸는 나만의 마을이에요.
         <br />
         운세를 보고 꼬리를 모을수록 마을이 채워져요.

@@ -34,7 +34,7 @@ export default function ChemiRankList({ entries }: { entries: EntryDoc[] }) {
                 <p className="mt-0.5 text-xs font-semibold text-coral-dark">
                   {affinity.emoji} {affinity.label} · {element.label}({element.hanja})
                 </p>
-                <p className="mt-1 text-xs leading-relaxed text-brown-soft/60">{entry.resultAffinityBlurb}</p>
+                <p className="mt-1 text-xs leading-relaxed text-brown-soft">{entry.resultAffinityBlurb}</p>
               </div>
             </div>
           );

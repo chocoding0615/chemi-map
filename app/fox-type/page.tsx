@@ -82,7 +82,7 @@ export default function FoxTypePage() {
     <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16">
       <FoxMascot size={56} prop="star" />
       <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-brown">나는 무슨 여우상일까</h1>
-      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft/60">
+      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft">
         생일만 넣어도 바로 알 수 있어요 · 무료
       </p>
 
@@ -129,7 +129,7 @@ export default function FoxTypePage() {
               {result.matchTag.label}
             </span>
           )}
-          <p className="mt-4 text-sm leading-relaxed text-brown-soft/70">{result.description}</p>
+          <p className="mt-4 text-sm leading-relaxed text-brown-soft">{result.description}</p>
           {result.matchTag && (
             <p className="mt-2 text-xs leading-relaxed text-brown-soft/50">{result.matchTag.desc}</p>
           )}
@@ -137,11 +137,11 @@ export default function FoxTypePage() {
           <div className="mt-4 grid grid-cols-2 gap-2 text-center text-xs">
             <div className="rounded-lg bg-cream p-2">
               <p className="font-bold text-coral-dark">행운의 색</p>
-              <p className="mt-0.5 text-brown-soft/70">{result.luckyColor}</p>
+              <p className="mt-0.5 text-brown-soft">{result.luckyColor}</p>
             </div>
             <div className="rounded-lg bg-cream p-2">
               <p className="font-bold text-coral-dark">행운의 아이템</p>
-              <p className="mt-0.5 text-brown-soft/70">{result.luckyItem}</p>
+              <p className="mt-0.5 text-brown-soft">{result.luckyItem}</p>
             </div>
           </div>
 

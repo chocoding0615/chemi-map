@@ -41,7 +41,7 @@ export default function CollectionSection() {
     <div className="flex w-full flex-col items-center">
       <FoxMascot size={56} prop="heart" />
       <h2 className="mt-4 text-xl font-extrabold tracking-tight text-brown">복실이의 부적 주머니 👝</h2>
-      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft/60">
+      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft">
         여우점을 둘러보면서 복실이의 부적을 모아보세요
       </p>
 
@@ -103,14 +103,14 @@ export default function CollectionSection() {
               {isSelectedOwned ? selected.name : "???"}
             </p>
             <span
-              className={`mt-1 inline-flex items-center gap-1 rounded-full bg-cream px-2 py-0.5 text-[11px] font-bold text-brown-soft/60`}
+              className={`mt-1 inline-flex items-center gap-1 rounded-full bg-cream px-2 py-0.5 text-[11px] font-bold text-brown-soft`}
             >
               <span className={`h-2 w-2 rounded-full ${RARITY_DOT[selected.rarity]}`} />
               {RARITY_LABEL[selected.rarity]}
             </span>
             {isSelectedOwned ? (
               <>
-                <p className="mt-3 text-sm leading-relaxed text-brown-soft/70">{selected.desc}</p>
+                <p className="mt-3 text-sm leading-relaxed text-brown-soft">{selected.desc}</p>
                 {getCharmAcquiredAt(selected.id) && (
                   <p className="mt-2 text-[11px] text-brown-soft/40">
                     획득일 {new Date(getCharmAcquiredAt(selected.id)!).toLocaleDateString("ko-KR")}
@@ -120,14 +120,14 @@ export default function CollectionSection() {
             ) : (
               <>
                 <p className="mt-3 text-sm text-brown-soft/50">아직 만나지 못한 부적이에요.</p>
-                <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{selected.howTo}</p>
+                <p className="mt-1 text-sm leading-relaxed text-brown-soft">{selected.howTo}</p>
               </>
             )}
             <button
               ref={closeButtonRef}
               type="button"
               onClick={() => setSelectedId(null)}
-              className="mt-5 w-full rounded-xl bg-cream py-2.5 text-sm font-bold text-brown-soft/70 transition active:scale-95"
+              className="mt-5 w-full rounded-xl bg-cream py-2.5 text-sm font-bold text-brown-soft transition active:scale-95"
             >
               닫기
             </button>

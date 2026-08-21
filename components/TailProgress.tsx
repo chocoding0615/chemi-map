@@ -39,7 +39,7 @@ export default function TailProgress() {
           <Link
             href="/my?tab=collection"
             aria-label="부적 주머니 보기"
-            className="text-brown-soft/40 transition active:scale-95 hover:text-brown-soft/60"
+            className="text-brown-soft/40 transition active:scale-95 hover:text-brown-soft"
           >
             부적함 👝
           </Link>

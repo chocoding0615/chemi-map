@@ -46,12 +46,12 @@ export default function TodayScoreCard() {
           <span className="text-xs font-semibold text-brown-soft/40">/100</span>
         </span>
       </div>
-      <p className="mt-1 text-xs leading-relaxed text-brown-soft/60">{score.comment}</p>
+      <p className="mt-1 text-xs leading-relaxed text-brown-soft">{score.comment}</p>
 
       <div className="mt-4 space-y-2">
         {CATEGORY_META.map((c) => (
           <div key={c.key} className="flex items-center gap-2 text-xs">
-            <span className="w-16 shrink-0 text-brown-soft/60">
+            <span className="w-16 shrink-0 text-brown-soft">
               {c.emoji} {c.label}
             </span>
             <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-brown/10">
@@ -70,15 +70,15 @@ export default function TodayScoreCard() {
       <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[11px]">
         <div className="rounded-lg bg-cream p-2">
           <p className="font-bold text-coral-dark">오늘의 색</p>
-          <p className="mt-0.5 text-brown-soft/70">{score.luckyColor}</p>
+          <p className="mt-0.5 text-brown-soft">{score.luckyColor}</p>
         </div>
         <div className="rounded-lg bg-cream p-2">
           <p className="font-bold text-coral-dark">오늘의 아이템</p>
-          <p className="mt-0.5 text-brown-soft/70">{score.luckyItem}</p>
+          <p className="mt-0.5 text-brown-soft">{score.luckyItem}</p>
         </div>
         <div className="rounded-lg bg-cream p-2">
           <p className="font-bold text-coral-dark">오늘의 방향</p>
-          <p className="mt-0.5 text-brown-soft/70">{score.luckyDirection}</p>
+          <p className="mt-0.5 text-brown-soft">{score.luckyDirection}</p>
         </div>
       </div>
     </div>

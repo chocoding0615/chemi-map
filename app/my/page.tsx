@@ -70,7 +70,7 @@ export default async function MyPage({ searchParams }: MyPageProps) {
         accountTab={
           !session ? (
             <>
-              <p className="mt-2 text-center text-sm text-brown-soft/60">
+              <p className="mt-2 text-center text-sm text-brown-soft">
                 로그인하면 구매내역과 잔디 잔액이 저장돼요.
               </p>
               {error === "login_failed" && (
@@ -182,7 +182,7 @@ async function MyActivityList({ uid }: { uid: string }) {
                   {new Date(item.unlockedAt).toLocaleDateString("ko-KR")}
                 </p>
               </div>
-              <span className="shrink-0 rounded-full bg-cream px-2.5 py-1 text-xs font-bold text-brown-soft/60">
+              <span className="shrink-0 rounded-full bg-cream px-2.5 py-1 text-xs font-bold text-brown-soft">
                 {item.priceKrw > 0 ? `🌱${item.priceKrw.toLocaleString()}` : "무료"}
               </span>
             </div>

@@ -9,7 +9,7 @@ export default function DiaryListPage() {
     <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16">
       <FoxMascot size={56} prop="heart" />
       <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-brown">복실이의 비밀일기</h1>
-      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft/60">
+      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft">
         아기 구미호 복실이의 세계관 이야기예요
       </p>
 
@@ -24,7 +24,7 @@ export default function DiaryListPage() {
             <div className="min-w-0">
               <p className="text-[11px] font-semibold text-lavender-dark">{entry.dateLabel}</p>
               <p className="font-bold text-brown">{entry.title}</p>
-              <p className="mt-0.5 text-xs leading-relaxed text-brown-soft/60">{entry.teaser}</p>
+              <p className="mt-0.5 text-xs leading-relaxed text-brown-soft">{entry.teaser}</p>
             </div>
           </Link>
         ))}

@@ -44,7 +44,7 @@ export default function MonthlyFortunePage() {
     <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16">
       <FoxMascot size={56} />
       <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-brown">이달의 기운</h1>
-      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft/60">
+      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft">
         매달 새로 바뀌는 무료 운세예요
       </p>
 
@@ -58,7 +58,7 @@ export default function MonthlyFortunePage() {
                 <ElementIcon element={fortune.element} size={56} />
               </div>
             )}
-            <p className="mt-3 text-sm leading-relaxed text-brown-soft/70">{fortune.text}</p>
+            <p className="mt-3 text-sm leading-relaxed text-brown-soft">{fortune.text}</p>
           </div>
 
           <form
@@ -81,7 +81,7 @@ export default function MonthlyFortunePage() {
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="rounded-xl bg-cream px-4 py-2.5 text-sm font-semibold text-brown-soft/60 ring-1 ring-brown/10 transition active:scale-95"
+                  className="rounded-xl bg-cream px-4 py-2.5 text-sm font-semibold text-brown-soft ring-1 ring-brown/10 transition active:scale-95"
                 >
                   초기화
                 </button>

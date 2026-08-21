@@ -82,7 +82,7 @@ function GenderPicker({ value, onChange }: { value: Gender | ""; onChange: (g: G
           className={`rounded-xl py-2.5 text-sm font-semibold transition active:scale-95 ${
             value === g
               ? "bg-gradient-to-b from-coral to-coral-dark text-white shadow-md shadow-coral-dark/25"
-              : "bg-cream text-brown-soft/70 ring-1 ring-brown/10 hover:bg-apricot"
+              : "bg-cream text-brown-soft ring-1 ring-brown/10 hover:bg-apricot"
           }`}
         >
           {g === "male" ? "남자" : "여자"}
@@ -107,7 +107,7 @@ function PersonFields({
     <div className="space-y-4 rounded-2xl bg-cream/60 p-4">
       <p className="text-sm font-bold text-brown">{legend}</p>
       <div>
-        <label className="mb-1.5 block text-xs font-semibold text-brown-soft/70">
+        <label className="mb-1.5 block text-xs font-semibold text-brown-soft">
           이름 <span className="font-normal text-brown-soft/40">(선택)</span>
         </label>
         <input
@@ -119,21 +119,21 @@ function PersonFields({
         />
       </div>
       <div>
-        <label className="mb-1.5 block text-xs font-semibold text-brown-soft/70">생년월일</label>
+        <label className="mb-1.5 block text-xs font-semibold text-brown-soft">생년월일</label>
         <BirthDatePicker value={value.birthdate} onChange={(birthdate) => onChange({ ...value, birthdate })} />
       </div>
       <div>
-        <label className="mb-1.5 block text-xs font-semibold text-brown-soft/70">성별</label>
+        <label className="mb-1.5 block text-xs font-semibold text-brown-soft">성별</label>
         <GenderPicker value={value.gender} onChange={(g) => onChange({ ...value, gender: g })} />
       </div>
       {showMbti && (
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-brown-soft/70">MBTI</label>
+          <label className="mb-1.5 block text-xs font-semibold text-brown-soft">MBTI</label>
           <MbtiSelect value={value.mbti} onChange={(mbti) => onChange({ ...value, mbti })} />
         </div>
       )}
       <div>
-        <label className="mb-1.5 block text-xs font-semibold text-brown-soft/70">
+        <label className="mb-1.5 block text-xs font-semibold text-brown-soft">
           태어난 시간 <span className="font-normal text-brown-soft/40">(선택)</span>
         </label>
         <BirthTimePicker value={value.birthTime} onChange={(birthTime) => onChange({ ...value, birthTime })} />
@@ -282,26 +282,26 @@ export default function FortuneForm({ category }: FortuneFormProps) {
           title={`${category.nameKo} 상세 풀이`}
         >
           <div className="mt-4 space-y-3 text-left">
-            <p className="text-sm leading-relaxed text-brown-soft/70">{result.blurb}</p>
+            <p className="text-sm leading-relaxed text-brown-soft">{result.blurb}</p>
             {result.kind === "pair" && result.mbtiBlurb && (
-              <p className="text-sm leading-relaxed text-brown-soft/70">{result.mbtiBlurb}</p>
+              <p className="text-sm leading-relaxed text-brown-soft">{result.mbtiBlurb}</p>
             )}
             <div className="rounded-lg bg-mint/15 p-3">
               <p className="text-xs font-bold text-mint-dark">💡 복실이의 조언</p>
-              <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{result.advice}</p>
+              <p className="mt-1 text-sm leading-relaxed text-brown-soft">{result.advice}</p>
             </div>
             <div className="rounded-lg bg-lavender/15 p-3">
               <p className="text-xs font-bold text-lavender-dark">⚠️ 이런 점은 조심하세요</p>
-              <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{result.caution}</p>
+              <p className="mt-1 text-sm leading-relaxed text-brown-soft">{result.caution}</p>
             </div>
             <div className="flex gap-2 text-center text-xs">
               <div className="flex-1 rounded-lg bg-cream p-2">
                 <p className="font-bold text-coral-dark">행운의 색</p>
-                <p className="mt-0.5 text-brown-soft/70">{result.luckyColor}</p>
+                <p className="mt-0.5 text-brown-soft">{result.luckyColor}</p>
               </div>
               <div className="flex-1 rounded-lg bg-cream p-2">
                 <p className="font-bold text-coral-dark">행운의 아이템</p>
-                <p className="mt-0.5 text-brown-soft/70">{result.luckyItem}</p>
+                <p className="mt-0.5 text-brown-soft">{result.luckyItem}</p>
               </div>
             </div>
           </div>
