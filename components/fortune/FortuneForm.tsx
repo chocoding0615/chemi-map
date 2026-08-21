@@ -6,6 +6,7 @@ import MbtiSelect from "@/components/MbtiSelect";
 import MockPayGate from "@/components/MockPayGate";
 import BirthDatePicker from "@/components/BirthDatePicker";
 import BirthTimePicker from "@/components/BirthTimePicker";
+import SajuDetailReport from "@/components/SajuDetailReport";
 import { getCategoryBlurb, type FortuneCategory } from "@/lib/content/fortuneCategories";
 import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 import { getAffinityCategory, AFFINITY_BANK, calculateAffinityScore } from "@/lib/result-engine/affinity";
@@ -41,6 +42,9 @@ type FortuneResult =
       caution: string;
       luckyColor: string;
       luckyItem: string;
+      birthdate: string;
+      birthTime: string;
+      gender: Gender;
     }
   | {
       kind: "pair";
@@ -59,6 +63,12 @@ type FortuneResult =
       caution: string;
       luckyColor: string;
       luckyItem: string;
+      birthdateA: string;
+      birthTimeA: string;
+      genderA: Gender;
+      birthdateB: string;
+      birthTimeB: string;
+      genderB: Gender;
     };
 
 function GenderPicker({ value, onChange }: { value: Gender | ""; onChange: (g: Gender) => void }) {
@@ -157,7 +167,15 @@ export default function FortuneForm({ category }: FortuneFormProps) {
       const { dominant } = calculateElementProfile(personA.birthdate, personA.birthTime || undefined);
       const blurb = getCategoryBlurb(category.slug, dominant, seed);
       const depth = getFortuneDepth(dominant, seed);
-      setResult({ kind: "single", element: dominant, blurb, ...depth });
+      setResult({
+        kind: "single",
+        element: dominant,
+        blurb,
+        ...depth,
+        birthdate: personA.birthdate,
+        birthTime: personA.birthTime,
+        gender: personA.gender as Gender,
+      });
       markSeenIfTracked(category.slug);
       return;
     }
@@ -202,6 +220,12 @@ export default function FortuneForm({ category }: FortuneFormProps) {
       mbtiEmoji: mbtiCompat?.entry.emoji ?? "",
       mbtiBlurb: mbtiCompat?.entry.blurb ?? "",
       ...depth,
+      birthdateA: personA.birthdate,
+      birthTimeA: personA.birthTime,
+      genderA: personA.gender as Gender,
+      birthdateB: personB.birthdate,
+      birthTimeB: personB.birthTime,
+      genderB: personB.gender as Gender,
     });
     markSeenIfTracked(category.slug);
   }
@@ -281,6 +305,30 @@ export default function FortuneForm({ category }: FortuneFormProps) {
               </div>
             </div>
           </div>
+
+          {result.kind === "single" ? (
+            <SajuDetailReport
+              label="나"
+              birthdate={result.birthdate}
+              birthTime={result.birthTime || undefined}
+              gender={result.gender}
+            />
+          ) : (
+            <>
+              <SajuDetailReport
+                label={result.nameA || "나"}
+                birthdate={result.birthdateA}
+                birthTime={result.birthTimeA || undefined}
+                gender={result.genderA}
+              />
+              <SajuDetailReport
+                label={result.nameB || "상대"}
+                birthdate={result.birthdateB}
+                birthTime={result.birthTimeB || undefined}
+                gender={result.genderB}
+              />
+            </>
+          )}
         </MockPayGate>
 
         <button

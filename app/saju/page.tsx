@@ -8,6 +8,10 @@ import FoxMascot from "@/components/FoxMascot";
 import TodayScoreCard from "@/components/TodayScoreCard";
 import BirthDatePicker from "@/components/BirthDatePicker";
 import BirthTimePicker from "@/components/BirthTimePicker";
+import MbtiSelect from "@/components/MbtiSelect";
+import SajuDetailReport from "@/components/SajuDetailReport";
+import MbtiBehaviorSection from "@/components/MbtiBehaviorSection";
+import type { MbtiType } from "@/lib/result-engine/temperament";
 import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 import {
   getPersonalityReading,
@@ -34,6 +38,10 @@ interface SajuResult {
   advice: string;
   caution: string;
   lucky: LuckyInfo;
+  birthdate: string;
+  birthTime: string;
+  gender: "male" | "female";
+  mbti: MbtiType | "";
 }
 
 export default function SajuPage() {
@@ -41,6 +49,7 @@ export default function SajuPage() {
   const [birthdate, setBirthdate] = useState("");
   const [gender, setGender] = useState<"male" | "female" | "">("");
   const [birthTime, setBirthTime] = useState("");
+  const [mbti, setMbti] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<SajuResult | null>(null);
 
@@ -74,6 +83,10 @@ export default function SajuPage() {
       advice: getSajuAdvice(profile.dominant, seed),
       caution: getSajuCaution(profile.dominant, seed),
       lucky: getLuckyInfo(profile.dominant),
+      birthdate,
+      birthTime,
+      gender,
+      mbti: mbti as MbtiType | "",
     });
     awardForAction("saju");
     markFortuneSeen("saju");
@@ -132,6 +145,12 @@ export default function SajuPage() {
               태어난 시간 <span className="font-normal text-brown/40">(선택, 모르면 비워두세요)</span>
             </label>
             <BirthTimePicker value={birthTime} onChange={setBirthTime} />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-brown">
+              MBTI <span className="font-normal text-brown/40">(선택, 입력하면 성격 기반 행동 조언도 나와요)</span>
+            </label>
+            <MbtiSelect value={mbti} onChange={setMbti} />
           </div>
           {error && <p className="text-sm font-medium text-red-500">{error}</p>}
           <button
@@ -212,6 +231,15 @@ export default function SajuPage() {
                   </div>
                 </div>
               </div>
+
+              <SajuDetailReport
+                label={result.name || "나"}
+                birthdate={result.birthdate}
+                birthTime={result.birthTime || undefined}
+                gender={result.gender}
+              />
+
+              {result.mbti && <MbtiBehaviorSection mbti={result.mbti} seed={`${result.birthdate}-${result.mbti}`} />}
             </MockPayGate>
 
             <button
