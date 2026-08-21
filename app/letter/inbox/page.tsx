@@ -72,17 +72,17 @@ async function LetterInboxBody({ uid }: { uid: string }) {
   return (
     <>
       <div className="mt-6 w-full rounded-2xl bg-gradient-to-b from-lavender/30 to-cream p-5 text-center shadow-inner ring-1 ring-brown/10">
-        <p className="text-xs font-semibold text-brown-soft/50">내 편지함 링크를 친구에게 공유해보세요</p>
+        <p className="text-xs font-semibold text-brown-soft/90">내 편지함 링크를 친구에게 공유해보세요</p>
         <p className="mt-1 truncate text-xs text-brown-soft/40">/letter/{handle}</p>
         <CopyLinkButton path={`/letter/${handle}`} label="링크 복사하기" />
       </div>
 
       <div className="mt-8 w-full">
-        <h2 className="text-sm font-semibold text-brown-soft/50">
+        <h2 className="text-sm font-semibold text-brown-soft/90">
           받은 편지 {letters.length > 0 && unreadCount > 0 && `· 안 읽은 편지 ${unreadCount}개`}
         </h2>
         {letters.length === 0 ? (
-          <p className="mt-3 rounded-2xl bg-white p-5 text-center text-sm text-brown-soft/50 ring-1 ring-brown/5">
+          <p className="mt-3 rounded-2xl bg-white p-5 text-center text-sm text-brown-soft/90 ring-1 ring-brown/5">
             아직 도착한 편지가 없어요. 링크를 공유해보세요!
           </p>
         ) : (

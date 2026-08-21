@@ -119,7 +119,7 @@ export default function CollectionSection() {
               </>
             ) : (
               <>
-                <p className="mt-3 text-sm text-brown-soft/50">아직 만나지 못한 부적이에요.</p>
+                <p className="mt-3 text-sm text-brown-soft/90">아직 만나지 못한 부적이에요.</p>
                 <p className="mt-1 text-sm leading-relaxed text-brown-soft">{selected.howTo}</p>
               </>
             )}

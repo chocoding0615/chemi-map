@@ -11,7 +11,7 @@ export default function ChemiRankList({ entries }: { entries: EntryDoc[] }) {
 
   return (
     <div className="w-full max-w-md">
-      <h2 className="text-center text-sm font-semibold text-brown-soft/50">케미 랭킹 · 잘 맞는 순</h2>
+      <h2 className="text-center text-sm font-semibold text-brown-soft/90">케미 랭킹 · 잘 맞는 순</h2>
       <div className="mt-3 space-y-2">
         {ranked.map((entry, i) => {
           const affinity = AFFINITY_BANK[entry.affinityCategory];

@@ -13,8 +13,8 @@ export default function MbtiBehaviorSection({ mbti, seed }: MbtiBehaviorSectionP
   const embrace = advice.embrace[pickVariant(`${seed}-mbti-embrace`, advice.embrace.length)];
 
   return (
-    <div className="mt-4 rounded-xl bg-white/60 p-4 text-left">
-      <p className="text-xs font-semibold text-brown-soft/50">{mbti} 성격으로 보는 행동 조언</p>
+    <div className="mt-4 rounded-xl bg-white p-4 text-left shadow-sm ring-1 ring-brown/10">
+      <p className="text-xs font-semibold text-brown-soft/90">{mbti} 성격으로 보는 행동 조언</p>
       <div className="mt-3 space-y-2">
         <div className="rounded-lg bg-cream/60 p-3">
           <p className="text-xs font-bold text-coral-dark">🙅 이런 행동은 자제해보세요</p>

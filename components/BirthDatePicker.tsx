@@ -9,8 +9,6 @@ interface BirthDatePickerProps {
 }
 
 const CURRENT_YEAR = new Date().getFullYear();
-// 최신 연도부터 1930년까지 역순 — 생년월일 선택은 최근 연도를 먼저 보여주는 게 더 빠르다.
-const YEARS = Array.from({ length: CURRENT_YEAR - 1930 + 1 }, (_, i) => CURRENT_YEAR - i);
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 
 function daysInMonth(year: number, month: number): number {
@@ -52,11 +50,18 @@ export default function BirthDatePicker({ value, onChange }: BirthDatePickerProp
   }
 
   function handleYear(raw: string) {
-    const y = raw ? Number(raw) : "";
-    const d = y && month && day && day > daysInMonth(y, month) ? daysInMonth(y, month) : day;
-    setYear(y);
+    // 4자리 연도를 직접 입력할 수 있게 한 필드라, 타이핑 중간의 미완성 값("1", "19"...)도
+    // 그대로 화면엔 보여주되(setYear), 유효한 연도가 완성됐을 때만 상위로 emit한다.
+    const digitsOnly = raw.replace(/\D/g, "").slice(0, 4);
+    const parsedNum = digitsOnly ? Number(digitsOnly) : 0;
+    setYear(digitsOnly ? parsedNum : "");
+
+    const isCompleteYear = digitsOnly.length === 4 && parsedNum >= 1930 && parsedNum <= CURRENT_YEAR;
+    if (!isCompleteYear) return;
+
+    const d = month && day && day > daysInMonth(parsedNum, month) ? daysInMonth(parsedNum, month) : day;
     setDay(d);
-    emit(y, month, d);
+    emit(parsedNum, month, d);
   }
 
   function handleMonth(raw: string) {
@@ -78,14 +83,15 @@ export default function BirthDatePicker({ value, onChange }: BirthDatePickerProp
 
   return (
     <div className="grid grid-cols-3 gap-2">
-      <select value={year} onChange={(e) => handleYear(e.target.value)} className={SELECT_CLASS}>
-        <option value="">년</option>
-        {YEARS.map((y) => (
-          <option key={y} value={y}>
-            {y}
-          </option>
-        ))}
-      </select>
+      <input
+        type="text"
+        inputMode="numeric"
+        maxLength={4}
+        value={year}
+        onChange={(e) => handleYear(e.target.value)}
+        placeholder="년(예: 1995)"
+        className={SELECT_CLASS}
+      />
       <select value={month} onChange={(e) => handleMonth(e.target.value)} className={SELECT_CLASS}>
         <option value="">월</option>
         {MONTHS.map((m) => (

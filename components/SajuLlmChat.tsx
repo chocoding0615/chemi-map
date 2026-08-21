@@ -55,7 +55,7 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
 
   return (
     <div className="mt-5 rounded-xl bg-white/60 p-4">
-      <p className="text-xs font-semibold text-brown-soft/50">
+      <p className="text-xs font-semibold text-brown-soft/90">
         궁금한 점을 더 물어보세요 · {freeRemaining > 0 ? `무료 질문 ${freeRemaining}개 남음` : "질문당 🌱2"}
       </p>
 

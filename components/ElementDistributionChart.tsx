@@ -23,7 +23,7 @@ export default function ElementDistributionChart({
                 style={{ width: `${(count / max) * 100}%`, backgroundColor: entry.color }}
               />
             </div>
-            <span className="w-3 shrink-0 text-right text-brown-soft/50">{count}</span>
+            <span className="w-3 shrink-0 text-right text-brown-soft/90">{count}</span>
           </div>
         );
       })}

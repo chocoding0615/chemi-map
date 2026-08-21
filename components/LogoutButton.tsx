@@ -18,7 +18,7 @@ export default function LogoutButton() {
       type="button"
       onClick={handleLogout}
       disabled={loading}
-      className="text-xs font-semibold text-brown-soft/50 underline decoration-dotted disabled:opacity-60"
+      className="text-xs font-semibold text-brown-soft/90 underline decoration-dotted disabled:opacity-60"
     >
       {loading ? "로그아웃 중..." : "로그아웃"}
     </button>

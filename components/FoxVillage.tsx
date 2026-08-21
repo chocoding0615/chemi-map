@@ -57,7 +57,7 @@ export default function FoxVillage() {
   return (
     <div className="mt-8 w-full">
       <div className="rounded-2xl bg-white/70 px-4 py-3 text-center shadow-sm ring-1 ring-brown/5">
-        <p className="text-base text-coral-dark" style={{ fontFamily: "var(--font-hand)" }}>
+        <p className="text-lg font-bold text-coral-dark" style={{ fontFamily: "var(--font-hand)" }}>
           🦊 &ldquo;여기 우리 마을이야! 하나씩 채워보자&rdquo;
         </p>
       </div>
@@ -87,7 +87,7 @@ export default function FoxVillage() {
         })}
       </div>
 
-      <div className="mt-3 flex items-center justify-between text-xs text-brown-soft/50">
+      <div className="mt-3 flex items-center justify-between text-xs text-brown-soft/90">
         <span>
           마을 {unlockedCount}/{VILLAGE_ITEMS.length} 채움
         </span>

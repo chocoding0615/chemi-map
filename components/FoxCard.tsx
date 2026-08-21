@@ -52,7 +52,7 @@ const FoxCard = forwardRef<HTMLDivElement, FoxCardProps>(function FoxCard(
           <div className="mt-5 w-full max-w-[160px] space-y-1">
             {ELEMENT_ORDER.map((key) => (
               <div key={key} className="flex items-center gap-1.5">
-                <span className="w-6 shrink-0 text-[9px] text-brown-soft/50">{ELEMENT_BANK[key].label}</span>
+                <span className="w-6 shrink-0 text-[9px] text-brown-soft/90">{ELEMENT_BANK[key].label}</span>
                 <div className="h-1 flex-1 overflow-hidden rounded-full bg-brown/10">
                   <div
                     className="h-full rounded-full"

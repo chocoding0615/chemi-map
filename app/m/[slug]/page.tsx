@@ -108,7 +108,7 @@ export default async function MapPage({ params, searchParams }: MapPageProps) {
         <h1 className="mt-5 text-2xl font-extrabold tracking-tight text-brown">
           {data.ownerName}님의 {villageName}
         </h1>
-        <p className="mt-1 text-sm font-semibold text-brown-soft/50">{data.entryCount}명이 다녀갔어요</p>
+        <p className="mt-1 text-sm font-semibold text-brown-soft/90">{data.entryCount}명이 다녀갔어요</p>
         <p className="mt-2 max-w-xs text-sm leading-relaxed text-brown-soft">{villageVibe}</p>
       </div>
 

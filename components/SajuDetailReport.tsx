@@ -19,8 +19,8 @@ export default function SajuDetailReport({ label, birthdate, birthTime, gender }
   const yongsinEntry = getYongsinEntry(detail.yongsinElement);
 
   return (
-    <div className="mt-4 rounded-xl bg-white/60 p-4 text-left">
-      <p className="text-xs font-semibold text-brown-soft/50">{label}의 십신·대운 풀이</p>
+    <div className="mt-4 rounded-xl bg-white p-4 text-left shadow-sm ring-1 ring-brown/10">
+      <p className="text-xs font-semibold text-brown-soft/90">{label}의 십신·대운 풀이</p>
 
       {dayMasterEntry && (
         <div className="mt-3 rounded-lg bg-cream/60 p-3">
@@ -53,7 +53,7 @@ export default function SajuDetailReport({ label, birthdate, birthTime, gender }
           {detail.topTenGods.map((tenGod) => (
             <div key={tenGod} className="rounded-lg bg-cream/60 p-3">
               <p className="text-xs font-bold text-coral-dark">
-                {tenGod} <span className="font-normal text-brown-soft/50">· {TEN_GOD_MEANING[tenGod].meaning}</span>
+                {tenGod} <span className="font-normal text-brown-soft/90">· {TEN_GOD_MEANING[tenGod].meaning}</span>
               </p>
               <p className="mt-1 text-sm leading-relaxed text-brown-soft">{TEN_GOD_MEANING[tenGod].manyText}</p>
             </div>
@@ -63,7 +63,7 @@ export default function SajuDetailReport({ label, birthdate, birthTime, gender }
 
       {detail.luckPillars && (
         <div className="mt-4">
-          <p className="text-xs font-semibold text-brown-soft/50">대운 흐름</p>
+          <p className="text-xs font-semibold text-brown-soft/90">대운 흐름</p>
           <div className="mt-2 flex gap-1.5 overflow-x-auto pb-1">
             {detail.luckPillars.map((p) => {
               const isCurrent = detail.currentLuckPillar?.age === p.age;

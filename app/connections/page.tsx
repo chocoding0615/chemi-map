@@ -19,7 +19,7 @@ export default function ConnectionsPage() {
       <FoxVillage />
 
       <div className="mt-10 w-full border-t border-brown/10 pt-8">
-        <h2 className="text-sm font-semibold text-brown-soft/50">진짜 인연 매칭 만들기</h2>
+        <h2 className="text-sm font-semibold text-brown-soft/90">진짜 인연 매칭 만들기</h2>
         <p className="mt-1 text-xs leading-relaxed text-brown-soft/40">
           친구들이 생일과 MBTI를 넣으면, 나에게 어떤 사람인지 진짜로 알려줘요.
         </p>

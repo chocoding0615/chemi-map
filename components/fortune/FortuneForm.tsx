@@ -244,7 +244,7 @@ export default function FortuneForm({ category }: FortuneFormProps) {
             <div className="flex justify-center">
               <ElementIcon element={result.element} size={64} />
             </div>
-            <p className="mt-2 text-sm font-semibold text-brown-soft/50">
+            <p className="mt-2 text-sm font-semibold text-brown-soft/90">
               {ELEMENT_BANK[result.element].label}({ELEMENT_BANK[result.element].hanja}) 기운
             </p>
           </>
@@ -257,7 +257,7 @@ export default function FortuneForm({ category }: FortuneFormProps) {
             <p className="mt-2 text-sm font-bold text-coral-dark">
               {result.nameA || "나"} ♥ {result.nameB || "상대"} 궁합
             </p>
-            <p className="mt-1 text-xs text-brown-soft/50">
+            <p className="mt-1 text-xs text-brown-soft/90">
               {withJosa(result.nameA || "나", "와/과")} {result.nameB || "상대"}의 케미 {result.score}점
             </p>
             <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
@@ -334,7 +334,7 @@ export default function FortuneForm({ category }: FortuneFormProps) {
         <button
           type="button"
           onClick={() => setResult(null)}
-          className="mt-4 text-xs font-semibold text-brown-soft/50 underline underline-offset-2"
+          className="mt-4 text-xs font-semibold text-brown-soft/90 underline underline-offset-2"
         >
           다시 입력하기
         </button>

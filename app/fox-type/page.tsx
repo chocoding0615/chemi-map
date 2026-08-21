@@ -131,7 +131,7 @@ export default function FoxTypePage() {
           )}
           <p className="mt-4 text-sm leading-relaxed text-brown-soft">{result.description}</p>
           {result.matchTag && (
-            <p className="mt-2 text-xs leading-relaxed text-brown-soft/50">{result.matchTag.desc}</p>
+            <p className="mt-2 text-xs leading-relaxed text-brown-soft/90">{result.matchTag.desc}</p>
           )}
 
           <div className="mt-4 grid grid-cols-2 gap-2 text-center text-xs">
@@ -194,7 +194,7 @@ export default function FoxTypePage() {
           <button
             type="button"
             onClick={() => setResult(null)}
-            className="mt-4 text-xs font-semibold text-brown-soft/50 underline underline-offset-2"
+            className="mt-4 text-xs font-semibold text-brown-soft/90 underline underline-offset-2"
           >
             다시 확인하기
           </button>

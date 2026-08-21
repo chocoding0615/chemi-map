@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ElementIcon from "@/components/ElementIcon";
 import ElementDistributionChart from "@/components/ElementDistributionChart";
 import MockPayGate from "@/components/MockPayGate";
@@ -53,10 +53,17 @@ export default function SajuPage() {
   const [mbti, setMbti] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<SajuResult | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!result) return;
     return registerBackHandler(() => setResult(null));
+  }, [result]);
+
+  useEffect(() => {
+    if (!result) return;
+    resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [result]);
 
   function handleSubmit(e: React.FormEvent) {
@@ -66,40 +73,51 @@ export default function SajuPage() {
       return;
     }
     setError("");
+    setSubmitting(true);
 
-    const profile = calculateElementProfile(birthdate, birthTime || undefined);
-    const seed = `${birthdate}-${gender}-${birthTime}-saju`;
-    const personality = getPersonalityReading(profile.dominant, seed);
-    const teaser = personality.temperament.split(".")[0] + ".";
+    // 계산 자체는 순간적으로 끝나지만, 로딩 상태를 한 프레임 보여줘야
+    // 버튼이 바뀌는 게 사용자에게 실제로 보인다(그렇지 않으면 결과로
+    // 즉시 바뀌어서 "눌렀는데 반응이 없나?" 하는 인상을 줄 수 있다).
+    requestAnimationFrame(() => {
+      const profile = calculateElementProfile(birthdate, birthTime || undefined);
+      const seed = `${birthdate}-${gender}-${birthTime}-saju`;
+      const personality = getPersonalityReading(profile.dominant, seed);
+      const teaser = personality.temperament.split(".")[0] + ".";
 
-    setResult({
-      name: name.trim(),
-      dominant: profile.dominant,
-      teaser,
-      distribution: profile.distribution,
-      pillarText: profile.pillarText,
-      hasTimeInput: profile.hasTimeInput,
-      personality,
-      balance: getBalanceInsight(profile.distribution),
-      advice: getSajuAdvice(profile.dominant, seed),
-      caution: getSajuCaution(profile.dominant, seed),
-      lucky: getLuckyInfo(profile.dominant),
-      birthdate,
-      birthTime,
-      gender,
-      mbti: mbti as MbtiType | "",
+      setResult({
+        name: name.trim(),
+        dominant: profile.dominant,
+        teaser,
+        distribution: profile.distribution,
+        pillarText: profile.pillarText,
+        hasTimeInput: profile.hasTimeInput,
+        personality,
+        balance: getBalanceInsight(profile.distribution),
+        advice: getSajuAdvice(profile.dominant, seed),
+        caution: getSajuCaution(profile.dominant, seed),
+        lucky: getLuckyInfo(profile.dominant),
+        birthdate,
+        birthTime,
+        gender,
+        mbti: mbti as MbtiType | "",
+      });
+      setSubmitting(false);
+      awardForAction("saju");
+      markFortuneSeen("saju");
     });
-    awardForAction("saju");
-    markFortuneSeen("saju");
   }
 
   return (
     <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16">
-      <FoxMascot size={56} prop="scroll" />
-      <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-brown">내 사주 풀이</h1>
-      <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft">
-        생년월일·성별·태어난 시간을 넣으면 복실이가 사주를 풀어드려요
-      </p>
+      {!result && (
+        <>
+          <FoxMascot size={56} prop="scroll" />
+          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-brown">내 사주 풀이</h1>
+          <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft">
+            생년월일·성별·태어난 시간을 넣으면 복실이가 사주를 풀어드려요
+          </p>
+        </>
+      )}
 
       {!result ? (
         <form
@@ -130,9 +148,10 @@ export default function SajuPage() {
                   key={g}
                   type="button"
                   onClick={() => setGender(g)}
+                  aria-pressed={gender === g}
                   className={`rounded-xl py-2.5 text-sm font-semibold transition active:scale-95 ${
                     gender === g
-                      ? "bg-gradient-to-b from-coral to-coral-dark text-white shadow-md shadow-coral-dark/25"
+                      ? "bg-gradient-to-b from-coral to-coral-dark text-white shadow-md shadow-coral-dark/25 ring-2 ring-coral-dark"
                       : "bg-cream text-brown-soft ring-1 ring-brown/10 hover:bg-apricot"
                   }`}
                 >
@@ -156,13 +175,21 @@ export default function SajuPage() {
           {error && <p className="text-sm font-medium text-red-500">{error}</p>}
           <button
             type="submit"
-            className="w-full rounded-xl bg-gradient-to-b from-coral to-coral-dark py-3.5 text-sm font-bold text-white shadow-lg shadow-coral-dark/25 transition active:scale-95 hover:brightness-105"
+            disabled={submitting}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-coral to-coral-dark py-3.5 text-sm font-bold text-white shadow-lg shadow-coral-dark/25 transition active:scale-95 hover:brightness-105 disabled:opacity-70"
           >
-            풀이 보기
+            {submitting ? (
+              <>
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                복실이가 사주를 보는 중...
+              </>
+            ) : (
+              "풀이 보기"
+            )}
           </button>
         </form>
       ) : (
-        <div className="mt-8 w-full space-y-4">
+        <div ref={resultRef} className="mt-8 w-full space-y-4 scroll-mt-6">
           <TodayScoreCard />
 
           <div className="w-full rounded-2xl bg-gradient-to-b from-apricot to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
@@ -177,9 +204,9 @@ export default function SajuPage() {
               category="내 사주 풀이"
               title={`${ELEMENT_BANK[result.dominant].label}(${ELEMENT_BANK[result.dominant].hanja}) 기운 상세 풀이`}
             >
-              <div className="mt-5 space-y-4 rounded-xl bg-white/60 p-4 text-left">
+              <div className="mt-5 space-y-4 rounded-xl bg-white p-4 text-left shadow-sm ring-1 ring-brown/10">
                 <div>
-                  <p className="text-center text-xs font-semibold text-brown-soft/50">
+                  <p className="text-center text-xs font-semibold text-brown-soft/90">
                     사주 상세 · {result.hasTimeInput ? "출생시간 포함" : "출생시간 미입력 (참고용)"}
                   </p>
                   <p className="mt-1 text-center text-xs text-brown-soft">{result.pillarText}</p>
@@ -256,7 +283,7 @@ export default function SajuPage() {
             <button
               type="button"
               onClick={() => setResult(null)}
-              className="mt-4 text-xs font-semibold text-brown-soft/50 underline underline-offset-2"
+              className="mt-4 text-xs font-semibold text-brown-soft/90 underline underline-offset-2"
             >
               다시 입력하기
             </button>

@@ -160,7 +160,7 @@ function SelectedCard({ entry, onClose }: { entry: EntryDoc; onClose: () => void
         </div>
         <div>
           <p className="font-bold text-brown">{entry.visitorName}</p>
-          <p className="text-xs text-brown-soft/50">
+          <p className="text-xs text-brown-soft/90">
             {element.label}({element.hanja}) 기운
           </p>
         </div>
@@ -234,7 +234,7 @@ export default function FoxMapScreen({ ownerName, ownerElement, entries }: FoxMa
         </div>
 
         {positions.length === 0 && (
-          <p className="absolute inset-x-0 bottom-4 text-center text-xs font-medium text-brown-soft/50">
+          <p className="absolute inset-x-0 bottom-4 text-center text-xs font-medium text-brown-soft/90">
             친구들이 등록하면 지도가 채워져요
           </p>
         )}

@@ -67,7 +67,7 @@ export default function SajuLlmReportSection({ input }: { input: SajuReportInput
   return (
     <div className="mt-5 rounded-2xl bg-white p-5 text-center shadow-lg shadow-brown/5 ring-1 ring-brown/5">
       <p className="text-sm font-bold text-brown">🔮 진짜 상세한 AI 사주 리포트</p>
-      <p className="mt-1 text-xs leading-relaxed text-brown-soft/50">
+      <p className="mt-1 text-xs leading-relaxed text-brown-soft/90">
         타고난 그릇부터 평생 운의 흐름, 돈·일·연애·결혼·건강, 대운·세운까지 —
         지금 이 사주만을 위해 새로 써드려요. 후속 질문 {SAJU_LLM_CHAT_FREE_QUESTIONS}개 무료 포함.
       </p>
@@ -76,7 +76,7 @@ export default function SajuLlmReportSection({ input }: { input: SajuReportInput
         <div className="mt-4 space-y-2">
           <div className="h-4 w-2/3 mx-auto animate-pulse rounded bg-brown/5" />
           <div className="h-4 w-1/2 mx-auto animate-pulse rounded bg-brown/5" />
-          <p className="mt-2 text-xs text-brown-soft/50">복실이가 정성껏 풀어쓰는 중이에요... (최대 1분 정도 걸려요)</p>
+          <p className="mt-2 text-xs text-brown-soft/90">복실이가 정성껏 풀어쓰는 중이에요... (최대 1분 정도 걸려요)</p>
         </div>
       )}
 
@@ -86,7 +86,7 @@ export default function SajuLlmReportSection({ input }: { input: SajuReportInput
           className="mt-4 flex w-full flex-col items-center justify-center rounded-2xl border border-dashed border-coral bg-white/50 py-3 text-center text-sm font-bold text-coral-dark transition active:scale-95 hover:bg-white"
         >
           <span>🌱 잔디가 부족해요</span>
-          <span className="mt-0.5 text-[11px] font-normal text-brown-soft/50">
+          <span className="mt-0.5 text-[11px] font-normal text-brown-soft/90">
             보유 🌱{result.balance.toLocaleString()} · 필요 🌱{result.required.toLocaleString()} · 충전하러 가기
           </span>
         </Link>

@@ -60,7 +60,7 @@ export default function TodayScoreCard() {
                 style={{ width: `${score.detail[c.key]}%` }}
               />
             </div>
-            <span className="w-7 shrink-0 text-right font-semibold text-brown-soft/50">
+            <span className="w-7 shrink-0 text-right font-semibold text-brown-soft/90">
               {score.detail[c.key]}
             </span>
           </div>

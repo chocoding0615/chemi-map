@@ -70,7 +70,7 @@ export default function NicknameEditForm({ nickname }: { nickname: string }) {
             setValue(nickname);
             setError(null);
           }}
-          className="shrink-0 rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-brown-soft/50 ring-1 ring-brown/10"
+          className="shrink-0 rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-brown-soft/90 ring-1 ring-brown/10"
         >
           취소
         </button>

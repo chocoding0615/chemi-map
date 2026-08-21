@@ -137,7 +137,7 @@ export default function DailyCharmPage() {
             </button>
           </div>
 
-          <Link href="/my?tab=collection" className="mt-4 text-xs font-semibold text-brown-soft/50 underline underline-offset-2">
+          <Link href="/my?tab=collection" className="mt-4 text-xs font-semibold text-brown-soft/90 underline underline-offset-2">
             부적 주머니 보러 가기
           </Link>
           <p className="mt-2 text-[11px] text-brown-soft/40">내일 다시 올래요? 🌙</p>

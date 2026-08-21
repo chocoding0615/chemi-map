@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function SiteFooter() {
   return (
     <footer className="mt-auto w-full px-6 py-8 text-center">
-      <div className="mx-auto flex max-w-[480px] flex-col items-center gap-2 text-[11px] leading-relaxed text-brown-soft/50">
+      <div className="mx-auto flex max-w-[480px] flex-col items-center gap-2 text-[11px] leading-relaxed text-brown-soft/90">
         <p>
           여우점 (베타 서비스) · 사업자 등록 준비 중 · 통신판매업 신고 예정 · 고객센터: 준비 중
         </p>

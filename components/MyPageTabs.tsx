@@ -17,7 +17,7 @@ export default function MyPageTabs({ accountTab }: { accountTab: ReactNode }) {
           type="button"
           onClick={() => setActive("account")}
           className={`flex-1 rounded-xl py-2 text-sm font-bold transition ${
-            active === "account" ? "bg-coral text-white shadow-sm" : "text-brown-soft/50"
+            active === "account" ? "bg-coral text-white shadow-sm" : "text-brown-soft/90"
           }`}
         >
           내 정보
@@ -26,7 +26,7 @@ export default function MyPageTabs({ accountTab }: { accountTab: ReactNode }) {
           type="button"
           onClick={() => setActive("collection")}
           className={`flex-1 rounded-xl py-2 text-sm font-bold transition ${
-            active === "collection" ? "bg-coral text-white shadow-sm" : "text-brown-soft/50"
+            active === "collection" ? "bg-coral text-white shadow-sm" : "text-brown-soft/90"
           }`}
         >
           부적 주머니

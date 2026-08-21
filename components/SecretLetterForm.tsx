@@ -36,7 +36,7 @@ export default function SecretLetterForm({ handle }: { handle: string }) {
       <div className="mt-6 w-full rounded-2xl bg-white p-6 text-center shadow-sm ring-1 ring-brown/5">
         <p className="text-2xl">🦊💌</p>
         <p className="mt-2 text-sm font-bold text-brown">편지가 전달됐어요!</p>
-        <p className="mt-1 text-xs text-brown-soft/50">복실이가 몰래 가져다 놓을게요.</p>
+        <p className="mt-1 text-xs text-brown-soft/90">복실이가 몰래 가져다 놓을게요.</p>
       </div>
     );
   }

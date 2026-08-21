@@ -38,7 +38,7 @@ export default function ResultCard({
       <div className="flex justify-center">
         <ElementIcon element={element} size={64} />
       </div>
-      <p className="mt-2 text-xs font-semibold text-brown-soft/50">{FOX_BASE[element].name}</p>
+      <p className="mt-2 text-xs font-semibold text-brown-soft/90">{FOX_BASE[element].name}</p>
       <p className="mt-1 text-lg font-extrabold leading-snug text-brown">{title}</p>
 
       <div className="mt-3 flex items-center justify-center gap-2">
@@ -55,7 +55,7 @@ export default function ResultCard({
 
       <MockPayGate priceKrw={0} category="인연 매칭" title={title}>
         <div className="mt-5 space-y-3 rounded-xl bg-white/60 p-4 text-left">
-          <p className="text-center text-xs font-semibold text-brown-soft/50">
+          <p className="text-center text-xs font-semibold text-brown-soft/90">
             사주 상세 · {hasTimeInput ? "출생시간 포함" : "출생시간 미입력 (참고용)"}
           </p>
           <p className="text-center text-xs text-brown-soft">{pillarText}</p>

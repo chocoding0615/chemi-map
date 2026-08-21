@@ -12,7 +12,7 @@ export default function Home() {
       {/* 히어로 */}
       <FoxMascot size={72} prop="star" />
       <p
-        className="mt-4 text-lg text-coral-dark"
+        className="mt-4 text-xl font-bold text-coral-dark"
         style={{ fontFamily: "var(--font-hand)" }}
       >
         안녕, 나는 복실이야!
@@ -38,7 +38,7 @@ export default function Home() {
         >
           <span className="text-2xl">🏘️</span>
           <p className="mt-1 text-sm font-bold text-brown">여우 마을</p>
-          <p className="mt-0.5 text-[11px] text-brown-soft/50">무료 · 공유해보기</p>
+          <p className="mt-0.5 text-[11px] text-brown-soft/90">무료 · 공유해보기</p>
         </Link>
       </div>
 
@@ -75,7 +75,7 @@ export default function Home() {
       <div className="mt-10 w-full space-y-8">
         {FORTUNE_GROUPS.map((group) => (
           <div key={group.title}>
-            <h2 className="text-sm font-semibold text-brown-soft/50">{group.title}</h2>
+            <h2 className="text-sm font-semibold text-brown-soft/90">{group.title}</h2>
             <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {group.items.map((item) =>
                 item.disabled ? (
@@ -84,7 +84,7 @@ export default function Home() {
                     className="flex flex-col items-center justify-center rounded-2xl bg-brown/5 p-4 text-center opacity-60"
                   >
                     <span className="text-2xl">{item.icon}</span>
-                    <p className="mt-1 text-sm font-bold text-brown-soft/50">{item.label}</p>
+                    <p className="mt-1 text-sm font-bold text-brown-soft/90">{item.label}</p>
                     <p className="mt-0.5 text-[11px] text-brown-soft/40">{item.desc}</p>
                   </div>
                 ) : (
@@ -107,7 +107,7 @@ export default function Home() {
       {/* 비밀일기 프리뷰 */}
       <div className="mt-10 w-full">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-brown-soft/50">복실이의 비밀일기</h2>
+          <h2 className="text-sm font-semibold text-brown-soft/90">복실이의 비밀일기</h2>
           <Link href="/diary" className="text-xs font-semibold text-coral-dark underline underline-offset-2">
             더보기
           </Link>

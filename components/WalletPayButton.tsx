@@ -79,7 +79,7 @@ export default function WalletPayButton({
         className="mt-5 flex w-full flex-col items-center justify-center rounded-2xl border border-dashed border-coral bg-white/50 py-3 text-center text-sm font-bold text-coral-dark transition active:scale-95 hover:bg-white"
       >
         <span>🌱 잔디가 부족해요</span>
-        <span className="mt-0.5 text-[11px] font-normal text-brown-soft/50">
+        <span className="mt-0.5 text-[11px] font-normal text-brown-soft/90">
           보유 🌱{insufficient.balance.toLocaleString()} · 필요 🌱{insufficient.required.toLocaleString()} · 충전하러 가기
         </span>
       </Link>

@@ -111,7 +111,7 @@ export default async function MyPage({ searchParams }: MyPageProps) {
               <LetterInboxBanner uid={session.uid} />
 
               <div className="mt-8 w-full rounded-2xl bg-gradient-to-b from-lavender/30 to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
-                <p className="text-xs font-semibold text-brown-soft/50">🌱 잔디</p>
+                <p className="text-xs font-semibold text-brown-soft/90">🌱 잔디</p>
                 <p className="mt-1 text-3xl font-extrabold text-brown">{session.ticketBalance.toLocaleString()}개</p>
                 <ChargeButton />
               </div>
@@ -119,7 +119,7 @@ export default async function MyPage({ searchParams }: MyPageProps) {
               <MyActivityList uid={session.uid} />
 
               <div className="mt-10 w-full space-y-2 rounded-2xl bg-white p-5 text-center ring-1 ring-brown/5">
-                <p className="text-xs font-semibold text-brown-soft/50">고객센터: 준비 중</p>
+                <p className="text-xs font-semibold text-brown-soft/90">고객센터: 준비 중</p>
                 <div className="flex items-center justify-center gap-3 text-[11px] font-semibold text-brown-soft/40">
                   <Link href="/terms" className="underline underline-offset-2">
                     이용약관
@@ -163,9 +163,9 @@ async function MyActivityList({ uid }: { uid: string }) {
 
   return (
     <div className="mt-8 w-full">
-      <h2 className="text-sm font-semibold text-brown-soft/50">구매한 풀이</h2>
+      <h2 className="text-sm font-semibold text-brown-soft/90">구매한 풀이</h2>
       {activity.length === 0 ? (
-        <p className="mt-3 rounded-2xl bg-white p-5 text-center text-sm text-brown-soft/50 ring-1 ring-brown/5">
+        <p className="mt-3 rounded-2xl bg-white p-5 text-center text-sm text-brown-soft/90 ring-1 ring-brown/5">
           아직 열어본 풀이가 없어요.
         </p>
       ) : (

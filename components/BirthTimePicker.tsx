@@ -90,7 +90,7 @@ export default function BirthTimePicker({ value, onChange }: BirthTimePickerProp
         <option value="">시</option>
         {HOURS.map((h) => (
           <option key={h} value={h}>
-            {h}시
+            {h}시{h === 12 ? (period === "AM" ? "(자정)" : period === "PM" ? "(정오)" : "") : ""}
           </option>
         ))}
       </select>
