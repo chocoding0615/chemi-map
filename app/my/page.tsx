@@ -3,8 +3,14 @@ import FoxMascot from "@/components/FoxMascot";
 import LoginButtons from "@/components/LoginButtons";
 import LogoutButton from "@/components/LogoutButton";
 import ChargeButton from "@/components/ChargeButton";
-import { getSession } from "@/lib/session";
+import NicknameEditForm from "@/components/NicknameEditForm";
+import { getSession, type Provider } from "@/lib/session";
 import { getDb } from "@/lib/firebaseAdmin";
+
+const PROVIDER_BADGE: Record<Provider, { label: string; bg: string; fg: string }> = {
+  kakao: { label: "카카오로 가입", bg: "#FEE500", fg: "#181600" },
+  naver: { label: "네이버로 가입", bg: "#03C75A", fg: "#ffffff" },
+};
 
 async function countUnreadLetters(uid: string): Promise<number> {
   const snap = await getDb()
@@ -73,8 +79,26 @@ export default async function MyPage({ searchParams }: MyPageProps) {
         </>
       ) : (
         <>
-          <p className="mt-2 text-center text-sm font-bold text-coral-dark">{session.nickname}님</p>
-          <div className="mt-1">
+          <NicknameEditForm nickname={session.nickname} />
+
+          <div className="mt-2 flex items-center gap-2">
+            <span
+              className="rounded-full px-2.5 py-1 text-[11px] font-bold"
+              style={{ backgroundColor: PROVIDER_BADGE[session.provider].bg, color: PROVIDER_BADGE[session.provider].fg }}
+            >
+              {PROVIDER_BADGE[session.provider].label}
+            </span>
+            <span className="text-[11px] text-brown-soft/40">
+              {new Date(session.createdAt).toLocaleDateString("ko-KR", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}{" "}
+              가입
+            </span>
+          </div>
+
+          <div className="mt-2">
             <LogoutButton />
           </div>
 
@@ -87,6 +111,18 @@ export default async function MyPage({ searchParams }: MyPageProps) {
           </div>
 
           <MyActivityList uid={session.uid} />
+
+          <div className="mt-10 w-full space-y-2 rounded-2xl bg-white p-5 text-center ring-1 ring-brown/5">
+            <p className="text-xs font-semibold text-brown-soft/50">고객센터: 준비 중</p>
+            <div className="flex items-center justify-center gap-3 text-[11px] font-semibold text-brown-soft/40">
+              <Link href="/terms" className="underline underline-offset-2">
+                이용약관
+              </Link>
+              <Link href="/privacy" className="underline underline-offset-2">
+                개인정보처리방침
+              </Link>
+            </div>
+          </div>
         </>
       )}
     </div>

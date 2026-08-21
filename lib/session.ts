@@ -16,6 +16,7 @@ export interface SessionUser {
   nickname: string;
   profileImageUrl: string | null;
   ticketBalance: number;
+  createdAt: string;
 }
 
 export interface OAuthProfile {
@@ -91,7 +92,13 @@ export async function getSession(): Promise<SessionUser | null> {
     nickname: string;
     profileImageUrl: string | null;
     ticketBalance: number;
+    createdAt?: Timestamp | Date;
   };
+  const createdAt = user.createdAt
+    ? user.createdAt instanceof Date
+      ? user.createdAt
+      : user.createdAt.toDate()
+    : new Date();
 
   return {
     uid: sessionData.uid,
@@ -99,6 +106,7 @@ export async function getSession(): Promise<SessionUser | null> {
     nickname: user.nickname,
     profileImageUrl: user.profileImageUrl,
     ticketBalance: user.ticketBalance ?? 0,
+    createdAt: createdAt.toISOString(),
   };
 }
 
