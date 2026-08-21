@@ -1,6 +1,7 @@
 import { calculateSajuDetail, type Gender } from "@/lib/result-engine/sajuDetail";
 import { TEN_GOD_MEANING } from "@/lib/content/tenGods";
-import { ELEMENT_BANK, pickVariant } from "@/lib/result-engine/elements";
+import { getDayMasterEntry, getGyeokgukEntry, getGapjaEntry, getYongsinEntry } from "@/lib/content/sajuBank";
+import { ELEMENT_BANK } from "@/lib/result-engine/elements";
 
 interface SajuDetailReportProps {
   label: string;
@@ -11,10 +12,41 @@ interface SajuDetailReportProps {
 
 export default function SajuDetailReport({ label, birthdate, birthTime, gender }: SajuDetailReportProps) {
   const detail = calculateSajuDetail(birthdate, birthTime, gender);
+  const dayMasterEntry = getDayMasterEntry(detail.dayMaster, detail.strength);
+  const gyeokgukEntry = getGyeokgukEntry(detail.dominantGroup);
+  const currentLuckGapja = detail.currentLuckPillar ? getGapjaEntry(detail.currentLuckPillar.korean) : undefined;
+  const currentYearEntry = getGapjaEntry(detail.currentYearGapja);
+  const yongsinEntry = getYongsinEntry(detail.yongsinElement);
 
   return (
     <div className="mt-4 rounded-xl bg-white/60 p-4 text-left">
       <p className="text-xs font-semibold text-brown-soft/50">{label}의 십신·대운 풀이</p>
+
+      {dayMasterEntry && (
+        <div className="mt-3 rounded-lg bg-cream/60 p-3">
+          <p className="text-xs font-bold text-coral-dark">
+            일간 {detail.dayMaster} · {detail.strength}
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{dayMasterEntry.temperament}</p>
+          <div className="mt-2 space-y-1.5 border-t border-brown/10 pt-2">
+            <p className="text-sm leading-relaxed text-brown-soft/70">
+              <span className="font-semibold text-mint-dark">강점 ·</span> {dayMasterEntry.strengthText}
+            </p>
+            <p className="text-sm leading-relaxed text-brown-soft/70">
+              <span className="font-semibold text-lavender-dark">약점 ·</span> {dayMasterEntry.weaknessText}
+            </p>
+            <p className="text-sm leading-relaxed text-brown-soft/70">{dayMasterEntry.lifeManifestation}</p>
+          </div>
+        </div>
+      )}
+
+      {gyeokgukEntry && (
+        <div className="mt-2 rounded-lg bg-cream/60 p-3">
+          <p className="text-xs font-bold text-coral-dark">{gyeokgukEntry.gyeokgukName}</p>
+          <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{gyeokgukEntry.description}</p>
+          <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{gyeokgukEntry.lifeTheme}</p>
+        </div>
+      )}
 
       {detail.topTenGods.length > 0 && (
         <div className="mt-3 space-y-2">
@@ -48,18 +80,46 @@ export default function SajuDetailReport({ label, birthdate, birthTime, gender }
               );
             })}
           </div>
-          {detail.currentLuckPillar && (
-            <p className="mt-2 text-sm leading-relaxed text-brown-soft/70">
-              지금은 {detail.currentLuckPillar.age}세부터 시작된{" "}
-              {ELEMENT_BANK[detail.currentLuckPillar.element].label}({ELEMENT_BANK[detail.currentLuckPillar.element].hanja})
-              대운 구간이에요.{" "}
-              {
-                ELEMENT_BANK[detail.currentLuckPillar.element].blurbs[
-                  pickVariant(`${birthdate}-luckpillar`, ELEMENT_BANK[detail.currentLuckPillar.element].blurbs.length)
-                ]
-              }
-            </p>
+          {detail.currentLuckPillar && currentLuckGapja && (
+            <div className="mt-2 rounded-lg bg-cream/60 p-3">
+              <p className="text-xs font-bold text-coral-dark">
+                {detail.currentLuckPillar.age}세부터 · {currentLuckGapja.gapja}대운 ·{" "}
+                {currentLuckGapja.keyword1} · {currentLuckGapja.keyword2}
+              </p>
+              <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{currentLuckGapja.flow}</p>
+              <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">
+                <span className="font-semibold text-lavender-dark">조심할 점 ·</span> {currentLuckGapja.caution}
+              </p>
+              <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">
+                <span className="font-semibold text-mint-dark">레벨업 ·</span> {currentLuckGapja.levelUp}
+              </p>
+            </div>
           )}
+        </div>
+      )}
+
+      {currentYearEntry && (
+        <div className="mt-2 rounded-lg bg-cream/60 p-3">
+          <p className="text-xs font-bold text-coral-dark">
+            올해 세운 · {currentYearEntry.gapja}년 · {currentYearEntry.keyword1} · {currentYearEntry.keyword2}
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{currentYearEntry.flow}</p>
+          <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">
+            <span className="font-semibold text-lavender-dark">조심할 점 ·</span> {currentYearEntry.caution}
+          </p>
+        </div>
+      )}
+
+      {yongsinEntry && (
+        <div className="mt-2 rounded-lg bg-cream/60 p-3">
+          <p className="text-xs font-bold text-coral-dark">
+            용신 · {ELEMENT_BANK[detail.yongsinElement].label}({ELEMENT_BANK[detail.yongsinElement].hanja})
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{yongsinEntry.meaning}</p>
+          <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">{yongsinEntry.lifeManifestation}</p>
+          <p className="mt-1 text-sm leading-relaxed text-brown-soft/70">
+            <span className="font-semibold text-mint-dark">활용법 ·</span> {yongsinEntry.howToUse}
+          </p>
         </div>
       )}
     </div>
