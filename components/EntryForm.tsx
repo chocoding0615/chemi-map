@@ -44,8 +44,8 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
     e.preventDefault();
     setError("");
 
-    if (!name.trim() || !mbti || !birthdate) {
-      setError("이름, MBTI, 생년월일을 모두 입력해주세요.");
+    if (!name.trim() || !birthdate) {
+      setError("이름, 생년월일을 입력해주세요.");
       return;
     }
 
@@ -112,7 +112,9 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
         />
       </div>
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-brown">MBTI</label>
+        <label className="mb-1.5 block text-sm font-semibold text-brown">
+          MBTI <span className="font-normal text-brown/40">(선택)</span>
+        </label>
         <MbtiSelect value={mbti} onChange={setMbti} />
       </div>
       <div>

@@ -15,9 +15,7 @@ export default function MbtiSelect({ value, onChange }: MbtiSelectProps) {
         onChange={(e) => onChange(e.target.value)}
         className="w-full appearance-none rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
       >
-        <option value="" disabled>
-          MBTI를 선택해주세요
-        </option>
+        <option value="">모름 / 안 함</option>
         {MBTI_TYPES.map((type) => (
           <option key={type} value={type}>
             {type}

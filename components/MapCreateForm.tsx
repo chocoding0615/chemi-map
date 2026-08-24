@@ -23,8 +23,8 @@ export default function MapCreateForm() {
     e.preventDefault();
     setError("");
 
-    if (!name.trim() || !gender || !mbti || !birthdate) {
-      setError("이름, 성별, MBTI, 생년월일을 모두 입력해주세요.");
+    if (!name.trim() || !gender || !birthdate) {
+      setError("이름, 성별, 생년월일을 모두 입력해주세요.");
       return;
     }
 
@@ -82,7 +82,9 @@ export default function MapCreateForm() {
         </div>
       </div>
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-brown">MBTI</label>
+        <label className="mb-1.5 block text-sm font-semibold text-brown">
+          MBTI <span className="font-normal text-brown/40">(선택)</span>
+        </label>
         <MbtiSelect value={mbti} onChange={setMbti} />
       </div>
       <div>

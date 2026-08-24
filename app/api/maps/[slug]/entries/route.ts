@@ -20,7 +20,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (!name || name.length > 20) {
     return NextResponse.json({ error: "이름을 1~20자로 입력해주세요." }, { status: 400 });
   }
-  if (!MBTI_TYPES.includes(mbti as (typeof MBTI_TYPES)[number])) {
+  if (mbti && !MBTI_TYPES.includes(mbti as (typeof MBTI_TYPES)[number])) {
     return NextResponse.json({ error: "MBTI 값이 올바르지 않습니다." }, { status: 400 });
   }
   if (!BIRTHDATE_RE.test(birthdate)) {
