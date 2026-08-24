@@ -12,6 +12,8 @@ import MbtiSelect from "@/components/MbtiSelect";
 import SajuDetailReport from "@/components/SajuDetailReport";
 import MbtiBehaviorSection from "@/components/MbtiBehaviorSection";
 import SajuLlmReportSection from "@/components/SajuLlmReportSection";
+import ProfileLoadModal from "@/components/ProfileLoadModal";
+import type { ProfileDoc } from "@/lib/profileTypes";
 import type { MbtiType } from "@/lib/result-engine/temperament";
 import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 import {
@@ -54,7 +56,16 @@ export default function SajuPage() {
   const [error, setError] = useState("");
   const [result, setResult] = useState<SajuResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [loadModalOpen, setLoadModalOpen] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
+
+  function applyProfile(profile: ProfileDoc) {
+    setName(profile.label);
+    setBirthdate(profile.birthdate);
+    setGender(profile.gender);
+    setBirthTime(profile.birthTime);
+    setMbti(profile.mbti);
+  }
 
   useEffect(() => {
     if (!result) return;
@@ -124,6 +135,13 @@ export default function SajuPage() {
           onSubmit={handleSubmit}
           className="mt-8 w-full space-y-5 rounded-3xl bg-white p-6 shadow-xl shadow-brown/5 ring-1 ring-brown/5"
         >
+          <button
+            type="button"
+            onClick={() => setLoadModalOpen(true)}
+            className="w-full rounded-xl bg-cream py-2 text-xs font-bold text-brown-soft transition active:scale-95 hover:bg-apricot"
+          >
+            📋 저장해둔 기본정보 불러오기
+          </button>
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-brown">
               이름 <span className="font-normal text-brown/40">(선택)</span>
@@ -290,6 +308,8 @@ export default function SajuPage() {
           </div>
         </div>
       )}
+
+      {loadModalOpen && <ProfileLoadModal onSelect={applyProfile} onClose={() => setLoadModalOpen(false)} />}
     </div>
   );
 }

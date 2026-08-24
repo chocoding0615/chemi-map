@@ -3,12 +3,16 @@
 import { useSearchParams } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import CollectionSection from "./CollectionSection";
+import ProfileManager from "./ProfileManager";
 
-type TabId = "account" | "collection";
+type TabId = "account" | "collection" | "profiles";
 
 export default function MyPageTabs({ accountTab }: { accountTab: ReactNode }) {
   const searchParams = useSearchParams();
-  const [active, setActive] = useState<TabId>(searchParams.get("tab") === "collection" ? "collection" : "account");
+  const initialTab = searchParams.get("tab");
+  const [active, setActive] = useState<TabId>(
+    initialTab === "collection" ? "collection" : initialTab === "profiles" ? "profiles" : "account"
+  );
 
   return (
     <div className="mt-6 w-full">
@@ -31,10 +35,19 @@ export default function MyPageTabs({ accountTab }: { accountTab: ReactNode }) {
         >
           부적 주머니
         </button>
+        <button
+          type="button"
+          onClick={() => setActive("profiles")}
+          className={`flex-1 rounded-xl py-2 text-sm font-bold transition ${
+            active === "profiles" ? "bg-coral text-white shadow-sm" : "text-brown-soft/90"
+          }`}
+        >
+          기본정보
+        </button>
       </div>
 
       <div className="mt-6 flex w-full flex-col items-center">
-        {active === "account" ? accountTab : <CollectionSection />}
+        {active === "account" ? accountTab : active === "collection" ? <CollectionSection /> : <ProfileManager />}
       </div>
     </div>
   );

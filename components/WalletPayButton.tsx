@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { chargeFreeWallet } from "@/lib/freeCharge";
+import ConfirmModal from "./ConfirmModal";
 
 interface WalletPayButtonProps {
   priceKrw: number;
@@ -27,6 +28,7 @@ export default function WalletPayButton({
   const [error, setError] = useState<string | null>(null);
   const [charging, setCharging] = useState(false);
   const [chargeError, setChargeError] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState(false);
 
   async function handleFreeCharge() {
     setCharging(true);
@@ -56,6 +58,7 @@ export default function WalletPayButton({
   }, []);
 
   async function handlePurchase() {
+    setConfirming(false);
     setPurchasing(true);
     setError(null);
     try {
@@ -117,7 +120,7 @@ export default function WalletPayButton({
       {error && <p className="mb-2 text-center text-xs font-semibold text-coral-dark">{error}</p>}
       <button
         type="button"
-        onClick={handlePurchase}
+        onClick={() => setConfirming(true)}
         disabled={purchasing}
         className="w-full rounded-2xl border border-dashed border-coral bg-white/50 py-3 text-sm font-bold text-coral-dark transition active:scale-95 hover:bg-white disabled:opacity-60"
       >
@@ -127,6 +130,16 @@ export default function WalletPayButton({
             ? "🎁 무료로 열어보기"
             : `🔓 잔디로 열기 (🌱${priceKrw.toLocaleString()})`}
       </button>
+
+      {confirming && (
+        <ConfirmModal
+          title={priceKrw === 0 ? "무료로 사용하시겠어요?" : `🌱${priceKrw.toLocaleString()}로 여시겠어요?`}
+          description={`${title} — 한 번 열면 다시 잠글 수 없어요.`}
+          pending={purchasing}
+          onConfirm={handlePurchase}
+          onCancel={() => setConfirming(false)}
+        />
+      )}
     </div>
   );
 }

@@ -7,6 +7,8 @@ import MockPayGate from "@/components/MockPayGate";
 import BirthDatePicker from "@/components/BirthDatePicker";
 import BirthTimePicker from "@/components/BirthTimePicker";
 import SajuDetailReport from "@/components/SajuDetailReport";
+import ProfileLoadModal from "@/components/ProfileLoadModal";
+import type { ProfileDoc } from "@/lib/profileTypes";
 import { getCategoryBlurb, type FortuneCategory } from "@/lib/content/fortuneCategories";
 import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 import { getAffinityCategory, AFFINITY_BANK, calculateAffinityScore } from "@/lib/result-engine/affinity";
@@ -42,6 +44,7 @@ type FortuneResult =
       caution: string;
       luckyColor: string;
       luckyItem: string;
+      name: string;
       birthdate: string;
       birthTime: string;
       gender: Gender;
@@ -97,15 +100,22 @@ function PersonFields({
   value,
   onChange,
   showMbti,
+  onLoadClick,
 }: {
   legend: string;
   value: PersonInput;
   onChange: (next: PersonInput) => void;
   showMbti: boolean;
+  onLoadClick: () => void;
 }) {
   return (
     <div className="space-y-4 rounded-2xl bg-cream/60 p-4">
-      <p className="text-sm font-bold text-brown">{legend}</p>
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-bold text-brown">{legend}</p>
+        <button type="button" onClick={onLoadClick} className="text-xs font-bold text-coral-dark underline underline-offset-2">
+          📋 불러오기
+        </button>
+      </div>
       <div>
         <label className="mb-1.5 block text-xs font-semibold text-brown-soft">
           이름 <span className="font-normal text-brown-soft/40">(선택)</span>
@@ -148,6 +158,19 @@ export default function FortuneForm({ category }: FortuneFormProps) {
   const [personB, setPersonB] = useState<PersonInput>(EMPTY_PERSON);
   const [error, setError] = useState("");
   const [result, setResult] = useState<FortuneResult | null>(null);
+  const [loadTarget, setLoadTarget] = useState<"A" | "B" | null>(null);
+
+  function applyProfile(profile: ProfileDoc) {
+    const next: PersonInput = {
+      name: profile.label,
+      birthdate: profile.birthdate,
+      gender: profile.gender,
+      birthTime: profile.birthTime,
+      mbti: profile.mbti,
+    };
+    if (loadTarget === "B") setPersonB(next);
+    else setPersonA(next);
+  }
 
   useEffect(() => {
     if (!result) return;
@@ -172,6 +195,7 @@ export default function FortuneForm({ category }: FortuneFormProps) {
         element: dominant,
         blurb,
         ...depth,
+        name: personA.name.trim(),
         birthdate: personA.birthdate,
         birthTime: personA.birthTime,
         gender: personA.gender as Gender,
@@ -244,7 +268,8 @@ export default function FortuneForm({ category }: FortuneFormProps) {
             <div className="flex justify-center">
               <ElementIcon element={result.element} size={64} />
             </div>
-            <p className="mt-2 text-sm font-semibold text-brown-soft/90">
+            {result.name && <p className="mt-2 text-sm font-bold text-coral-dark">{result.name}님의 결과예요</p>}
+            <p className="mt-1 text-sm font-semibold text-brown-soft/90">
               {ELEMENT_BANK[result.element].label}({ELEMENT_BANK[result.element].hanja}) 기운
             </p>
           </>
@@ -308,7 +333,7 @@ export default function FortuneForm({ category }: FortuneFormProps) {
 
           {result.kind === "single" ? (
             <SajuDetailReport
-              label="나"
+              label={result.name || "나"}
               birthdate={result.birthdate}
               birthTime={result.birthTime || undefined}
               gender={result.gender}
@@ -349,11 +374,42 @@ export default function FortuneForm({ category }: FortuneFormProps) {
     >
       {isPair ? (
         <>
-          <PersonFields legend="나" value={personA} onChange={setPersonA} showMbti={!!category.needsMbti} />
-          <PersonFields legend="상대" value={personB} onChange={setPersonB} showMbti={!!category.needsMbti} />
+          <PersonFields
+            legend="나"
+            value={personA}
+            onChange={setPersonA}
+            showMbti={!!category.needsMbti}
+            onLoadClick={() => setLoadTarget("A")}
+          />
+          <PersonFields
+            legend="상대"
+            value={personB}
+            onChange={setPersonB}
+            showMbti={!!category.needsMbti}
+            onLoadClick={() => setLoadTarget("B")}
+          />
         </>
       ) : (
         <>
+          <button
+            type="button"
+            onClick={() => setLoadTarget("A")}
+            className="w-full rounded-xl bg-cream py-2 text-xs font-bold text-brown-soft transition active:scale-95 hover:bg-apricot"
+          >
+            📋 저장해둔 기본정보 불러오기
+          </button>
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-brown">
+              이름 <span className="font-normal text-brown/40">(선택)</span>
+            </label>
+            <input
+              value={personA.name}
+              onChange={(e) => setPersonA({ ...personA, name: e.target.value })}
+              maxLength={20}
+              placeholder="홍길동"
+              className="w-full rounded-xl border border-brown/10 bg-white px-4 py-2.5 text-sm text-brown placeholder:text-brown/30 focus:border-coral focus:outline-none focus:ring-2 focus:ring-coral/30"
+            />
+          </div>
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
             <BirthDatePicker
@@ -383,6 +439,13 @@ export default function FortuneForm({ category }: FortuneFormProps) {
       >
         결과 보기
       </button>
+
+      {loadTarget && (
+        <ProfileLoadModal
+          onSelect={applyProfile}
+          onClose={() => setLoadTarget(null)}
+        />
+      )}
     </form>
   );
 }
