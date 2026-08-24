@@ -4,7 +4,9 @@
 import { notifyBirthdateChanged } from "./notify";
 
 const BIRTHDATE_KEY = "yeojujeom.today.birthdate";
+const IS_LUNAR_KEY = "yeojujeom.today.isLunar";
 const NAME_KEY = "yeojujeom.today.name";
+const MBTI_KEY = "yeojujeom.today.mbti";
 const ANON_ID_KEY = "yeojujeom.anonId";
 
 function isBrowser() {
@@ -25,7 +27,31 @@ export function setStoredBirthdate(value: string): void {
 export function clearStoredBirthdate(): void {
   if (!isBrowser()) return;
   window.localStorage.removeItem(BIRTHDATE_KEY);
+  window.localStorage.removeItem(IS_LUNAR_KEY);
   notifyBirthdateChanged();
+}
+
+export function getStoredIsLunar(): boolean {
+  if (!isBrowser()) return false;
+  return window.localStorage.getItem(IS_LUNAR_KEY) === "1";
+}
+
+export function setStoredIsLunar(value: boolean): void {
+  if (!isBrowser()) return;
+  if (value) window.localStorage.setItem(IS_LUNAR_KEY, "1");
+  else window.localStorage.removeItem(IS_LUNAR_KEY);
+  notifyBirthdateChanged();
+}
+
+export function getStoredMbti(): string | null {
+  if (!isBrowser()) return null;
+  return window.localStorage.getItem(MBTI_KEY);
+}
+
+export function setStoredMbti(value: string): void {
+  if (!isBrowser()) return;
+  if (value) window.localStorage.setItem(MBTI_KEY, value);
+  else window.localStorage.removeItem(MBTI_KEY);
 }
 
 export function getStoredName(): string | null {

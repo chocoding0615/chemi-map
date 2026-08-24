@@ -54,10 +54,14 @@ interface SajuResult {
   advancedOptions: AdvancedBirthOptions;
 }
 
-function toAdvancedOptions(settings: AdvancedSettingsValue): AdvancedBirthOptions {
+function toAdvancedOptions(
+  isLunar: boolean,
+  isLeapMonth: boolean,
+  settings: AdvancedSettingsValue
+): AdvancedBirthOptions {
   return {
-    isLunar: settings.calendarType === "lunar" || undefined,
-    isLeapMonth: settings.calendarType === "lunar" ? settings.isLeapMonth : undefined,
+    isLunar: isLunar || undefined,
+    isLeapMonth: isLunar ? isLeapMonth : undefined,
     longitude: settings.longitudeCorrection ? (settings.longitude ? Number(settings.longitude) : 127.5) : undefined,
   };
 }
@@ -68,6 +72,8 @@ export default function SajuPage() {
   const [gender, setGender] = useState<"male" | "female" | "">("");
   const [birthTime, setBirthTime] = useState("");
   const [mbti, setMbti] = useState("");
+  const [isLunar, setIsLunar] = useState(false);
+  const [isLeapMonth, setIsLeapMonth] = useState(false);
   const [advancedSettings, setAdvancedSettings] = useState<AdvancedSettingsValue>(DEFAULT_ADVANCED_SETTINGS);
   const [error, setError] = useState("");
   const [result, setResult] = useState<SajuResult | null>(null);
@@ -81,6 +87,7 @@ export default function SajuPage() {
     setGender(profile.gender);
     setBirthTime(profile.birthTime);
     setMbti(profile.mbti);
+    setIsLunar(profile.isLunar ?? false);
   }
 
   useEffect(() => {
@@ -106,7 +113,7 @@ export default function SajuPage() {
     // 버튼이 바뀌는 게 사용자에게 실제로 보인다(그렇지 않으면 결과로
     // 즉시 바뀌어서 "눌렀는데 반응이 없나?" 하는 인상을 줄 수 있다).
     requestAnimationFrame(() => {
-      const advancedOptions = toAdvancedOptions(advancedSettings);
+      const advancedOptions = toAdvancedOptions(isLunar, isLeapMonth, advancedSettings);
       const profile = calculateElementProfile(birthdate, birthTime || undefined, advancedOptions);
       const seed = `${birthdate}-${gender}-${birthTime}-saju`;
       const personality = getPersonalityReading(profile.dominant, seed);
@@ -174,7 +181,14 @@ export default function SajuPage() {
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
-            <BirthDatePicker value={birthdate} onChange={setBirthdate} />
+            <BirthDatePicker
+              value={birthdate}
+              onChange={setBirthdate}
+              isLunar={isLunar}
+              onLunarChange={setIsLunar}
+              isLeapMonth={isLeapMonth}
+              onLeapMonthChange={setIsLeapMonth}
+            />
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-brown">성별</label>

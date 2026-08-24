@@ -5,6 +5,7 @@ export interface ProfileInput {
   name: string;
   relation: string;
   birthdate: string;
+  isLunar: boolean;
   birthTime: string;
   gender: "male" | "female";
   mbti: string;

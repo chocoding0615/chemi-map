@@ -14,6 +14,7 @@ export default function MapCreateForm() {
   const [gender, setGender] = useState<"male" | "female" | "">("");
   const [mbti, setMbti] = useState("");
   const [birthdate, setBirthdate] = useState("");
+  const [isLunar, setIsLunar] = useState(false);
   const [birthTime, setBirthTime] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,7 +33,7 @@ export default function MapCreateForm() {
       const res = await fetch("/api/maps", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, gender, mbti, birthdate, birthTime: birthTime || undefined }),
+        body: JSON.stringify({ name, gender, mbti, birthdate, isLunar, birthTime: birthTime || undefined }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -86,7 +87,7 @@ export default function MapCreateForm() {
       </div>
       <div>
         <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
-        <BirthDatePicker value={birthdate} onChange={setBirthdate} />
+        <BirthDatePicker value={birthdate} onChange={setBirthdate} isLunar={isLunar} onLunarChange={setIsLunar} />
       </div>
       <div>
         <label className="mb-1.5 block text-sm font-semibold text-brown">

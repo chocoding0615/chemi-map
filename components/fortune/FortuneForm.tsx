@@ -7,10 +7,16 @@ import MockPayGate from "@/components/MockPayGate";
 import BirthDatePicker from "@/components/BirthDatePicker";
 import BirthTimePicker from "@/components/BirthTimePicker";
 import SajuDetailReport from "@/components/SajuDetailReport";
+import SajuLlmReportSection from "@/components/SajuLlmReportSection";
 import ProfileLoadModal from "@/components/ProfileLoadModal";
 import type { ProfileDoc } from "@/lib/profileTypes";
 import { getCategoryBlurb, type FortuneCategory } from "@/lib/content/fortuneCategories";
-import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
+import {
+  calculateElementProfile,
+  ELEMENT_BANK,
+  type ElementKey,
+  type AdvancedBirthOptions,
+} from "@/lib/result-engine/elements";
 import { getAffinityCategory, AFFINITY_BANK, calculateAffinityScore } from "@/lib/result-engine/affinity";
 import { getFortuneDepth } from "@/lib/result-engine/depth";
 import { getMbtiCompat } from "@/lib/result-engine/mbtiCompat";
@@ -28,12 +34,20 @@ type Gender = "male" | "female";
 interface PersonInput {
   name: string;
   birthdate: string;
+  isLunar: boolean;
   gender: Gender | "";
   birthTime: string;
   mbti: string;
 }
 
-const EMPTY_PERSON: PersonInput = { name: "", birthdate: "", gender: "", birthTime: "", mbti: "" };
+const EMPTY_PERSON: PersonInput = {
+  name: "",
+  birthdate: "",
+  isLunar: false,
+  gender: "",
+  birthTime: "",
+  mbti: "",
+};
 
 type FortuneResult =
   | {
@@ -46,6 +60,7 @@ type FortuneResult =
       luckyItem: string;
       name: string;
       birthdate: string;
+      advancedOptions: AdvancedBirthOptions;
       birthTime: string;
       gender: Gender;
     }
@@ -67,9 +82,11 @@ type FortuneResult =
       luckyColor: string;
       luckyItem: string;
       birthdateA: string;
+      advancedOptionsA: AdvancedBirthOptions;
       birthTimeA: string;
       genderA: Gender;
       birthdateB: string;
+      advancedOptionsB: AdvancedBirthOptions;
       birthTimeB: string;
       genderB: Gender;
     };
@@ -130,7 +147,12 @@ function PersonFields({
       </div>
       <div>
         <label className="mb-1.5 block text-xs font-semibold text-brown-soft">생년월일</label>
-        <BirthDatePicker value={value.birthdate} onChange={(birthdate) => onChange({ ...value, birthdate })} />
+        <BirthDatePicker
+          value={value.birthdate}
+          onChange={(birthdate) => onChange({ ...value, birthdate })}
+          isLunar={value.isLunar}
+          onLunarChange={(isLunar) => onChange({ ...value, isLunar })}
+        />
       </div>
       <div>
         <label className="mb-1.5 block text-xs font-semibold text-brown-soft">성별</label>
@@ -164,6 +186,7 @@ export default function FortuneForm({ category }: FortuneFormProps) {
     const next: PersonInput = {
       name: profile.name,
       birthdate: profile.birthdate,
+      isLunar: profile.isLunar ?? false,
       gender: profile.gender,
       birthTime: profile.birthTime,
       mbti: profile.mbti,
@@ -187,7 +210,8 @@ export default function FortuneForm({ category }: FortuneFormProps) {
       }
       setError("");
       const seed = `${personA.birthdate}-${personA.gender}-${personA.birthTime}-${category.slug}`;
-      const { dominant } = calculateElementProfile(personA.birthdate, personA.birthTime || undefined);
+      const advancedOptionsA: AdvancedBirthOptions = { isLunar: personA.isLunar || undefined };
+      const { dominant } = calculateElementProfile(personA.birthdate, personA.birthTime || undefined, advancedOptionsA);
       const blurb = getCategoryBlurb(category.slug, dominant, seed);
       const depth = getFortuneDepth(dominant, seed);
       setResult({
@@ -197,6 +221,7 @@ export default function FortuneForm({ category }: FortuneFormProps) {
         ...depth,
         name: personA.name.trim(),
         birthdate: personA.birthdate,
+        advancedOptions: advancedOptionsA,
         birthTime: personA.birthTime,
         gender: personA.gender as Gender,
       });
@@ -220,8 +245,10 @@ export default function FortuneForm({ category }: FortuneFormProps) {
     }
     setError("");
 
-    const elementA = calculateElementProfile(personA.birthdate, personA.birthTime || undefined).dominant;
-    const elementB = calculateElementProfile(personB.birthdate, personB.birthTime || undefined).dominant;
+    const advancedOptionsA: AdvancedBirthOptions = { isLunar: personA.isLunar || undefined };
+    const advancedOptionsB: AdvancedBirthOptions = { isLunar: personB.isLunar || undefined };
+    const elementA = calculateElementProfile(personA.birthdate, personA.birthTime || undefined, advancedOptionsA).dominant;
+    const elementB = calculateElementProfile(personB.birthdate, personB.birthTime || undefined, advancedOptionsB).dominant;
     const affinityCategory = getAffinityCategory(elementA, elementB);
     const affinity = AFFINITY_BANK[affinityCategory];
     const seed = `${personA.birthdate}-${personB.birthdate}-${category.slug}`;
@@ -245,9 +272,11 @@ export default function FortuneForm({ category }: FortuneFormProps) {
       mbtiBlurb: mbtiCompat?.entry.blurb ?? "",
       ...depth,
       birthdateA: personA.birthdate,
+      advancedOptionsA,
       birthTimeA: personA.birthTime,
       genderA: personA.gender as Gender,
       birthdateB: personB.birthdate,
+      advancedOptionsB,
       birthTimeB: personB.birthTime,
       genderB: personB.gender as Gender,
     });
@@ -337,6 +366,7 @@ export default function FortuneForm({ category }: FortuneFormProps) {
               birthdate={result.birthdate}
               birthTime={result.birthTime || undefined}
               gender={result.gender}
+              advanced={result.advancedOptions}
             />
           ) : (
             <>
@@ -345,16 +375,29 @@ export default function FortuneForm({ category }: FortuneFormProps) {
                 birthdate={result.birthdateA}
                 birthTime={result.birthTimeA || undefined}
                 gender={result.genderA}
+                advanced={result.advancedOptionsA}
               />
               <SajuDetailReport
                 label={result.nameB || "상대"}
                 birthdate={result.birthdateB}
                 birthTime={result.birthTimeB || undefined}
                 gender={result.genderB}
+                advanced={result.advancedOptionsB}
               />
             </>
           )}
         </MockPayGate>
+
+        {result.kind === "single" && (
+          <SajuLlmReportSection
+            input={{
+              name: result.name || undefined,
+              birthdate: result.birthdate,
+              birthTime: result.birthTime || undefined,
+              gender: result.gender,
+            }}
+          />
+        )}
 
         <button
           type="button"
@@ -415,6 +458,8 @@ export default function FortuneForm({ category }: FortuneFormProps) {
             <BirthDatePicker
               value={personA.birthdate}
               onChange={(birthdate) => setPersonA({ ...personA, birthdate })}
+              isLunar={personA.isLunar}
+              onLunarChange={(isLunar) => setPersonA({ ...personA, isLunar })}
             />
           </div>
           <div>

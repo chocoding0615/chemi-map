@@ -7,7 +7,15 @@ import MbtiSelect from "./MbtiSelect";
 import ConfirmModal from "./ConfirmModal";
 import type { ProfileDoc, ProfileInput } from "@/lib/profileTypes";
 
-const EMPTY_FORM: ProfileInput = { name: "", relation: "", birthdate: "", birthTime: "", gender: "male", mbti: "" };
+const EMPTY_FORM: ProfileInput = {
+  name: "",
+  relation: "",
+  birthdate: "",
+  isLunar: false,
+  birthTime: "",
+  gender: "male",
+  mbti: "",
+};
 
 export default function ProfileManager() {
   const [profiles, setProfiles] = useState<ProfileDoc[] | null>(null);
@@ -35,6 +43,7 @@ export default function ProfileManager() {
       name: profile.name,
       relation: profile.relation,
       birthdate: profile.birthdate,
+      isLunar: profile.isLunar ?? false,
       birthTime: profile.birthTime,
       gender: profile.gender,
       mbti: profile.mbti,
@@ -108,7 +117,8 @@ export default function ProfileManager() {
                   {profile.name} <span className="font-normal text-brown-soft/50">· {profile.relation}</span>
                 </p>
                 <p className="mt-0.5 text-[11px] text-brown-soft/50">
-                  {profile.birthdate} {profile.birthTime && `· ${profile.birthTime}`} ·{" "}
+                  {profile.birthdate}
+                  {profile.isLunar && " (음력)"} {profile.birthTime && `· ${profile.birthTime}`} ·{" "}
                   {profile.gender === "male" ? "남" : "여"}
                   {profile.mbti && ` · ${profile.mbti}`}
                 </p>
@@ -160,7 +170,12 @@ export default function ProfileManager() {
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-brown-soft">생년월일</label>
-            <BirthDatePicker value={form.birthdate} onChange={(birthdate) => setForm({ ...form, birthdate })} />
+            <BirthDatePicker
+              value={form.birthdate}
+              onChange={(birthdate) => setForm({ ...form, birthdate })}
+              isLunar={form.isLunar}
+              onLunarChange={(isLunar) => setForm({ ...form, isLunar })}
+            />
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-brown-soft">성별</label>

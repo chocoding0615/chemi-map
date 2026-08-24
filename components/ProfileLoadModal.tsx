@@ -60,7 +60,8 @@ export default function ProfileLoadModal({ onSelect, onClose }: ProfileLoadModal
                     {profile.name} <span className="font-normal text-brown-soft/50">· {profile.relation}</span>
                   </p>
                   <p className="mt-0.5 text-[11px] text-brown-soft/50">
-                    {profile.birthdate} {profile.birthTime && `· ${profile.birthTime}`} ·{" "}
+                    {profile.birthdate}
+                    {profile.isLunar && " (음력)"} {profile.birthTime && `· ${profile.birthTime}`} ·{" "}
                     {profile.gender === "male" ? "남" : "여"}
                     {profile.mbti && ` · ${profile.mbti}`}
                   </p>

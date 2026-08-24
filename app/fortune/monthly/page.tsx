@@ -5,11 +5,18 @@ import FoxMascot from "@/components/FoxMascot";
 import ElementIcon from "@/components/ElementIcon";
 import BirthDatePicker from "@/components/BirthDatePicker";
 import { getMonthlyFortune } from "@/lib/result-engine/monthlyFortune";
-import { getStoredBirthdate, setStoredBirthdate, clearStoredBirthdate } from "@/lib/dailyPersonalization";
+import {
+  getStoredBirthdate,
+  setStoredBirthdate,
+  clearStoredBirthdate,
+  getStoredIsLunar,
+  setStoredIsLunar,
+} from "@/lib/dailyPersonalization";
 
 export default function MonthlyFortunePage() {
   const [birthdate, setBirthdate] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState("");
+  const [isLunar, setIsLunar] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -19,6 +26,7 @@ export default function MonthlyFortunePage() {
     if (stored) {
       setBirthdate(stored);
       setInputValue(stored);
+      setIsLunar(getStoredIsLunar());
     }
     setHydrated(true);
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -28,6 +36,7 @@ export default function MonthlyFortunePage() {
     e.preventDefault();
     if (!inputValue) return;
     setStoredBirthdate(inputValue);
+    setStoredIsLunar(isLunar);
     setBirthdate(inputValue);
   }
 
@@ -35,10 +44,11 @@ export default function MonthlyFortunePage() {
     clearStoredBirthdate();
     setBirthdate(null);
     setInputValue("");
+    setIsLunar(false);
   }
 
   const monthISO = new Date().toISOString().slice(0, 7);
-  const fortune = hydrated ? getMonthlyFortune(birthdate, monthISO) : null;
+  const fortune = hydrated ? getMonthlyFortune(birthdate, monthISO, isLunar) : null;
 
   return (
     <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-16">
@@ -69,7 +79,12 @@ export default function MonthlyFortunePage() {
               생일을 넣으면 나만의 기운으로 볼 수 있어요{" "}
               <span className="font-normal text-brown/40">(선택)</span>
             </label>
-            <BirthDatePicker value={inputValue} onChange={setInputValue} />
+            <BirthDatePicker
+              value={inputValue}
+              onChange={setInputValue}
+              isLunar={isLunar}
+              onLunarChange={setIsLunar}
+            />
             <div className="flex gap-2">
               <button
                 type="submit"

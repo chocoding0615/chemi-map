@@ -10,7 +10,10 @@ function profilesRef(uid: string) {
 
 export async function listProfiles(uid: string): Promise<ProfileDoc[]> {
   const snap = await profilesRef(uid).orderBy("createdAt", "asc").get();
-  return snap.docs.map((doc) => ({ id: doc.id, ...(doc.data() as ProfileInput) }));
+  return snap.docs.map((doc) => {
+    const data = doc.data() as ProfileInput;
+    return { id: doc.id, ...data, isLunar: data.isLunar ?? false };
+  });
 }
 
 export async function createProfile(uid: string, input: ProfileInput): Promise<string> {
@@ -37,6 +40,7 @@ export function parseProfileInput(body: unknown): ProfileInput | null {
 
   const birthTime = typeof b.birthTime === "string" && /^\d{2}:\d{2}$/.test(b.birthTime) ? b.birthTime : "";
   const mbti = typeof b.mbti === "string" ? b.mbti.slice(0, 4) : "";
+  const isLunar = b.isLunar === true;
 
-  return { name, relation, birthdate, gender, birthTime, mbti };
+  return { name, relation, birthdate, isLunar, gender, birthTime, mbti };
 }

@@ -44,9 +44,9 @@ export interface MonthlyFortune {
   text: string;
 }
 
-export function getMonthlyFortune(birthdate: string | null, monthISO: string): MonthlyFortune {
+export function getMonthlyFortune(birthdate: string | null, monthISO: string, isLunar = false): MonthlyFortune {
   if (birthdate) {
-    const { dominant } = calculateElementProfile(birthdate);
+    const { dominant } = calculateElementProfile(birthdate, undefined, { isLunar: isLunar || undefined });
     const bank = MONTHLY_FORTUNE_BANK[dominant];
     const text = bank[pickVariant(`${birthdate}-${monthISO}`, bank.length)];
     return { element: dominant, text };

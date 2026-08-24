@@ -6,21 +6,29 @@ import FoxMascot from "@/components/FoxMascot";
 import ElementIcon from "@/components/ElementIcon";
 import TodayScoreCard from "@/components/TodayScoreCard";
 import BirthDatePicker from "@/components/BirthDatePicker";
+import MbtiSelect from "@/components/MbtiSelect";
 import { getDailyFortune } from "@/lib/result-engine/dailyFortune";
+import type { MbtiType } from "@/lib/result-engine/temperament";
 import { awardForAction } from "@/lib/foxRewards";
 import {
   getStoredBirthdate,
   setStoredBirthdate,
   clearStoredBirthdate,
+  getStoredIsLunar,
+  setStoredIsLunar,
   getStoredName,
   setStoredName,
+  getStoredMbti,
+  setStoredMbti,
 } from "@/lib/dailyPersonalization";
 import { hasDrawnCharmToday } from "@/lib/dailyCharm";
 
 export default function TodayPage() {
   const [birthdate, setBirthdate] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState("");
+  const [isLunar, setIsLunar] = useState(false);
   const [name, setName] = useState("");
+  const [mbti, setMbti] = useState("");
   const [hydrated, setHydrated] = useState(false);
   const [charmDrawnToday, setCharmDrawnToday] = useState(false);
 
@@ -31,8 +39,10 @@ export default function TodayPage() {
     if (stored) {
       setBirthdate(stored);
       setInputValue(stored);
+      setIsLunar(getStoredIsLunar());
     }
     setName(getStoredName() ?? "");
+    setMbti(getStoredMbti() ?? "");
     setCharmDrawnToday(hasDrawnCharmToday());
     setHydrated(true);
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -43,20 +53,27 @@ export default function TodayPage() {
     e.preventDefault();
     if (!inputValue) return;
     setStoredBirthdate(inputValue);
+    setStoredIsLunar(isLunar);
     setStoredName(name.trim());
+    setStoredMbti(mbti);
     setBirthdate(inputValue);
   }
 
   function handleClear() {
     clearStoredBirthdate();
     setStoredName("");
+    setStoredMbti("");
     setBirthdate(null);
     setInputValue("");
+    setIsLunar(false);
     setName("");
+    setMbti("");
   }
 
   const todayISO = new Date().toISOString().slice(0, 10);
-  const fortune = hydrated ? getDailyFortune(birthdate, todayISO) : null;
+  const fortune = hydrated
+    ? getDailyFortune(birthdate, todayISO, isLunar, mbti ? (mbti as MbtiType) : undefined)
+    : null;
 
   return (
     <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-16">
@@ -84,14 +101,38 @@ export default function TodayPage() {
             <span className="text-lg">→</span>
           </Link>
 
-          <div className="mt-4 w-full rounded-2xl bg-gradient-to-b from-apricot to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
+          <div className="mt-4 w-full rounded-2xl bg-gradient-to-b from-apricot to-cream p-6 shadow-inner ring-1 ring-brown/10">
             {fortune.element && (
               <div className="flex justify-center">
                 <ElementIcon element={fortune.element} size={56} />
               </div>
             )}
-            {name && <p className="mt-2 text-sm font-bold text-coral-dark">{name}님, 오늘의 기운이에요</p>}
-            <p className="mt-3 text-sm leading-relaxed text-brown-soft">{fortune.text}</p>
+            {name && (
+              <p className="mt-2 text-center text-sm font-bold text-coral-dark">{name}님, 오늘의 기운이에요</p>
+            )}
+            <div className="mt-3 space-y-2 text-left">
+              {fortune.categories.map((c) => (
+                <p key={c.label} className="text-sm leading-relaxed text-brown-soft">
+                  {c.point ? (
+                    <>
+                      <span className="font-semibold text-brown">
+                        {c.label} · {c.point}.
+                      </span>{" "}
+                      {c.detail}
+                    </>
+                  ) : (
+                    c.detail
+                  )}
+                </p>
+              ))}
+            </div>
+
+            {fortune.mbtiTip && (
+              <div className="mt-3 rounded-lg bg-lavender/15 p-3 text-left">
+                <p className="text-xs font-bold text-lavender-dark">🧭 {mbti} 오늘의 팁</p>
+                <p className="mt-1 text-sm leading-relaxed text-brown-soft">{fortune.mbtiTip}</p>
+              </div>
+            )}
           </div>
 
           <form
@@ -109,7 +150,18 @@ export default function TodayPage() {
               placeholder="이름(선택)"
               className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown placeholder:text-brown/30 focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
             />
-            <BirthDatePicker value={inputValue} onChange={setInputValue} />
+            <BirthDatePicker
+              value={inputValue}
+              onChange={setInputValue}
+              isLunar={isLunar}
+              onLunarChange={setIsLunar}
+            />
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-brown-soft">
+                MBTI <span className="font-normal text-brown-soft/40">(선택, 넣으면 오늘의 팁도 함께 나와요)</span>
+              </label>
+              <MbtiSelect value={mbti} onChange={setMbti} />
+            </div>
             <div className="flex gap-2">
               <button
                 type="submit"

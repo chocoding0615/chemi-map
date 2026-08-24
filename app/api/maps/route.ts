@@ -14,6 +14,7 @@ export async function POST(request: NextRequest) {
   const gender = body?.gender === "male" || body?.gender === "female" ? body.gender : "";
   const mbti = typeof body?.mbti === "string" ? body.mbti.toUpperCase() : "";
   const birthdate = typeof body?.birthdate === "string" ? body.birthdate : "";
+  const isLunar = body?.isLunar === true;
   const birthTime = typeof body?.birthTime === "string" && body.birthTime ? body.birthTime : undefined;
 
   if (!name || name.length > 20) {
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
 
   const slug = await generateUniqueSlug();
   const now = FieldValue.serverTimestamp();
-  const profile = calculateElementProfile(birthdate, birthTime);
+  const profile = calculateElementProfile(birthdate, birthTime, { isLunar: isLunar || undefined });
 
   await getDb()
     .collection("maps")
@@ -49,6 +50,7 @@ export async function POST(request: NextRequest) {
       ownerGender: gender,
       ownerMbti: mbti,
       ownerBirthdate: birthdate,
+      ownerIsLunar: isLunar,
       ownerBirthTime: birthTime ?? null,
       ownerElement: profile.dominant,
       ownerElementDistribution: profile.distribution,

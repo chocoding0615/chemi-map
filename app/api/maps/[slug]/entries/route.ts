@@ -14,6 +14,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const name = typeof body?.name === "string" ? body.name.trim() : "";
   const mbti = typeof body?.mbti === "string" ? body.mbti.toUpperCase() : "";
   const birthdate = typeof body?.birthdate === "string" ? body.birthdate : "";
+  const isLunar = body?.isLunar === true;
   const birthTime = typeof body?.birthTime === "string" && body.birthTime ? body.birthTime : undefined;
 
   if (!name || name.length > 20) {
@@ -47,6 +48,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     visitorName: name,
     visitorMbti: mbti,
     visitorBirthdate: birthdate,
+    visitorIsLunar: isLunar,
     visitorBirthTime: birthTime,
   });
 
@@ -55,6 +57,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     visitorName: name,
     visitorMbti: mbti,
     visitorBirthdate: birthdate,
+    visitorIsLunar: isLunar,
     visitorBirthTime: birthTime ?? null,
     visitorElement: result.visitorElement,
     visitorElementDistribution: result.distribution,

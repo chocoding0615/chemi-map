@@ -3,15 +3,11 @@
 import { useState } from "react";
 
 export interface AdvancedSettingsValue {
-  calendarType: "solar" | "lunar";
-  isLeapMonth: boolean;
   longitudeCorrection: boolean;
   longitude: string;
 }
 
 export const DEFAULT_ADVANCED_SETTINGS: AdvancedSettingsValue = {
-  calendarType: "solar",
-  isLeapMonth: false,
   longitudeCorrection: true,
   longitude: "",
 };
@@ -22,6 +18,7 @@ interface AdvancedSettingsProps {
 }
 
 // /saju 입력 폼의 L4(접이식) 고급 설정 — 기본 접힘 상태로, 초심자 시야를 어지럽히지 않는다(여우.md v2).
+// 양력/음력 선택은 BirthDatePicker 쪽으로 옮겨서(전역 적용), 여기는 경도보정 + 자시 안내만 남는다.
 export default function AdvancedSettings({ value, onChange }: AdvancedSettingsProps) {
   const [open, setOpen] = useState(false);
 
@@ -36,7 +33,7 @@ export default function AdvancedSettings({ value, onChange }: AdvancedSettingsPr
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center justify-between px-4 py-2.5 text-xs font-semibold text-brown-soft/90"
       >
-        <span>⚙️ 고급 설정 (음력·경도보정)</span>
+        <span>⚙️ 고급 설정 (경도보정)</span>
         <span className="text-brown-soft/40">{open ? "접기 ▲" : "펼치기 ▼"}</span>
       </button>
 
@@ -83,43 +80,6 @@ export default function AdvancedSettings({ value, onChange }: AdvancedSettingsPr
                   예: 서울 126.98 · 부산 129.08 · 모르면 비워두면 한반도 평균(127.5°)으로 계산해요.
                 </p>
               </div>
-            )}
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold text-brown">양력 / 음력</label>
-            <div className="grid grid-cols-2 gap-2">
-              {(
-                [
-                  { key: "solar", label: "양력" },
-                  { key: "lunar", label: "음력" },
-                ] as const
-              ).map((opt) => (
-                <button
-                  key={opt.key}
-                  type="button"
-                  onClick={() => patch({ calendarType: opt.key })}
-                  aria-pressed={value.calendarType === opt.key}
-                  className={`rounded-lg py-2 text-xs font-semibold transition active:scale-95 ${
-                    value.calendarType === opt.key
-                      ? "bg-gradient-to-b from-coral to-coral-dark text-white shadow-sm"
-                      : "bg-white text-brown-soft ring-1 ring-brown/10 hover:bg-apricot"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-            {value.calendarType === "lunar" && (
-              <label className="mt-2 flex items-center gap-2 text-xs text-brown-soft">
-                <input
-                  type="checkbox"
-                  checked={value.isLeapMonth}
-                  onChange={(e) => patch({ isLeapMonth: e.target.checked })}
-                  className="h-4 w-4 rounded border-brown/20 accent-coral"
-                />
-                윤달이에요
-              </label>
             )}
           </div>
 

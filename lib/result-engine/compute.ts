@@ -16,6 +16,7 @@ export interface ComputeResultInput {
   visitorName: string;
   visitorMbti: string;
   visitorBirthdate: string; // ISO yyyy-mm-dd
+  visitorIsLunar?: boolean;
   visitorBirthTime?: string; // "HH:mm", optional
 }
 
@@ -46,7 +47,9 @@ export interface ComputeResultOutput {
 export function computeResult(input: ComputeResultInput): ComputeResultOutput {
   const ownerTemperament = mbtiToTemperament(input.ownerMbti);
   const visitorTemperament = mbtiToTemperament(input.visitorMbti);
-  const profile = calculateElementProfile(input.visitorBirthdate, input.visitorBirthTime);
+  const profile = calculateElementProfile(input.visitorBirthdate, input.visitorBirthTime, {
+    isLunar: input.visitorIsLunar || undefined,
+  });
 
   const element = ELEMENT_BANK[profile.dominant];
   const variantIndex = pickVariant(`${input.visitorName}-${input.visitorBirthdate}`, element.blurbs.length);

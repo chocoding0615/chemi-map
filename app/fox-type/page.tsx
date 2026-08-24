@@ -19,6 +19,7 @@ interface PageResult extends FoxTypeResult {
 
 export default function FoxTypePage() {
   const [birthdate, setBirthdate] = useState("");
+  const [isLunar, setIsLunar] = useState(false);
   const [mbti, setMbti] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<PageResult | null>(null);
@@ -44,7 +45,7 @@ export default function FoxTypePage() {
       return;
     }
     setError("");
-    const { distribution } = calculateElementProfile(birthdate);
+    const { distribution } = calculateElementProfile(birthdate, undefined, { isLunar: isLunar || undefined });
     const foxType = getFoxType({ distribution, mbti: mbti || undefined });
     setResult({ ...foxType, distribution });
     awardForAction("foxtype");
@@ -93,7 +94,7 @@ export default function FoxTypePage() {
         >
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
-            <BirthDatePicker value={birthdate} onChange={setBirthdate} />
+            <BirthDatePicker value={birthdate} onChange={setBirthdate} isLunar={isLunar} onLunarChange={setIsLunar} />
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-brown">
