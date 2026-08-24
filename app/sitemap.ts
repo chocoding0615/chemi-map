@@ -19,6 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/diary",
     "/terms",
     "/privacy",
+    "/policy/wallet",
   ];
 
   const fortuneRoutes = FORTUNE_CATEGORY_ORDER.map((category) => `/fortune/${category}`);

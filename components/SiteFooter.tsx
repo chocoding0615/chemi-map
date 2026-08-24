@@ -16,6 +16,9 @@ export default function SiteFooter() {
           <Link href="/privacy" className="underline underline-offset-2 hover:text-brown-soft/80">
             개인정보처리방침
           </Link>
+          <Link href="/policy/wallet" className="underline underline-offset-2 hover:text-brown-soft/80">
+            잔디 이용안내
+          </Link>
         </div>
       </div>
     </footer>

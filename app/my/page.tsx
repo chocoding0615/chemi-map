@@ -131,6 +131,9 @@ export default async function MyPage({ searchParams }: MyPageProps) {
                   <Link href="/privacy" className="underline underline-offset-2">
                     개인정보처리방침
                   </Link>
+                  <Link href="/policy/wallet" className="underline underline-offset-2">
+                    잔디 이용안내
+                  </Link>
                 </div>
               </div>
             </>

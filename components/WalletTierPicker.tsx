@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { WALLET_TIERS } from "@/lib/walletTiers";
 import { chargeFreeWallet } from "@/lib/freeCharge";
 
@@ -54,6 +55,12 @@ export default function WalletTierPicker() {
         })}
       </div>
       {error && <p className="mt-2 text-center text-xs font-semibold text-coral-dark">{error}</p>}
+      <Link
+        href="/policy/wallet"
+        className="mt-3 block text-center text-[10px] text-brown-soft/40 underline underline-offset-2"
+      >
+        잔디 유효기간·환불 안내
+      </Link>
     </div>
   );
 }
