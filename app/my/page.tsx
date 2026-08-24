@@ -118,10 +118,6 @@ export default async function MyPage({ searchParams }: MyPageProps) {
                 <WalletTierPicker />
               </div>
 
-              <MyReportList uid={session.uid} />
-
-              <MyActivityList uid={session.uid} />
-
               <AdminEntry uid={session.uid} />
 
               <p className="mt-6 text-center text-[10px] text-brown-soft/30">계정 ID: {session.uid}</p>
@@ -138,6 +134,16 @@ export default async function MyPage({ searchParams }: MyPageProps) {
                 </div>
               </div>
             </>
+          )
+        }
+        historyTab={
+          !session ? (
+            <p className="mt-2 text-center text-sm text-brown-soft">로그인하면 결제·사용 내역을 볼 수 있어요.</p>
+          ) : (
+            <div className="w-full">
+              <MyReportList uid={session.uid} />
+              <MyActivityList uid={session.uid} />
+            </div>
           )
         }
       />
