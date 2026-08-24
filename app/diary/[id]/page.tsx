@@ -24,7 +24,7 @@ export default async function DiaryDetailPage({ params }: DiaryDetailPageProps) 
   if (!entry) notFound();
 
   return (
-    <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16">
+    <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-16">
       <FoxMascot size={56} prop="heart" />
       <p className="mt-4 text-xs font-semibold text-lavender-dark">{entry.dateLabel}</p>
       <h1 className="mt-1 text-center text-2xl font-extrabold tracking-tight text-brown">

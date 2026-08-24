@@ -10,7 +10,7 @@ export default async function AdminPage() {
 
   if (!session) {
     return (
-      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16 text-center">
+      <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-16 text-center">
         <p className="text-sm font-semibold text-brown-soft">로그인이 필요해요.</p>
         <Link href="/my" className="mt-3 text-xs font-bold text-coral-dark underline underline-offset-2">
           마이페이지로 가기
@@ -21,7 +21,7 @@ export default async function AdminPage() {
 
   if (!(await isAdmin(session.uid))) {
     return (
-      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16 text-center">
+      <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-16 text-center">
         <p className="text-sm font-semibold text-brown-soft">이 페이지에 접근할 권한이 없어요.</p>
       </div>
     );
@@ -30,7 +30,7 @@ export default async function AdminPage() {
   const [overview, users] = await Promise.all([getAdminOverview(), listAllUsers()]);
 
   return (
-    <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-12">
+    <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-12">
       <h1 className="text-2xl font-extrabold tracking-tight text-brown">관리자</h1>
 
       <AdminTabs

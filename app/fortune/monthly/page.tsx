@@ -41,7 +41,7 @@ export default function MonthlyFortunePage() {
   const fortune = hydrated ? getMonthlyFortune(birthdate, monthISO) : null;
 
   return (
-    <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16">
+    <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-16">
       <FoxMascot size={56} />
       <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-brown">이달의 기운</h1>
       <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft">

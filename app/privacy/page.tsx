@@ -2,7 +2,7 @@ export const metadata = { title: "개인정보처리방침 · 여우점" };
 
 export default function PrivacyPage() {
   return (
-    <div className="mx-auto w-full max-w-[480px] flex-1 px-6 py-16">
+    <div className="mx-auto w-full max-w-[480px] md:max-w-2xl flex-1 px-6 py-16">
       <h1 className="text-xl font-extrabold text-brown">개인정보처리방침</h1>
       <p className="mt-4 rounded-2xl bg-white p-5 text-sm leading-relaxed text-brown-soft shadow-sm ring-1 ring-brown/5">
         개인정보처리방침을 준비하고 있어요. 카카오·네이버 로그인 시 닉네임·프로필 사진만

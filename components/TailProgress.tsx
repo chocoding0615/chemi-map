@@ -25,13 +25,13 @@ export default function TailProgress() {
   }, []);
 
   if (!progress) {
-    return <div className="mx-auto h-14 w-full max-w-[480px]" />;
+    return <div className="mx-auto h-14 w-full max-w-[480px] md:max-w-2xl" />;
   }
 
   const { tails, pct, remain } = deriveTailState(progress.exp);
 
   return (
-    <div className="mx-auto flex w-full max-w-[480px] items-center gap-3 px-6 pt-3">
+    <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl items-center gap-3 px-6 pt-3">
       <span className="shrink-0 text-3xl">🦊</span>
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between text-xs">

@@ -17,7 +17,7 @@ export default async function SajuLlmReportPage({ params }: ReportPageProps) {
   if (!report) notFound();
 
   return (
-    <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col px-6 py-10">
+    <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col px-6 py-10">
       <Link href="/my" className="text-xs font-semibold text-brown-soft/60">
         ← 마이페이지로
       </Link>

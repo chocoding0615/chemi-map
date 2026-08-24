@@ -137,7 +137,7 @@ export default function SajuPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16">
+    <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-16">
       {!result && (
         <>
           <FoxMascot size={56} prop="scroll" />

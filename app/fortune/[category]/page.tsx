@@ -30,7 +30,7 @@ export default async function FortuneCategoryPage({ params }: FortuneCategoryPag
   const entry = FORTUNE_CATEGORIES[category];
 
   return (
-    <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16">
+    <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-16">
       <FoxMascot size={56} prop={entry.inputKind === "twoBirthdates" ? "heart" : "brush"} />
       <span className="mt-3 text-3xl">{entry.icon}</span>
       <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-brown">{entry.nameKo}</h1>

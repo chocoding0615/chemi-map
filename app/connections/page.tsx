@@ -7,7 +7,7 @@ export const metadata = { title: "여우 마을 · 여우점" };
 
 export default function ConnectionsPage() {
   return (
-    <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16">
+    <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-16">
       <FoxMascot size={64} prop="heart" />
       <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-brown">여우 마을</h1>
       <p className="mt-3 text-center text-sm leading-relaxed text-brown-soft">

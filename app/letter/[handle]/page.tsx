@@ -20,7 +20,7 @@ export default async function LetterHandlePage({ params }: LetterHandlePageProps
   if (!resolved) notFound();
 
   return (
-    <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-16">
+    <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-16">
       <FoxMascot size={56} prop="heart" />
       <h1 className="mt-4 text-center text-2xl font-extrabold tracking-tight text-brown">
         {resolved.nickname}님에게

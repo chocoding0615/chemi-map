@@ -8,7 +8,7 @@ export default function Home() {
   const diaryPreview = DIARY_ENTRIES.slice(0, 3);
 
   return (
-    <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center px-6 py-14">
+    <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-14">
       {/* 히어로 */}
       <FoxMascot size={72} prop="star" />
       <p

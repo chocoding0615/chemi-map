@@ -14,7 +14,7 @@ export default function BottomTabBar() {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-brown/10 bg-white shadow-[0_-2px_12px_rgba(255,159,90,0.12)]"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="mx-auto flex h-16 max-w-[480px] items-stretch justify-between px-1">
+      <div className="mx-auto flex h-16 max-w-[480px] md:max-w-2xl items-stretch justify-between px-1">
         {TABS.map((tab) => {
           const active = isTabActive(pathname, tab.href);
           return (
