@@ -7,7 +7,10 @@ export default function AppHeader() {
       <Link href="/" className="flex items-center gap-1.5 text-sm font-extrabold text-brown">
         🦊 여우점
       </Link>
-      <NavControls />
+      <div className="flex items-center gap-2">
+        <span className="rounded-full bg-coral px-2 py-0.5 text-[10px] font-bold tracking-wide text-white">BETA</span>
+        <NavControls />
+      </div>
     </header>
   );
 }

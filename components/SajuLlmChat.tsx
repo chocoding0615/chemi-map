@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { chargeFreeWallet } from "@/lib/freeCharge";
 
 interface ChatEntry {
   role: "user" | "assistant";
@@ -19,6 +20,21 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
   const [freeRemaining, setFreeRemaining] = useState(freeQuestionsTotal);
   const [insufficient, setInsufficient] = useState<{ balance: number; required: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [charging, setCharging] = useState(false);
+  const [chargeError, setChargeError] = useState<string | null>(null);
+
+  async function handleFreeCharge() {
+    setCharging(true);
+    setChargeError(null);
+    const result = await chargeFreeWallet();
+    if (!result.ok) {
+      setChargeError(result.error);
+      setCharging(false);
+      return;
+    }
+    setInsufficient(null);
+    setCharging(false);
+  }
 
   async function handleSend() {
     const question = input.trim();
@@ -39,6 +55,7 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
         const data = (await res.json()) as { balance: number; required: number };
         setInsufficient({ balance: data.balance, required: data.required });
         setMessages((prev) => prev.slice(0, -1));
+        setInput(question);
         return;
       }
       if (!res.ok) throw new Error();
@@ -47,6 +64,7 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
       setFreeRemaining(data.freeRemaining);
     } catch {
       setError("답변을 받아오지 못했어요. 다시 시도해주세요.");
+      setInput(question);
       setMessages((prev) => prev.slice(0, -1));
     } finally {
       setSending(false);
@@ -77,9 +95,19 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
       {sending && <div className="mt-2 h-16 animate-pulse rounded-lg bg-brown/5" />}
 
       {insufficient && (
-        <p className="mt-2 text-center text-xs font-semibold text-coral-dark">
-          🌱 잔디가 부족해요 (보유 {insufficient.balance} · 필요 {insufficient.required})
-        </p>
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={handleFreeCharge}
+            disabled={charging}
+            className="w-full rounded-lg border border-dashed border-coral bg-white/50 py-2 text-center text-xs font-bold text-coral-dark transition active:scale-95 hover:bg-white disabled:opacity-60"
+          >
+            {charging
+              ? "충전 중..."
+              : `🌱 잔디가 부족해요 (보유 ${insufficient.balance} · 필요 ${insufficient.required}) · 눌러서 충전`}
+          </button>
+          {chargeError && <p className="mt-1 text-center text-xs font-semibold text-coral-dark">{chargeError}</p>}
+        </div>
       )}
       {error && <p className="mt-2 text-center text-xs font-semibold text-coral-dark">{error}</p>}
 

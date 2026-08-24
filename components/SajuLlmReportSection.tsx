@@ -6,6 +6,7 @@ import SimpleMarkdown from "./SimpleMarkdown";
 import SajuLlmChat from "./SajuLlmChat";
 import type { SajuReportInput } from "@/lib/result-engine/sajuPrompt";
 import { SAJU_LLM_REPORT_PRICE_KRW, SAJU_LLM_CHAT_FREE_QUESTIONS } from "@/lib/sajuLlmPricing";
+import { chargeFreeWallet } from "@/lib/freeCharge";
 
 type WalletState = { status: "loading" } | { status: "guest" } | { status: "ready"; balance: number };
 type ResultState =
@@ -18,6 +19,26 @@ type ResultState =
 export default function SajuLlmReportSection({ input }: { input: SajuReportInput }) {
   const [wallet, setWallet] = useState<WalletState>({ status: "loading" });
   const [result, setResult] = useState<ResultState>({ phase: "idle" });
+  const [charging, setCharging] = useState(false);
+  const [chargeError, setChargeError] = useState<string | null>(null);
+
+  async function handleFreeCharge() {
+    setCharging(true);
+    setChargeError(null);
+    const chargeResult = await chargeFreeWallet();
+    if (!chargeResult.ok) {
+      setChargeError(chargeResult.error);
+      setCharging(false);
+      return;
+    }
+    const res = await fetch("/api/user/wallet");
+    const data = (await res.json()) as { loggedIn: boolean; ticketBalance?: number };
+    if (data.loggedIn) {
+      setWallet({ status: "ready", balance: data.ticketBalance ?? 0 });
+      setResult({ phase: "idle" });
+    }
+    setCharging(false);
+  }
 
   useEffect(() => {
     fetch("/api/user/wallet")
@@ -81,15 +102,20 @@ export default function SajuLlmReportSection({ input }: { input: SajuReportInput
       )}
 
       {result.phase === "insufficient" && (
-        <Link
-          href="/my"
-          className="mt-4 flex w-full flex-col items-center justify-center rounded-2xl border border-dashed border-coral bg-white/50 py-3 text-center text-sm font-bold text-coral-dark transition active:scale-95 hover:bg-white"
-        >
-          <span>🌱 잔디가 부족해요</span>
-          <span className="mt-0.5 text-[11px] font-normal text-brown-soft/90">
-            보유 🌱{result.balance.toLocaleString()} · 필요 🌱{result.required.toLocaleString()} · 충전하러 가기
-          </span>
-        </Link>
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={handleFreeCharge}
+            disabled={charging}
+            className="flex w-full flex-col items-center justify-center rounded-2xl border border-dashed border-coral bg-white/50 py-3 text-center text-sm font-bold text-coral-dark transition active:scale-95 hover:bg-white disabled:opacity-60"
+          >
+            <span>{charging ? "충전 중..." : "🌱 잔디가 부족해요 · 눌러서 충전하기"}</span>
+            <span className="mt-0.5 text-[11px] font-normal text-brown-soft/90">
+              보유 🌱{result.balance.toLocaleString()} · 필요 🌱{result.required.toLocaleString()}
+            </span>
+          </button>
+          {chargeError && <p className="mt-1.5 text-center text-xs font-semibold text-coral-dark">{chargeError}</p>}
+        </div>
       )}
 
       {result.phase === "error" && <p className="mt-3 text-xs font-semibold text-coral-dark">{result.message}</p>}

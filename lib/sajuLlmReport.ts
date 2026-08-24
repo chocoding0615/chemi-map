@@ -31,6 +31,40 @@ export async function getSajuLlmReport(uid: string, reportId: string): Promise<S
   return snap.data() as SajuLlmReportDoc;
 }
 
+export interface SajuLlmReportSummary extends SajuLlmReportDoc {
+  id: string;
+  createdAt: string;
+}
+
+// 마이페이지 "이전 운세보기"용 — 리포트 본문 없이 목록에 필요한 필드만.
+export async function listSajuLlmReports(uid: string, limit = 20): Promise<SajuLlmReportSummary[]> {
+  const snap = await getDb()
+    .collection("users")
+    .doc(uid)
+    .collection("sajuLlmReports")
+    .orderBy("createdAt", "desc")
+    .limit(limit)
+    .get();
+  return snap.docs.map((doc) => {
+    const data = doc.data() as SajuLlmReportDoc & { createdAt?: { toDate: () => Date } };
+    return { ...data, id: doc.id, createdAt: (data.createdAt?.toDate() ?? new Date()).toISOString() };
+  });
+}
+
+// 잔디는 지금 무료 충전이라(실제 결제 연동 전) 신규 리포트 생성 횟수 자체를 하루 단위로
+// 제한해둔다 — 캐시된 리포트 재조회는 여기 안 걸림(LLM 재호출이 아니라서 비용 없음).
+export async function countTodayReports(uid: string): Promise<number> {
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const snap = await getDb()
+    .collection("users")
+    .doc(uid)
+    .collection("sajuLlmReports")
+    .where("createdAt", ">=", startOfToday)
+    .get();
+  return snap.size;
+}
+
 export async function saveSajuLlmReport(uid: string, reportId: string, input: SajuReportInput, reportText: string): Promise<void> {
   await getDb()
     .collection("users")

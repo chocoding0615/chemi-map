@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { chargeFreeWallet } from "@/lib/freeCharge";
 
 interface WalletPayButtonProps {
   priceKrw: number;
@@ -24,6 +25,26 @@ export default function WalletPayButton({
   const [purchasing, setPurchasing] = useState(false);
   const [insufficient, setInsufficient] = useState<{ balance: number; required: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [charging, setCharging] = useState(false);
+  const [chargeError, setChargeError] = useState<string | null>(null);
+
+  async function handleFreeCharge() {
+    setCharging(true);
+    setChargeError(null);
+    const result = await chargeFreeWallet();
+    if (!result.ok) {
+      setChargeError(result.error);
+      setCharging(false);
+      return;
+    }
+    const res = await fetch("/api/user/wallet");
+    const data = (await res.json()) as { loggedIn: boolean; ticketBalance?: number };
+    if (data.loggedIn) {
+      setWallet({ status: "ready", balance: data.ticketBalance ?? 0 });
+      setInsufficient(null);
+    }
+    setCharging(false);
+  }
 
   useEffect(() => {
     fetch("/api/user/wallet")
@@ -74,15 +95,20 @@ export default function WalletPayButton({
 
   if (insufficient) {
     return (
-      <Link
-        href="/my"
-        className="mt-5 flex w-full flex-col items-center justify-center rounded-2xl border border-dashed border-coral bg-white/50 py-3 text-center text-sm font-bold text-coral-dark transition active:scale-95 hover:bg-white"
-      >
-        <span>🌱 잔디가 부족해요</span>
-        <span className="mt-0.5 text-[11px] font-normal text-brown-soft/90">
-          보유 🌱{insufficient.balance.toLocaleString()} · 필요 🌱{insufficient.required.toLocaleString()} · 충전하러 가기
-        </span>
-      </Link>
+      <div className="mt-5 w-full">
+        <button
+          type="button"
+          onClick={handleFreeCharge}
+          disabled={charging}
+          className="flex w-full flex-col items-center justify-center rounded-2xl border border-dashed border-coral bg-white/50 py-3 text-center text-sm font-bold text-coral-dark transition active:scale-95 hover:bg-white disabled:opacity-60"
+        >
+          <span>{charging ? "충전 중..." : "🌱 잔디가 부족해요 · 눌러서 충전하기"}</span>
+          <span className="mt-0.5 text-[11px] font-normal text-brown-soft/90">
+            보유 🌱{insufficient.balance.toLocaleString()} · 필요 🌱{insufficient.required.toLocaleString()}
+          </span>
+        </button>
+        {chargeError && <p className="mt-1.5 text-center text-xs font-semibold text-coral-dark">{chargeError}</p>}
+      </div>
     );
   }
 

@@ -3,7 +3,15 @@ import { getSession } from "@/lib/session";
 import { chargeWallet } from "@/lib/wallet";
 import { callLLM } from "@/lib/llm";
 import { buildSajuFactSheet, SAJU_REPORT_SYSTEM_PROMPT, type SajuReportInput } from "@/lib/result-engine/sajuPrompt";
-import { getSajuLlmReport, saveSajuLlmReport, makeReportId, SAJU_LLM_REPORT_PRICE_KRW } from "@/lib/sajuLlmReport";
+import {
+  getSajuLlmReport,
+  saveSajuLlmReport,
+  makeReportId,
+  countTodayReports,
+  SAJU_LLM_REPORT_PRICE_KRW,
+} from "@/lib/sajuLlmReport";
+
+const DAILY_REPORT_LIMIT = 5;
 import { MBTI_TYPES } from "@/lib/result-engine/temperament";
 
 function parseInput(body: unknown): SajuReportInput | null {
@@ -39,6 +47,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { ok: false, balance: session.ticketBalance, required: SAJU_LLM_REPORT_PRICE_KRW },
       { status: 402 }
+    );
+  }
+
+  const todayCount = await countTodayReports(session.uid);
+  if (todayCount >= DAILY_REPORT_LIMIT) {
+    return NextResponse.json(
+      { error: "오늘 생성 가능한 AI 리포트 횟수를 다 쓰셨어요. 내일 다시 시도해주세요." },
+      { status: 429 }
     );
   }
 
