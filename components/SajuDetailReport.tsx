@@ -4,18 +4,19 @@ import { useState } from "react";
 import { calculateSajuDetail, type Gender } from "@/lib/result-engine/sajuDetail";
 import { TEN_GOD_MEANING } from "@/lib/content/tenGods";
 import { getDayMasterEntry, getGyeokgukEntry, getGapjaEntry, getYongsinEntry } from "@/lib/content/sajuBank";
-import { ELEMENT_BANK } from "@/lib/result-engine/elements";
+import { ELEMENT_BANK, type AdvancedBirthOptions } from "@/lib/result-engine/elements";
 
 interface SajuDetailReportProps {
   label: string;
   birthdate: string;
   birthTime?: string;
   gender: Gender;
+  advanced?: AdvancedBirthOptions;
 }
 
-export default function SajuDetailReport({ label, birthdate, birthTime, gender }: SajuDetailReportProps) {
+export default function SajuDetailReport({ label, birthdate, birthTime, gender, advanced }: SajuDetailReportProps) {
   const [expanded, setExpanded] = useState(false);
-  const detail = calculateSajuDetail(birthdate, birthTime, gender);
+  const detail = calculateSajuDetail(birthdate, birthTime, gender, advanced);
   const dayMasterEntry = getDayMasterEntry(detail.dayMaster, detail.strength);
   const gyeokgukEntry = getGyeokgukEntry(detail.dominantGroup);
   const currentLuckGapja = detail.currentLuckPillar ? getGapjaEntry(detail.currentLuckPillar.korean) : undefined;

@@ -22,6 +22,15 @@ export interface ElementProfile {
   pillarText: string;
 }
 
+// /saju 입력 폼의 "고급 설정"(음력/양력, 경도보정)에서만 쓰는 선택적 옵션.
+// 전부 undefined면 manseryeok 기본값(양력·보정 없음)과 동일 — 기존 호출부는 영향 없음.
+export interface AdvancedBirthOptions {
+  isLunar?: boolean;
+  isLeapMonth?: boolean;
+  /** 출생지 경도(동경). 지정하면 진태양시 보정을 적용한다. */
+  longitude?: number;
+}
+
 // manseryeok의 ElementPair.stem/branch는 이미 오행 한글 라벨('목'/'화'/'토'/'금'/'수')이다.
 const ELEMENT_LABEL_TO_KEY: Record<string, ElementKey> = {
   목: "wood",
@@ -42,12 +51,24 @@ const EMPTY_DISTRIBUTION = (): Record<ElementKey, number> => ({
 // 생년월일(+선택적 출생시간)의 사주팔자를 계산해 오행 분포를 낸다.
 // 출생시간이 없으면 시주는 계산에서 제외(hour/minute은 자정 경계에 영향 없는 정오로
 // 고정 — dayBoundary 기본값 'midnight'에서는 일주가 시각과 무관하게 날짜로만 결정된다).
-export function calculateElementProfile(birthdate: string, birthTime?: string): ElementProfile {
+export function calculateElementProfile(
+  birthdate: string,
+  birthTime?: string,
+  advanced?: AdvancedBirthOptions
+): ElementProfile {
   const [year, month, day] = birthdate.split("-").map(Number);
   const hasTimeInput = Boolean(birthTime);
   const [hour, minute] = hasTimeInput ? birthTime!.split(":").map(Number) : [12, 0];
 
-  const pillars = calculateFourPillars({ year, month, day, hour, minute });
+  const pillars = calculateFourPillars({
+    year,
+    month,
+    day,
+    hour,
+    minute,
+    ...(advanced?.isLunar ? { isLunar: true, isLeapMonth: advanced.isLeapMonth } : {}),
+    ...(advanced?.longitude !== undefined ? { trueSolarTime: { longitude: advanced.longitude } } : {}),
+  });
 
   const distribution = EMPTY_DISTRIBUTION();
   const count = (pair: { stem: string; branch: string }) => {

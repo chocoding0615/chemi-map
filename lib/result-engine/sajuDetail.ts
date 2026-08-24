@@ -1,5 +1,5 @@
 import { calculateFourPillars, getHeavenlyStemElement, type TenGod } from "manseryeok";
-import { calculateElementProfile, type ElementKey } from "./elements";
+import { calculateElementProfile, type AdvancedBirthOptions, type ElementKey } from "./elements";
 
 // /saju + 9개 운세 카테고리의 "상세(유료)" 섹션 전용 — manseryeok이 calculateFourPillars()
 // 안에서 이미 계산해서 반환하는 십신(tenGods)·대운(luckPillars)을 새로 뽑아 쓴다.
@@ -62,12 +62,26 @@ const EMPTY_TEN_GOD_COUNTS = (): Record<TenGod, number> => ({
   정인: 0,
 });
 
-export function calculateSajuDetail(birthdate: string, birthTime: string | undefined, gender: Gender): SajuDetailFacts {
+export function calculateSajuDetail(
+  birthdate: string,
+  birthTime: string | undefined,
+  gender: Gender,
+  advanced?: AdvancedBirthOptions
+): SajuDetailFacts {
   const [year, month, day] = birthdate.split("-").map(Number);
   const hasTimeInput = Boolean(birthTime);
   const [hour, minute] = hasTimeInput ? birthTime!.split(":").map(Number) : [12, 0];
 
-  const pillars = calculateFourPillars({ year, month, day, hour, minute, gender });
+  const pillars = calculateFourPillars({
+    year,
+    month,
+    day,
+    hour,
+    minute,
+    gender,
+    ...(advanced?.isLunar ? { isLunar: true, isLeapMonth: advanced.isLeapMonth } : {}),
+    ...(advanced?.longitude !== undefined ? { trueSolarTime: { longitude: advanced.longitude } } : {}),
+  });
 
   const counts = EMPTY_TEN_GOD_COUNTS();
   counts[pillars.tenGods.year.stem]++;
@@ -123,7 +137,7 @@ export function calculateSajuDetail(birthdate: string, birthTime: string | undef
   const currentYearGapja = `${thisYearPillars.year.heavenlyStem}${thisYearPillars.year.earthlyBranch}`;
 
   // 용신: 사주 오행 분포에서 가장 부족한 기운을 보태 균형을 맞춰주는 오행으로 본다(단순화된 통용 기준).
-  const { distribution } = calculateElementProfile(birthdate, birthTime);
+  const { distribution } = calculateElementProfile(birthdate, birthTime, advanced);
   const yongsinElement = (Object.entries(distribution) as [ElementKey, number][]).sort(
     (a, b) => a[1] - b[1]
   )[0][0];

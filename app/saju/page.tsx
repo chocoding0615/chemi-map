@@ -13,9 +13,15 @@ import SajuDetailReport from "@/components/SajuDetailReport";
 import MbtiBehaviorSection from "@/components/MbtiBehaviorSection";
 import SajuLlmReportSection from "@/components/SajuLlmReportSection";
 import ProfileLoadModal from "@/components/ProfileLoadModal";
+import AdvancedSettings, { DEFAULT_ADVANCED_SETTINGS, type AdvancedSettingsValue } from "@/components/AdvancedSettings";
 import type { ProfileDoc } from "@/lib/profileTypes";
 import type { MbtiType } from "@/lib/result-engine/temperament";
-import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
+import {
+  calculateElementProfile,
+  ELEMENT_BANK,
+  type ElementKey,
+  type AdvancedBirthOptions,
+} from "@/lib/result-engine/elements";
 import {
   getPersonalityReading,
   getBalanceInsight,
@@ -45,6 +51,15 @@ interface SajuResult {
   birthTime: string;
   gender: "male" | "female";
   mbti: MbtiType | "";
+  advancedOptions: AdvancedBirthOptions;
+}
+
+function toAdvancedOptions(settings: AdvancedSettingsValue): AdvancedBirthOptions {
+  return {
+    isLunar: settings.calendarType === "lunar" || undefined,
+    isLeapMonth: settings.calendarType === "lunar" ? settings.isLeapMonth : undefined,
+    longitude: settings.longitudeCorrection ? (settings.longitude ? Number(settings.longitude) : 127.5) : undefined,
+  };
 }
 
 export default function SajuPage() {
@@ -53,6 +68,7 @@ export default function SajuPage() {
   const [gender, setGender] = useState<"male" | "female" | "">("");
   const [birthTime, setBirthTime] = useState("");
   const [mbti, setMbti] = useState("");
+  const [advancedSettings, setAdvancedSettings] = useState<AdvancedSettingsValue>(DEFAULT_ADVANCED_SETTINGS);
   const [error, setError] = useState("");
   const [result, setResult] = useState<SajuResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -90,7 +106,8 @@ export default function SajuPage() {
     // 버튼이 바뀌는 게 사용자에게 실제로 보인다(그렇지 않으면 결과로
     // 즉시 바뀌어서 "눌렀는데 반응이 없나?" 하는 인상을 줄 수 있다).
     requestAnimationFrame(() => {
-      const profile = calculateElementProfile(birthdate, birthTime || undefined);
+      const advancedOptions = toAdvancedOptions(advancedSettings);
+      const profile = calculateElementProfile(birthdate, birthTime || undefined, advancedOptions);
       const seed = `${birthdate}-${gender}-${birthTime}-saju`;
       const personality = getPersonalityReading(profile.dominant, seed);
       const teaser = personality.temperament.split(".")[0] + ".";
@@ -111,6 +128,7 @@ export default function SajuPage() {
         birthTime,
         gender,
         mbti: mbti as MbtiType | "",
+        advancedOptions,
       });
       setSubmitting(false);
       awardForAction("saju");
@@ -190,6 +208,7 @@ export default function SajuPage() {
             </label>
             <MbtiSelect value={mbti} onChange={setMbti} />
           </div>
+          <AdvancedSettings value={advancedSettings} onChange={setAdvancedSettings} />
           {error && <p className="text-sm font-medium text-red-500">{error}</p>}
           <button
             type="submit"
@@ -283,6 +302,7 @@ export default function SajuPage() {
                 birthdate={result.birthdate}
                 birthTime={result.birthTime || undefined}
                 gender={result.gender}
+                advanced={result.advancedOptions}
               />
 
               {result.mbti && <MbtiBehaviorSection mbti={result.mbti} seed={`${result.birthdate}-${result.mbti}`} />}
