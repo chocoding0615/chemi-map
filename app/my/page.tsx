@@ -2,11 +2,13 @@ import Link from "next/link";
 import FoxMascot from "@/components/FoxMascot";
 import LoginButtons from "@/components/LoginButtons";
 import LogoutButton from "@/components/LogoutButton";
-import ChargeButton from "@/components/ChargeButton";
+import WalletTierPicker from "@/components/WalletTierPicker";
 import NicknameEditForm from "@/components/NicknameEditForm";
 import MyPageTabs from "@/components/MyPageTabs";
 import { getSession, type Provider } from "@/lib/session";
 import { getDb } from "@/lib/firebaseAdmin";
+import { isAdmin } from "@/lib/admin";
+import { listSajuLlmReports } from "@/lib/sajuLlmReport";
 
 const PROVIDER_BADGE: Record<Provider, { label: string; bg: string; fg: string }> = {
   kakao: { label: "카카오로 가입", bg: "#FEE500", fg: "#181600" },
@@ -113,10 +115,16 @@ export default async function MyPage({ searchParams }: MyPageProps) {
               <div className="mt-8 w-full rounded-2xl bg-gradient-to-b from-lavender/30 to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
                 <p className="text-xs font-semibold text-brown-soft/90">🌱 잔디</p>
                 <p className="mt-1 text-3xl font-extrabold text-brown">{session.ticketBalance.toLocaleString()}개</p>
-                <ChargeButton />
+                <WalletTierPicker />
               </div>
 
+              <MyReportList uid={session.uid} />
+
               <MyActivityList uid={session.uid} />
+
+              <AdminEntry uid={session.uid} />
+
+              <p className="mt-6 text-center text-[10px] text-brown-soft/30">계정 ID: {session.uid}</p>
 
               <div className="mt-10 w-full space-y-2 rounded-2xl bg-white p-5 text-center ring-1 ring-brown/5">
                 <p className="text-xs font-semibold text-brown-soft/90">고객센터: 준비 중</p>
@@ -154,6 +162,49 @@ async function LetterInboxBanner({ uid }: { uid: string }) {
       ) : (
         <span className="text-lg text-brown-soft/30">→</span>
       )}
+    </Link>
+  );
+}
+
+async function MyReportList({ uid }: { uid: string }) {
+  const reports = await listSajuLlmReports(uid, 10);
+  if (reports.length === 0) return null;
+
+  return (
+    <div className="mt-8 w-full">
+      <h2 className="text-sm font-semibold text-brown-soft/90">이전 운세보기 (AI 상세 사주)</h2>
+      <div className="mt-3 space-y-2">
+        {reports.map((report) => (
+          <Link
+            key={report.id}
+            href={`/my/reports/${report.id}`}
+            className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm ring-1 ring-brown/5 transition active:scale-[0.98] hover:bg-cream/40"
+          >
+            <div className="min-w-0">
+              <p className="truncate text-sm font-bold text-brown">
+                {report.name ? `${report.name}님의 사주` : "나의 사주"}
+              </p>
+              <p className="mt-0.5 text-[11px] text-brown-soft/40">
+                {report.birthdate} · {new Date(report.createdAt).toLocaleDateString("ko-KR")}
+              </p>
+            </div>
+            <span className="shrink-0 text-lg text-brown-soft/30">→</span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+async function AdminEntry({ uid }: { uid: string }) {
+  if (!(await isAdmin(uid))) return null;
+  return (
+    <Link
+      href="/admin"
+      className="mt-8 flex w-full items-center justify-between rounded-2xl bg-brown p-4 text-white shadow-sm transition active:scale-[0.98]"
+    >
+      <span className="text-sm font-bold">🛠️ 관리자 페이지</span>
+      <span className="text-lg text-white/50">→</span>
     </Link>
   );
 }
