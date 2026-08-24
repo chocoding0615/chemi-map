@@ -162,7 +162,7 @@ export default function FortuneForm({ category }: FortuneFormProps) {
 
   function applyProfile(profile: ProfileDoc) {
     const next: PersonInput = {
-      name: profile.label,
+      name: profile.name,
       birthdate: profile.birthdate,
       gender: profile.gender,
       birthTime: profile.birthTime,

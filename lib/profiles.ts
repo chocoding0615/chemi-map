@@ -29,13 +29,14 @@ export async function deleteProfile(uid: string, id: string): Promise<void> {
 export function parseProfileInput(body: unknown): ProfileInput | null {
   if (!body || typeof body !== "object") return null;
   const b = body as Record<string, unknown>;
-  const label = typeof b.label === "string" ? b.label.trim().slice(0, 20) : "";
+  const name = typeof b.name === "string" ? b.name.trim().slice(0, 20) : "";
+  const relation = typeof b.relation === "string" ? b.relation.trim().slice(0, 10) : "";
   const birthdate = typeof b.birthdate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(b.birthdate) ? b.birthdate : "";
   const gender = b.gender === "male" || b.gender === "female" ? b.gender : null;
-  if (!label || !birthdate || !gender) return null;
+  if (!name || !relation || !birthdate || !gender) return null;
 
   const birthTime = typeof b.birthTime === "string" && /^\d{2}:\d{2}$/.test(b.birthTime) ? b.birthTime : "";
   const mbti = typeof b.mbti === "string" ? b.mbti.slice(0, 4) : "";
 
-  return { label, birthdate, gender, birthTime, mbti };
+  return { name, relation, birthdate, gender, birthTime, mbti };
 }

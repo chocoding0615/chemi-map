@@ -56,7 +56,9 @@ export default function ProfileLoadModal({ onSelect, onClose }: ProfileLoadModal
                 className="flex w-full items-center justify-between rounded-xl bg-cream/60 p-3 text-left transition active:scale-[0.98] hover:bg-cream"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-bold text-brown">{profile.label}</p>
+                  <p className="truncate text-sm font-bold text-brown">
+                    {profile.name} <span className="font-normal text-brown-soft/50">· {profile.relation}</span>
+                  </p>
                   <p className="mt-0.5 text-[11px] text-brown-soft/50">
                     {profile.birthdate} {profile.birthTime && `· ${profile.birthTime}`} ·{" "}
                     {profile.gender === "male" ? "남" : "여"}

@@ -60,7 +60,7 @@ export default function SajuPage() {
   const resultRef = useRef<HTMLDivElement>(null);
 
   function applyProfile(profile: ProfileDoc) {
-    setName(profile.label);
+    setName(profile.name);
     setBirthdate(profile.birthdate);
     setGender(profile.gender);
     setBirthTime(profile.birthTime);

@@ -2,7 +2,8 @@
 // lib/profiles.ts(서버 전용, firebase-admin 의존)를 직접 import하면 번들이 깨지므로
 // 타입은 여기서 따로 빼서 공유한다.
 export interface ProfileInput {
-  label: string;
+  name: string;
+  relation: string;
   birthdate: string;
   birthTime: string;
   gender: "male" | "female";

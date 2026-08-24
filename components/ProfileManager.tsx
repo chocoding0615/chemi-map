@@ -7,7 +7,7 @@ import MbtiSelect from "./MbtiSelect";
 import ConfirmModal from "./ConfirmModal";
 import type { ProfileDoc, ProfileInput } from "@/lib/profileTypes";
 
-const EMPTY_FORM: ProfileInput = { label: "", birthdate: "", birthTime: "", gender: "male", mbti: "" };
+const EMPTY_FORM: ProfileInput = { name: "", relation: "", birthdate: "", birthTime: "", gender: "male", mbti: "" };
 
 export default function ProfileManager() {
   const [profiles, setProfiles] = useState<ProfileDoc[] | null>(null);
@@ -31,14 +31,21 @@ export default function ProfileManager() {
   }
 
   function startEdit(profile: ProfileDoc) {
-    setForm({ label: profile.label, birthdate: profile.birthdate, birthTime: profile.birthTime, gender: profile.gender, mbti: profile.mbti });
+    setForm({
+      name: profile.name,
+      relation: profile.relation,
+      birthdate: profile.birthdate,
+      birthTime: profile.birthTime,
+      gender: profile.gender,
+      mbti: profile.mbti,
+    });
     setEditingId(profile.id);
     setError(null);
   }
 
   async function handleSave() {
-    if (!form.label.trim() || !form.birthdate || !form.gender) {
-      setError("이름·생년월일·성별은 꼭 입력해주세요.");
+    if (!form.name.trim() || !form.relation.trim() || !form.birthdate || !form.gender) {
+      setError("이름·관계·생년월일·성별은 꼭 입력해주세요.");
       return;
     }
     setSaving(true);
@@ -97,7 +104,9 @@ export default function ProfileManager() {
           <div key={profile.id} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-brown/5">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <p className="truncate text-sm font-bold text-brown">{profile.label}</p>
+                <p className="truncate text-sm font-bold text-brown">
+                  {profile.name} <span className="font-normal text-brown-soft/50">· {profile.relation}</span>
+                </p>
                 <p className="mt-0.5 text-[11px] text-brown-soft/50">
                   {profile.birthdate} {profile.birthTime && `· ${profile.birthTime}`} ·{" "}
                   {profile.gender === "male" ? "남" : "여"}
@@ -127,15 +136,27 @@ export default function ProfileManager() {
 
       {editingId ? (
         <div className="mt-3 space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-brown/5">
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold text-brown-soft">이름/별칭</label>
-            <input
-              value={form.label}
-              onChange={(e) => setForm({ ...form, label: e.target.value })}
-              maxLength={20}
-              placeholder="예: 나, 엄마, 여자친구"
-              className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown placeholder:text-brown/30 focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
-            />
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-brown-soft">이름</label>
+              <input
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                maxLength={20}
+                placeholder="홍길동"
+                className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown placeholder:text-brown/30 focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-brown-soft">관계</label>
+              <input
+                value={form.relation}
+                onChange={(e) => setForm({ ...form, relation: e.target.value })}
+                maxLength={10}
+                placeholder="나, 엄마, 친구"
+                className="w-full rounded-xl border border-brown/10 bg-cream px-4 py-2.5 text-sm text-brown placeholder:text-brown/30 focus:border-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-coral/30"
+              />
+            </div>
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-brown-soft">생년월일</label>
@@ -206,7 +227,7 @@ export default function ProfileManager() {
 
       {deleteTarget && (
         <ConfirmModal
-          title={`"${deleteTarget.label}" 정보를 삭제할까요?`}
+          title={`"${deleteTarget.name}(${deleteTarget.relation})" 정보를 삭제할까요?`}
           confirmLabel="삭제"
           pending={saving}
           onConfirm={handleDelete}
