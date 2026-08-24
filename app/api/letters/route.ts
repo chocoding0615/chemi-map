@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/firebaseAdmin";
+import { countLetters, MAX_LETTERS_PER_INBOX } from "@/lib/letters";
 import { FieldValue } from "firebase-admin/firestore";
 
 export async function POST(request: NextRequest) {
@@ -22,6 +23,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "존재하지 않는 편지함이에요." }, { status: 404 });
   }
   const { uid: toUid } = handleSnap.data() as { uid: string };
+
+  const currentCount = await countLetters(toUid);
+  if (currentCount >= MAX_LETTERS_PER_INBOX) {
+    return NextResponse.json({ error: "편지함이 가득 찼어요. 나중에 다시 보내주세요." }, { status: 400 });
+  }
 
   await db.collection("users").doc(toUid).collection("letters").add({
     senderName,

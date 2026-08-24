@@ -3,20 +3,32 @@ import LoginButtons from "@/components/LoginButtons";
 import CopyLinkButton from "@/components/CopyLinkButton";
 import SecretLetterCard from "@/components/SecretLetterCard";
 import DeleteLetterButton from "@/components/DeleteLetterButton";
+import BragShareCard from "@/components/BragShareCard";
 import { getSession } from "@/lib/session";
 import { getOrCreateLetterHandle } from "@/lib/letterHandle";
-import { hasUnlockedAnyLetter } from "@/lib/letters";
+import { hasUnlockedAnyLetter, MAX_LETTERS_PER_INBOX } from "@/lib/letters";
 import { getDb } from "@/lib/firebaseAdmin";
 
 const PREVIEW_LEN = 15;
 const UNLOCK_PRICE_KRW = 2;
+const MYSTERY_LABEL = "???";
 
 interface LetterRow {
   id: string;
-  senderName: string;
+  displaySenderName: string;
   isUnlocked: boolean;
   content: string | null;
   preview: string;
+  createdAtLabel: string;
+}
+
+function formatKoreanDateTime(date: Date): string {
+  const y = date.getFullYear();
+  const m = date.getMonth() + 1;
+  const d = date.getDate();
+  const hh = String(date.getHours()).padStart(2, "0");
+  const mm = String(date.getMinutes()).padStart(2, "0");
+  return `${y}년 ${m}월 ${d}일 ${hh}:${mm}`;
 }
 
 async function loadLetters(uid: string): Promise<LetterRow[]> {
@@ -29,14 +41,23 @@ async function loadLetters(uid: string): Promise<LetterRow[]> {
     .get();
 
   return snap.docs.map((doc) => {
-    const data = doc.data() as { senderName: string; content: string; unlockedAt: unknown };
+    const data = doc.data() as {
+      senderName: string;
+      content: string;
+      unlockedAt: unknown;
+      createdAt?: { toDate: () => Date };
+    };
     const isUnlocked = Boolean(data.unlockedAt);
+    const createdAtLabel = formatKoreanDateTime(data.createdAt?.toDate() ?? new Date());
     return {
       id: doc.id,
-      senderName: data.senderName,
+      // 잠긴 상태에서는 보낸 사람이 실제로 이름을 적었더라도 절대 미리 보여주지 않는다 —
+      // "이거 누구지?" 하는 궁금증이 핵심 재미 포인트라, 열기 전까지는 항상 물음표로만 표시.
+      displaySenderName: isUnlocked ? data.senderName : MYSTERY_LABEL,
       isUnlocked,
       content: isUnlocked ? data.content : null,
       preview: isUnlocked ? "" : data.content.slice(0, PREVIEW_LEN),
+      createdAtLabel,
     };
   });
 }
@@ -67,6 +88,7 @@ async function LetterInboxBody({ uid }: { uid: string }) {
   const handle = await getOrCreateLetterHandle(uid);
   const letters = await loadLetters(uid);
   const unreadCount = letters.filter((l) => !l.isUnlocked).length;
+  const unlockedCount = letters.filter((l) => l.isUnlocked).length;
   const nextUnlockIsFree = !(await hasUnlockedAnyLetter(uid));
 
   return (
@@ -77,10 +99,20 @@ async function LetterInboxBody({ uid }: { uid: string }) {
         <CopyLinkButton path={`/letter/${handle}`} label="링크 복사하기" />
       </div>
 
+      {unlockedCount > 0 && <BragShareCard handle={handle} unlockedCount={unlockedCount} />}
+
       <div className="mt-8 w-full">
-        <h2 className="text-sm font-semibold text-brown-soft/90">
-          받은 편지 {letters.length > 0 && unreadCount > 0 && `· 안 읽은 편지 ${unreadCount}개`}
-        </h2>
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-sm font-semibold text-brown-soft/90">
+            받은 편지 {letters.length > 0 && `· 총 ${letters.length}통`}
+            {unreadCount > 0 && ` · 안 읽은 편지 ${unreadCount}개`}
+          </h2>
+        </div>
+        {letters.length >= MAX_LETTERS_PER_INBOX && (
+          <p className="mt-1 text-[11px] text-brown-soft/40">
+            편지함이 가득 찼어요({MAX_LETTERS_PER_INBOX}통). 몇 개 정리하면 새 편지를 더 받을 수 있어요.
+          </p>
+        )}
         {letters.length === 0 ? (
           <p className="mt-3 rounded-2xl bg-white p-5 text-center text-sm text-brown-soft/90 ring-1 ring-brown/5">
             아직 도착한 편지가 없어요. 링크를 공유해보세요!
@@ -91,17 +123,19 @@ async function LetterInboxBody({ uid }: { uid: string }) {
               letter.isUnlocked ? (
                 <div key={letter.id} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-brown/5">
                   <div className="flex items-center justify-between">
-                    <p className="text-[11px] font-semibold text-coral-dark">{letter.senderName}</p>
+                    <p className="text-[11px] font-semibold text-coral-dark">{letter.displaySenderName}</p>
                     <DeleteLetterButton id={letter.id} />
                   </div>
                   <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed text-brown">{letter.content}</p>
+                  <p className="mt-1.5 text-[10px] text-brown-soft/30">{letter.createdAtLabel}</p>
                 </div>
               ) : (
                 <SecretLetterCard
                   key={letter.id}
                   id={letter.id}
-                  senderName={letter.senderName}
+                  senderName={letter.displaySenderName}
                   preview={letter.preview}
+                  createdAtLabel={letter.createdAtLabel}
                   priceKrw={nextUnlockIsFree ? 0 : UNLOCK_PRICE_KRW}
                 />
               )

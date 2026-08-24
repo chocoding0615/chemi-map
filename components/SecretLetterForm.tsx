@@ -22,10 +22,13 @@ export default function SecretLetterForm({ handle }: { handle: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ handle, senderName, content }),
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || "전송에 실패했어요. 다시 시도해주세요.");
+      }
       setSent(true);
-    } catch {
-      setError("전송에 실패했어요. 다시 시도해주세요.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "전송에 실패했어요. 다시 시도해주세요.");
     } finally {
       setSending(false);
     }
