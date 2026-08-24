@@ -46,6 +46,9 @@ export default function WalletTierPicker() {
               <span className="mt-1.5 text-xs font-bold text-coral-dark">
                 {chargingId === tier.id ? "충전 중..." : `${tier.priceKrw.toLocaleString()}원`}
               </span>
+              <span className="mt-0.5 text-[10px] text-brown-soft/40">
+                개당 {Math.round(tier.priceKrw / total).toLocaleString()}원
+              </span>
             </button>
           );
         })}
