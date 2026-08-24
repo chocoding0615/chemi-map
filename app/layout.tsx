@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Gaegu } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import SiteFooter from "@/components/SiteFooter";
 import TailProgress from "@/components/TailProgress";
 import ToastHost from "@/components/ToastHost";
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <SiteFooter />
         </div>
         <BottomTabBar />
+        <Analytics />
       </body>
     </html>
   );
