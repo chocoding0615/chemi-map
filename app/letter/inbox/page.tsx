@@ -6,11 +6,10 @@ import DeleteLetterButton from "@/components/DeleteLetterButton";
 import BragShareCard from "@/components/BragShareCard";
 import { getSession } from "@/lib/session";
 import { getOrCreateLetterHandle } from "@/lib/letterHandle";
-import { hasUnlockedAnyLetter, MAX_LETTERS_PER_INBOX } from "@/lib/letters";
+import { hasUnlockedAnyLetter, MAX_LETTERS_PER_INBOX, LETTER_UNLOCK_PRICE_KRW } from "@/lib/letters";
 import { getDb } from "@/lib/firebaseAdmin";
 
 const PREVIEW_LEN = 15;
-const UNLOCK_PRICE_KRW = 2;
 const MYSTERY_LABEL = "???";
 
 interface LetterRow {
@@ -136,7 +135,7 @@ async function LetterInboxBody({ uid }: { uid: string }) {
                   senderName={letter.displaySenderName}
                   preview={letter.preview}
                   createdAtLabel={letter.createdAtLabel}
-                  priceKrw={nextUnlockIsFree ? 0 : UNLOCK_PRICE_KRW}
+                  priceKrw={nextUnlockIsFree ? 0 : LETTER_UNLOCK_PRICE_KRW}
                 />
               )
             )}
