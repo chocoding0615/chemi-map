@@ -118,6 +118,20 @@ export default async function MyPage({ searchParams }: MyPageProps) {
                 <WalletTierPicker />
               </div>
 
+              <Link
+                href="/subscribe"
+                className="mt-4 flex w-full items-center justify-between rounded-2xl bg-gradient-to-b from-coral to-coral-dark p-4 text-white shadow-sm transition active:scale-[0.98]"
+              >
+                <span className="flex items-center gap-3">
+                  <span className="text-2xl">🌅</span>
+                  <span className="text-left">
+                    <span className="block text-sm font-bold">여우점 프리미엄</span>
+                    <span className="block text-[11px] text-white/80">아침 알림 + AI 리포트 무제한</span>
+                  </span>
+                </span>
+                <span className="text-lg text-white/60">→</span>
+              </Link>
+
               <AdminEntry uid={session.uid} />
 
               <p className="mt-6 text-center text-[10px] text-brown-soft/30">계정 ID: {session.uid}</p>
