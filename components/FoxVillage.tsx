@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { getProgress, deriveTailState, type FoxProgress } from "@/lib/progress";
 import { onProgressChanged } from "@/lib/notify";
 import { VILLAGE_ITEMS } from "@/lib/content/villageItems";
+import { getMyMapSlug } from "@/lib/myMap";
 
 export default function FoxVillage() {
   const [progress, setProgress] = useState<FoxProgress | null>(null);
   const [unlockedIds, setUnlockedIds] = useState<Set<string> | null>(null);
-  const [inviteMessage, setInviteMessage] = useState(false);
+  const [inviteMessage, setInviteMessage] = useState<string | null>(null);
 
   useEffect(() => {
     function refresh() {
@@ -39,11 +40,21 @@ export default function FoxVillage() {
     });
   }
 
-  function handleInvite() {
-    // TODO: 실제 초대 링크 생성·공유는 lib/myMap.ts + ShareBanner 패턴과 연결해서
-    // "친구가 링크로 들어와 놀러가면 손님 여우가 마을에 추가된다"로 완성할 예정.
-    setInviteMessage(true);
-    setTimeout(() => setInviteMessage(false), 3000);
+  async function handleInvite() {
+    const slug = getMyMapSlug();
+    if (!slug) {
+      // 아직 만든 지도가 없으면 바로 아래 "새 지도 만들기" 폼으로 안내한다.
+      document.getElementById("map-create-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    const url = `${window.location.origin}/m/${slug}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setInviteMessage("링크를 복사했어요! 친구에게 보내보세요 🦊");
+    } catch {
+      setInviteMessage(url);
+    }
+    setTimeout(() => setInviteMessage(null), 4000);
   }
 
   if (!progress || !unlockedIds) {
@@ -113,9 +124,7 @@ export default function FoxVillage() {
         친구 초대하기
       </button>
       {inviteMessage && (
-        <p className="mt-2 text-center text-xs leading-relaxed text-coral-dark">
-          친구가 놀러 오면 마을에 손님 여우가 나타나고, 꼬리 성장에도 도움이 돼요! (연결 준비 중)
-        </p>
+        <p className="mt-2 text-center text-xs leading-relaxed text-coral-dark">{inviteMessage}</p>
       )}
 
       <p className="mt-3 text-center text-[10px] text-brown-soft/30">

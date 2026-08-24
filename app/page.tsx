@@ -22,16 +22,18 @@ export default function Home() {
         아기 구미호 복실이가 그려주는 나의 사주
       </p>
 
-      {/* 대표 서비스 */}
-      <div className="mt-8 grid w-full grid-cols-2 gap-3">
-        <Link
-          href="/saju"
-          className="rounded-2xl bg-gradient-to-b from-coral to-coral-dark p-4 text-center text-white shadow-lg shadow-coral-dark/25 transition active:scale-95"
-        >
-          <span className="text-2xl">🔮</span>
-          <p className="mt-1 text-sm font-bold">내 사주 풀이</p>
-          <p className="mt-0.5 text-[11px] text-white/80">{FORTUNE_FREE_PREVIEW ? "지금은 무료" : "요약 무료"}</p>
-        </Link>
+      {/* L1: 대표 액션 — 화면에서 가장 크고 진한 카드 */}
+      <Link
+        href="/saju"
+        className="mt-8 flex w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-b from-coral to-coral-dark py-8 text-center text-white shadow-xl shadow-coral-dark/25 transition active:scale-95"
+      >
+        <span className="text-4xl">🔮</span>
+        <p className="mt-2 text-lg font-extrabold">내 사주 풀이</p>
+        <p className="mt-1 text-xs text-white/80">{FORTUNE_FREE_PREVIEW ? "지금은 무료" : "요약 무료"}</p>
+      </Link>
+
+      {/* L2: 핵심 보조 — L1보다 작게, 외곽선형 2열 */}
+      <div className="mt-4 grid w-full grid-cols-2 gap-3">
         <Link
           href="/connections"
           className="rounded-2xl bg-white p-4 text-center shadow-sm ring-1 ring-brown/10 transition active:scale-95 hover:bg-apricot/40"
@@ -40,22 +42,15 @@ export default function Home() {
           <p className="mt-1 text-sm font-bold text-brown">여우 마을</p>
           <p className="mt-0.5 text-[11px] text-brown-soft/90">무료 · 공유해보기</p>
         </Link>
-      </div>
-
-      {/* 무료 콘텐츠 배너 */}
-      <Link
-        href="/fox-type"
-        className="mt-4 flex w-full items-center justify-between rounded-2xl bg-gradient-to-b from-lavender/30 to-cream p-4 shadow-sm ring-1 ring-brown/5 transition active:scale-[0.98] hover:bg-lavender/20"
-      >
-        <span className="flex items-center gap-3">
+        <Link
+          href="/fox-type"
+          className="rounded-2xl bg-white p-4 text-center shadow-sm ring-1 ring-brown/10 transition active:scale-95 hover:bg-apricot/40"
+        >
           <span className="text-2xl">🦊</span>
-          <span>
-            <span className="block text-sm font-bold text-brown">나는 무슨 여우상일까</span>
-            <span className="block text-[11px] text-lavender-dark">무료 · 공유용</span>
-          </span>
-        </span>
-        <span className="text-lg text-brown-soft/30">→</span>
-      </Link>
+          <p className="mt-1 text-sm font-bold text-brown">여우상 보기</p>
+          <p className="mt-0.5 text-[11px] text-brown-soft/90">무료 · 공유용</p>
+        </Link>
+      </div>
 
       <Link
         href="/letter/inbox"
@@ -91,7 +86,11 @@ export default function Home() {
                   <Link
                     key={item.label}
                     href={item.href}
-                    className="flex flex-col items-center justify-center rounded-2xl bg-white p-4 text-center shadow-sm ring-1 ring-brown/5 transition active:scale-95 hover:bg-apricot/40"
+                    className={`flex flex-col items-center justify-center rounded-2xl p-4 text-center shadow-sm transition active:scale-95 ${
+                      item.emphasize
+                        ? "bg-apricot/40 ring-2 ring-coral/30 hover:bg-apricot/60"
+                        : "bg-white ring-1 ring-brown/5 hover:bg-apricot/40"
+                    }`}
                   >
                     <span className="text-2xl">{item.icon}</span>
                     <p className="mt-1 text-sm font-bold text-brown">{item.label}</p>

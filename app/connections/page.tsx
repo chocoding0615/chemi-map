@@ -26,7 +26,9 @@ export default function ConnectionsPage() {
 
         <MyMapBanner />
 
-        <p className="mt-6 w-full text-center text-xs font-semibold text-brown-soft/40">새 지도 만들기</p>
+        <p id="map-create-section" className="mt-6 w-full scroll-mt-8 text-center text-xs font-semibold text-brown-soft/40">
+          새 지도 만들기
+        </p>
         <div className="mt-3 w-full rounded-3xl bg-white p-6 shadow-xl shadow-brown/5 ring-1 ring-brown/5 sm:p-8">
           <MapCreateForm />
         </div>
