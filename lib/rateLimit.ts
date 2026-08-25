@@ -20,6 +20,8 @@ export const RATE_LIMITS = {
   letters: { endpoint: "letters", limit: 10, windowMs: 60 * 60 * 1000 },
   /** 인연지도 방명록 작성: 시간당 20건 */
   mapEntries: { endpoint: "map_entries", limit: 20, windowMs: 60 * 60 * 1000 },
+  /** 바이럴 테스트 플레이 기록: 시간당 60회 - 매크로로 분포 왜곡하는 것만 막는 수준 */
+  testPlays: { endpoint: "test_plays", limit: 60, windowMs: 60 * 60 * 1000 },
 } satisfies Record<string, RateLimitRule>;
 
 // 프록시 체인의 맨 앞이 실제 클라이언트 IP다. Vercel은 항상 x-forwarded-for를 세팅한다.

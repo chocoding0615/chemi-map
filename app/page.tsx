@@ -79,6 +79,21 @@ export default function Home() {
         <span className="text-lg text-brown-soft/30">→</span>
       </Link>
 
+      {/* 바이럴 심테 놀이터 — 유입 깔때기 */}
+      <Link
+        href="/test"
+        className="mt-3 flex w-full items-center justify-between rounded-2xl bg-gradient-to-b from-violet-100 to-purple-100 p-4 shadow-sm ring-1 ring-brown/5 transition active:scale-[0.98] hover:from-violet-200 hover:to-purple-200"
+      >
+        <span className="flex items-center gap-3">
+          <span className="text-2xl">🎯</span>
+          <span>
+            <span className="block text-sm font-bold text-brown">심테 놀이터</span>
+            <span className="block text-[11px] text-purple-400">과몰입 테스트 하고 결과 카드 저장!</span>
+          </span>
+        </span>
+        <span className="text-lg text-brown-soft/30">→</span>
+      </Link>
+
       {/* 운세 더 보기 — 그룹별 섹션 */}
       <div className="mt-10 w-full space-y-10">
         {FORTUNE_GROUPS.map((group) => (
