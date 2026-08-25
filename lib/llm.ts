@@ -12,24 +12,36 @@ export interface ChatMessage {
   content: string;
 }
 
-export async function callLLM(messages: ChatMessage[], maxTokens = 4000): Promise<string> {
+const DEFAULT_TIMEOUT_MS = 60_000;
+
+export async function callLLM(messages: ChatMessage[], maxTokens = 4000, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<string> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     throw new Error("OPENROUTER_API_KEY가 설정되지 않았어요. .env.local에 키를 추가해주세요.");
   }
 
-  const res = await fetch(OPENROUTER_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: process.env.OPENROUTER_MODEL || DEFAULT_MODEL,
-      messages,
-      max_tokens: maxTokens,
-    }),
-  });
+  let res: Response;
+  try {
+    res = await fetch(OPENROUTER_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: process.env.OPENROUTER_MODEL || DEFAULT_MODEL,
+        messages,
+        max_tokens: maxTokens,
+      }),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+  } catch (err) {
+    const isTimeout = err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
+    if (isTimeout) {
+      throw new Error("복실이가 답변을 만드는 데 시간이 너무 오래 걸려요. 잠시 후 다시 시도해주세요.");
+    }
+    throw err;
+  }
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
