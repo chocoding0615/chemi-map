@@ -187,6 +187,8 @@ export default function FortuneForm({ category }: FortuneFormProps) {
   const [error, setError] = useState("");
   const [result, setResult] = useState<FortuneResult | null>(null);
   const [loadTarget, setLoadTarget] = useState<"A" | "B" | null>(null);
+  // 택일(擇日) 전용: 무슨 목적의 길일을 고르는지 - 결과와 캐시키 모두에 반영된다.
+  const [taekilPurpose, setTaekilPurpose] = useState("");
 
   function applyProfile(profile: ProfileDoc) {
     const next: PersonInput = {
@@ -212,6 +214,10 @@ export default function FortuneForm({ category }: FortuneFormProps) {
     if (!isPair) {
       if (!personA.birthdate || !personA.gender) {
         setError("생년월일과 성별을 입력해주세요.");
+        return;
+      }
+      if (category.slug === "taekil" && !taekilPurpose) {
+        setError("무슨 날을 고르실지 선택해주세요.");
         return;
       }
       setError("");
@@ -302,6 +308,8 @@ export default function FortuneForm({ category }: FortuneFormProps) {
           birthTime: r.birthTime || undefined,
           gender: r.gender,
         },
+        // 택일은 목적까지 전송한다(JSON.stringify가 undefined는 자동으로 뺀다).
+        purpose: category.slug === "taekil" ? taekilPurpose : undefined,
       };
     }
     return {
@@ -471,6 +479,27 @@ export default function FortuneForm({ category }: FortuneFormProps) {
             </label>
             <GenderPicker value={personA.gender} onChange={(g) => setPersonA({ ...personA, gender: g })} />
           </div>
+          {category.slug === "taekil" && (
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold text-brown">
+                무슨 날을 고르세요? <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={taekilPurpose}
+                onChange={(e) => setTaekilPurpose(e.target.value)}
+                className="w-full rounded-xl border border-brown/10 bg-white px-4 py-2.5 text-sm text-brown focus:border-coral focus:outline-none focus:ring-2 focus:ring-coral/30"
+              >
+                <option value="">선택해주세요</option>
+                <option value="이사·입주">이사·입주</option>
+                <option value="결혼식">결혼식</option>
+                <option value="계약">계약</option>
+                <option value="개업·오픈">개업·오픈</option>
+                <option value="면접·시험">면접·시험</option>
+                <option value="여행 출발">여행 출발</option>
+                <option value="수술·치료">수술·치료</option>
+              </select>
+            </div>
+          )}
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-brown">
               태어난 시간 <span className="font-normal text-brown/40">(선택, 모르면 비워두세요)</span>

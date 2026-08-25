@@ -31,9 +31,17 @@ function personKey(p: FortunePersonInput): string {
   return [p.birthdate, p.birthTime || "na", p.gender, p.mbti || "na"].join("-");
 }
 
-export function makeReadingId(slug: CategorySlug, me: FortunePersonInput, partner?: FortunePersonInput): string {
+export function makeReadingId(
+  slug: CategorySlug,
+  me: FortunePersonInput,
+  partner?: FortunePersonInput,
+  purpose?: string
+): string {
   const parts = [slug, personKey(me)];
   if (partner) parts.push(personKey(partner));
+  // 택일처럼 같은 사람이라도 목적에 따라 결과가 달라지는 카테고리는 캐시키에 목적을 포함한다.
+  // (안 그러면 "이사"로 생성한 리딩이 "결혼식" 요청에서 그대로 재사용되는 버그가 된다.)
+  if (purpose?.trim()) parts.push(purpose.trim());
   return parts.join("_").replace(/[:/.]/g, "-");
 }
 

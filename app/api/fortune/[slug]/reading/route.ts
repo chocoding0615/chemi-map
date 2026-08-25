@@ -73,7 +73,11 @@ export async function POST(request: NextRequest, ctx: { params: Promise<{ slug: 
     pairInfo = parsePairInfo(body?.pairInfo) ?? undefined;
   }
 
-  const readingId = makeReadingId(slug, me, partner);
+  // 택일은 "무슨 날을 고르는지"가 결과를 바꾼다 - 프롬프트와 캐시키 둘 다에 반영한다.
+  const purpose =
+    typeof body?.purpose === "string" && body.purpose.trim() ? body.purpose.trim().slice(0, 20) : undefined;
+
+  const readingId = makeReadingId(slug, me, partner, purpose);
   const names = partner
     ? `${me.name?.trim() || "나"} / ${partner.name?.trim() || "상대"}`
     : me.name?.trim() || "나";
@@ -114,7 +118,7 @@ export async function POST(request: NextRequest, ctx: { params: Promise<{ slug: 
     readingText = await callLLM(
       [
         { role: "system", content: getCategorySystemPrompt(slug) },
-        { role: "user", content: buildCategoryUserMessage(me, partner, pairInfo) },
+        { role: "user", content: buildCategoryUserMessage(me, partner, pairInfo, purpose) },
       ],
       6000
     );

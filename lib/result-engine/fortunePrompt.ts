@@ -159,6 +159,7 @@ const CATEGORY_FOCUS: Record<CategorySlug, CategoryFocus> = {
     topic: "택일 (길일 고르기)",
     structure: `좋은 날을 고르는 일의 전문가로서 읽어줘.
 미래의 특정 날짜를 단정하지 말고, 이 사주에 맞는 "고르는 원칙"을 알려주는 데 집중해.
+사용자 메시지에 [택일 목적]이 적혀 있으면 그 목적 하나에만 집중하고, 없으면 여러 상황을 아울러 일반론으로.
 
 [출력 구조 - 제목 그대로 사용]
 ## 왜 날을 골라야 하는가
@@ -211,9 +212,14 @@ function toFactSheet(person: FortunePersonInput): string {
 export function buildCategoryUserMessage(
   person: FortunePersonInput,
   partner?: FortunePersonInput,
-  pairInfo?: PairInfo
+  pairInfo?: PairInfo,
+  purpose?: string
 ): string {
-  if (!partner) return toFactSheet(person);
+  // 택일처럼 "목적이 결과를 바꾸는" 카테고리용 - 있으면 프롬프트에 명시적으로 주입한다.
+  const purposeBlock = purpose?.trim()
+    ? "\n\n[택일 목적]\n- 이 사주에 맞는 길일을 아래 목적으로만 골라서 설명할 것: " + purpose.trim()
+    : "";
+  if (!partner) return toFactSheet(person) + purposeBlock;
 
   return (
     "[사람 A - 나]\n" +
@@ -223,7 +229,8 @@ export function buildCategoryUserMessage(
     "\n\n[궁합 정보]\n" +
     "- 궁합 점수: " + (pairInfo?.score ?? "?") + "점\n" +
     "- 궁합 유형: " + (pairInfo ? pairInfo.emoji + " " + pairInfo.label : "미계산") + "\n" +
-    "- MBTI 궁합: " + (pairInfo?.mbtiLabel || "미입력")
+    "- MBTI 궁합: " + (pairInfo?.mbtiLabel || "미입력") +
+    purposeBlock
   );
 }
 
