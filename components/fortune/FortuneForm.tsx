@@ -1,13 +1,11 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import ElementIcon from "@/components/ElementIcon";
 import MbtiSelect from "@/components/MbtiSelect";
-import MockPayGate from "@/components/MockPayGate";
 import BirthDatePicker from "@/components/BirthDatePicker";
 import BirthTimePicker from "@/components/BirthTimePicker";
-import SajuDetailReport from "@/components/SajuDetailReport";
-import SajuLlmReportSection from "@/components/SajuLlmReportSection";
+import CategoryReadingSection from "@/components/fortune/CategoryReadingSection";
 import ProfileLoadModal from "@/components/ProfileLoadModal";
 import type { ProfileDoc } from "@/lib/profileTypes";
 import { getCategoryBlurb, type FortuneCategory } from "@/lib/content/fortuneCategories";
@@ -24,6 +22,11 @@ import { markFortuneSeen } from "@/lib/foxRewards";
 import type { FortuneSeenId } from "@/lib/progress";
 import { registerBackHandler } from "@/lib/backHandler";
 import { withJosa } from "@/lib/josa";
+
+// 결과 화면 구조(2026-08 개편):
+// [무료 티저] 오행 아이콘 + 카테고리 블러브/조언/주의/행운정보 - 결정론적 엔진 즉시 표시
+// [유료] CategoryReadingSection - 카테고리 특화 AI 리딩(서버에서 선차감 후 생성, 캐시 재열람 무료)
+// 예전처럼 모든 카테고리에 내 사주풀이(SajuDetailReport)를 붙이지 않는다 - 사주풀이는 /saju 전용.
 
 interface FortuneFormProps {
   category: FortuneCategory;
@@ -60,7 +63,6 @@ type FortuneResult =
       luckyItem: string;
       name: string;
       birthdate: string;
-      advancedOptions: AdvancedBirthOptions;
       birthTime: string;
       gender: Gender;
     }
@@ -82,11 +84,9 @@ type FortuneResult =
       luckyColor: string;
       luckyItem: string;
       birthdateA: string;
-      advancedOptionsA: AdvancedBirthOptions;
       birthTimeA: string;
       genderA: Gender;
       birthdateB: string;
-      advancedOptionsB: AdvancedBirthOptions;
       birthTimeB: string;
       genderB: Gender;
     };
@@ -227,7 +227,6 @@ export default function FortuneForm({ category }: FortuneFormProps) {
         ...depth,
         name: personA.name.trim(),
         birthdate: personA.birthdate,
-        advancedOptions: advancedOptionsA,
         birthTime: personA.birthTime,
         gender: personA.gender as Gender,
       });
@@ -278,11 +277,9 @@ export default function FortuneForm({ category }: FortuneFormProps) {
       mbtiBlurb: mbtiCompat?.entry.blurb ?? "",
       ...depth,
       birthdateA: personA.birthdate,
-      advancedOptionsA,
       birthTimeA: personA.birthTime,
       genderA: personA.gender as Gender,
       birthdateB: personB.birthdate,
-      advancedOptionsB,
       birthTimeB: personB.birthTime,
       genderB: personB.gender as Gender,
     });
@@ -293,6 +290,40 @@ export default function FortuneForm({ category }: FortuneFormProps) {
     const trackedId: FortuneSeenId | null =
       slug === "love" ? "love" : slug === "career" ? "career" : slug === "gunghap" ? "compat" : null;
     if (trackedId) markFortuneSeen(trackedId);
+  }
+
+  // 카테고리 특화 AI 리딩 요청 바디 - 서버가 검증하므로 여기선 입력값을 그대로 옮긴다.
+  function buildReadingBody(r: FortuneResult): Record<string, unknown> {
+    if (r.kind === "single") {
+      return {
+        me: {
+          name: r.name || undefined,
+          birthdate: r.birthdate,
+          birthTime: r.birthTime || undefined,
+          gender: r.gender,
+        },
+      };
+    }
+    return {
+      me: {
+        name: r.nameA || undefined,
+        birthdate: r.birthdateA,
+        birthTime: r.birthTimeA || undefined,
+        gender: r.genderA,
+      },
+      partner: {
+        name: r.nameB || undefined,
+        birthdate: r.birthdateB,
+        birthTime: r.birthTimeB || undefined,
+        gender: r.genderB,
+      },
+      pairInfo: {
+        score: r.score,
+        label: r.label,
+        emoji: r.emoji,
+        mbtiLabel: r.mbtiLabel || undefined,
+      },
+    };
   }
 
   if (result) {
@@ -336,75 +367,38 @@ export default function FortuneForm({ category }: FortuneFormProps) {
           </>
         )}
 
-        <MockPayGate
-          productId={`fortune:${category.slug}`}
-          priceKrw={category.priceKrw}
-          category={category.nameKo}
-          title={`${category.nameKo} 상세 풀이`}
-        >
-          <div className="mt-4 space-y-3 text-left">
-            <p className="text-sm leading-relaxed text-brown-soft">{result.blurb}</p>
-            {result.kind === "pair" && result.mbtiBlurb && (
-              <p className="text-sm leading-relaxed text-brown-soft">{result.mbtiBlurb}</p>
-            )}
-            <div className="rounded-lg bg-mint/15 p-3">
-              <p className="text-xs font-bold text-mint-dark">💡 복실이의 조언</p>
-              <p className="mt-1 text-sm leading-relaxed text-brown-soft">{result.advice}</p>
+        <div className="mt-4 space-y-3 text-left">
+          <p className="text-sm leading-relaxed text-brown-soft">{result.blurb}</p>
+          {result.kind === "pair" && result.mbtiBlurb && (
+            <p className="text-sm leading-relaxed text-brown-soft">{result.mbtiBlurb}</p>
+          )}
+          <div className="rounded-lg bg-mint/15 p-3">
+            <p className="text-xs font-bold text-mint-dark">💡 복실이의 조언</p>
+            <p className="mt-1 text-sm leading-relaxed text-brown-soft">{result.advice}</p>
+          </div>
+          <div className="rounded-lg bg-lavender/15 p-3">
+            <p className="text-xs font-bold text-lavender-dark">⚠️ 이런 점은 조심하세요</p>
+            <p className="mt-1 text-sm leading-relaxed text-brown-soft">{result.caution}</p>
+          </div>
+          <div className="flex gap-2 text-center text-xs">
+            <div className="flex-1 rounded-lg bg-cream p-2">
+              <p className="font-bold text-coral-dark">행운의 색</p>
+              <p className="mt-0.5 text-brown-soft">{result.luckyColor}</p>
             </div>
-            <div className="rounded-lg bg-lavender/15 p-3">
-              <p className="text-xs font-bold text-lavender-dark">⚠️ 이런 점은 조심하세요</p>
-              <p className="mt-1 text-sm leading-relaxed text-brown-soft">{result.caution}</p>
-            </div>
-            <div className="flex gap-2 text-center text-xs">
-              <div className="flex-1 rounded-lg bg-cream p-2">
-                <p className="font-bold text-coral-dark">행운의 색</p>
-                <p className="mt-0.5 text-brown-soft">{result.luckyColor}</p>
-              </div>
-              <div className="flex-1 rounded-lg bg-cream p-2">
-                <p className="font-bold text-coral-dark">행운의 아이템</p>
-                <p className="mt-0.5 text-brown-soft">{result.luckyItem}</p>
-              </div>
+            <div className="flex-1 rounded-lg bg-cream p-2">
+              <p className="font-bold text-coral-dark">행운의 아이템</p>
+              <p className="mt-0.5 text-brown-soft">{result.luckyItem}</p>
             </div>
           </div>
+        </div>
 
-          {result.kind === "single" ? (
-            <SajuDetailReport
-              label={result.name || "나"}
-              birthdate={result.birthdate}
-              birthTime={result.birthTime || undefined}
-              gender={result.gender}
-              advanced={result.advancedOptions}
-            />
-          ) : (
-            <>
-              <SajuDetailReport
-                label={result.nameA || "나"}
-                birthdate={result.birthdateA}
-                birthTime={result.birthTimeA || undefined}
-                gender={result.genderA}
-                advanced={result.advancedOptionsA}
-              />
-              <SajuDetailReport
-                label={result.nameB || "상대"}
-                birthdate={result.birthdateB}
-                birthTime={result.birthTimeB || undefined}
-                gender={result.genderB}
-                advanced={result.advancedOptionsB}
-              />
-            </>
-          )}
-        </MockPayGate>
-
-        {result.kind === "single" && (
-          <SajuLlmReportSection
-            input={{
-              name: result.name || undefined,
-              birthdate: result.birthdate,
-              birthTime: result.birthTime || undefined,
-              gender: result.gender,
-            }}
-          />
-        )}
+        <CategoryReadingSection
+          slug={category.slug}
+          nameKo={category.nameKo}
+          icon={category.icon}
+          priceKrw={category.priceKrw}
+          requestBody={buildReadingBody(result)}
+        />
 
         <button
           type="button"
