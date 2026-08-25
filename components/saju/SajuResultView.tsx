@@ -44,6 +44,7 @@ export default function SajuResultView({ result, resultRef, onReset }: SajuResul
         </div>
 
         <MockPayGate
+          productId="saju-summary"
           priceKrw={SAJU_SUMMARY_PRICE_KRW}
           category="내 사주 풀이"
           title={`${ELEMENT_BANK[result.dominant].label}(${ELEMENT_BANK[result.dominant].hanja}) 기운 상세 풀이`}

@@ -3,9 +3,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { chargeFreeWallet } from "@/lib/freeCharge";
+import type { PurchaseProductId } from "@/lib/pricing";
 import ConfirmModal from "./ConfirmModal";
 
 interface WalletPayButtonProps {
+  /** /api/wallet/purchase 기본 경로를 쓸 때 서버가 실제 가격을 다시 계산하는 기준.
+   * purchaseUrl을 커스텀으로 넘겨서 서버가 자체적으로 가격을 정하는 경우(비밀편지 등)엔 안 써도 된다. */
+  productId?: PurchaseProductId;
   priceKrw: number;
   category: string;
   title: string;
@@ -16,6 +20,7 @@ interface WalletPayButtonProps {
 type WalletState = { status: "loading" } | { status: "guest" } | { status: "ready"; balance: number };
 
 export default function WalletPayButton({
+  productId,
   priceKrw,
   category,
   title,
@@ -66,7 +71,7 @@ export default function WalletPayButton({
       const res = await fetch(purchaseUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ category, title, priceKrw }),
+        body: JSON.stringify({ productId, category, title, priceKrw }),
       });
       if (res.status === 402) {
         const data = (await res.json()) as { balance: number; required: number };

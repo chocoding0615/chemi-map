@@ -53,7 +53,7 @@ export default function ResultCard({
       <p className="mt-4 text-sm leading-relaxed text-brown-soft">{affinityBlurb}</p>
       <p className="mt-2 text-sm leading-relaxed text-brown-soft">{elementBlurb}</p>
 
-      <MockPayGate priceKrw={0} category="인연 매칭" title={title}>
+      <MockPayGate productId="free" priceKrw={0} category="인연 매칭" title={title}>
         <div className="mt-5 space-y-3 rounded-xl bg-white/60 p-4 text-left">
           <p className="text-center text-xs font-semibold text-brown-soft/90">
             사주 상세 · {hasTimeInput ? "출생시간 포함" : "출생시간 미입력 (참고용)"}

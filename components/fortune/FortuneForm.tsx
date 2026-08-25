@@ -337,6 +337,7 @@ export default function FortuneForm({ category }: FortuneFormProps) {
         )}
 
         <MockPayGate
+          productId={`fortune:${category.slug}`}
           priceKrw={category.priceKrw}
           category={category.nameKo}
           title={`${category.nameKo} 상세 풀이`}
