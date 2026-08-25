@@ -71,11 +71,6 @@ function saveState(state: DailyCharmState): void {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-export function hasDrawnCharmToday(): boolean {
-  const state = readState();
-  return state.lastDrawDate === todayISO() && Boolean(state.lastResult);
-}
-
 export function getTodayDrawResult(): { charmId: string; message: string } | null {
   const state = readState();
   if (state.lastDrawDate !== todayISO() || !state.lastResult) return null;
