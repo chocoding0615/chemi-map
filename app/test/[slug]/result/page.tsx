@@ -2,18 +2,12 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import TestResultShare from "@/components/test/TestResultShare";
-import { getTestDef, resolveTestResult } from "@/lib/content/tests";
+import { getTestDef, resolveTestResult, clampTestScore, scoreToDisplayScore } from "@/lib/content/tests";
 import { getDb } from "@/lib/firebaseAdmin";
 
 interface Props {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ t?: string; s?: string; n?: string }>;
-}
-
-function clampScore(def: NonNullable<ReturnType<typeof getTestDef>>, s: number): number {
-  const first = def.results[0];
-  const last = def.results[def.results.length - 1];
-  return Math.min(Math.max(s, first.minScore), last.maxScore);
 }
 
 function decodeNickname(n?: string): string {
@@ -33,12 +27,12 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 
   const score = Number.parseInt(sp.s ?? "", 10);
   if (Number.isNaN(score)) return { title: `${def.title} | 여우점` };
-  const clamped = clampScore(def, score);
+  const clamped = clampTestScore(def, score);
   const result = resolveTestResult(def, clamped);
   const who = decodeNickname(sp.n);
   return {
     title: `${who ? `${who}님은 ` : ""}${result.name}! | ${def.title}`,
-    description: `${result.tagline} - ${who || "나"}의 점수는 ${clamped}점. 나도 해보기!`,
+    description: `${result.tagline} - ${who || "나"}의 점수는 ${scoreToDisplayScore(def, clamped)}점. 나도 해보기!`,
   };
 }
 
@@ -50,7 +44,7 @@ export default async function TestResultPage({ params, searchParams }: Props) {
   const rawScore = Number.parseInt(sp.s ?? "", 10);
   // 점수 파라미터가 없으면(직접 주소 친 경우 등) 퀴즈부터 다시 풀게 보낸다.
   if (Number.isNaN(rawScore)) redirect(`/test/${slug}`);
-  const score = clampScore(def, rawScore);
+  const score = clampTestScore(def, rawScore);
   const result = resolveTestResult(def, score);
 
   const nickname = decodeNickname(sp.n);
@@ -84,12 +78,13 @@ export default async function TestResultPage({ params, searchParams }: Props) {
       <div className="mt-6">
         <TestResultShare
           data={{
+            slug: def.slug,
             testTitle: def.title,
             emoji: result.emoji,
             name: result.name,
             tagline: result.tagline,
             nickname,
-            score,
+            score: scoreToDisplayScore(def, score),
             percent,
             theme: result.theme,
           }}

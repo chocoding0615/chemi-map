@@ -16,15 +16,19 @@ export function downloadBlob(blob: Blob, filename: string): void {
   URL.revokeObjectURL(url);
 }
 
-/** 파일 공유(Web Share)가 가능하면 이미지를 그대로 공유하고, 안 되면 페이지 링크를 클립보드에 복사한다. */
-export async function shareImageOrCopyLink(blob: Blob, filename: string, shareText: string): Promise<"shared" | "copied"> {
+/** 파일 공유(Web Share)가 가능하면 이미지+링크를 함께 공유하고, 안 되면 텍스트+링크를 클립보드에 복사한다.
+ * 링크가 없으면 이미지만 받은 친구는 정작 테스트를 하러 갈 방법이 없다 - 초대 링크(url)를
+ * 항상 텍스트에 함께 실어 보낸다(navigator.share의 url 필드는 files와 같이 쓰면 무시하는
+ * 브라우저가 많아, 텍스트에 직접 포함시키는 쪽이 더 안전하다). */
+export async function shareImageOrCopyLink(blob: Blob, filename: string, shareText: string, url: string): Promise<"shared" | "copied"> {
   const file = new File([blob], filename, { type: "image/png" });
+  const textWithLink = `${shareText} ${url}`;
   const nav = navigator as Navigator & { canShare?: (data: { files: File[] }) => boolean };
   if (nav.share && nav.canShare?.({ files: [file] })) {
-    await nav.share({ files: [file], text: shareText, title: "여우점" });
+    await nav.share({ files: [file], text: textWithLink, title: "여우점" });
     return "shared";
   }
-  await navigator.clipboard.writeText(`${shareText} ${window.location.origin}`);
+  await navigator.clipboard.writeText(textWithLink);
   return "copied";
 }
 

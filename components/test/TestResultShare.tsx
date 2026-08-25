@@ -19,6 +19,7 @@ const THEME_BG: Record<CardTheme, string> = {
 };
 
 export interface TestResultCardData {
+  slug: string;
   testTitle: string;
   emoji: string;
   name: string;
@@ -58,7 +59,10 @@ export default function TestResultShare({ data }: { data: TestResultCardData }) 
     setBusy("share");
     try {
       const blob = await makeBlob();
-      const res = await shareImageOrCopyLink(blob, `yeojujeom-${data.name}.png`, `${data.nickname || "나"}는 ${data.name}? 나도 해봐!`);
+      // 결과 페이지(내 점수) 링크가 아니라 테스트 시작 링크를 보내야 받은 사람이
+      // 바로 자기 결과를 볼 수 있다 - 이미지만 보내면 받은 사람은 참여할 방법이 없었다.
+      const inviteUrl = `${window.location.origin}/test/${data.slug}`;
+      const res = await shareImageOrCopyLink(blob, `yeojujeom-${data.name}.png`, `${data.nickname || "나"}는 ${data.name}? 나도 해봐!`, inviteUrl);
       notify({ kind: "normal", text: res === "shared" ? "공유했어요! 🎉" : "링크를 복사했어요! 🔗" });
     } catch (err) {
       if (!isUserCancelledShare(err)) notify({ kind: "normal", text: "공유에 실패했어요 😢" });

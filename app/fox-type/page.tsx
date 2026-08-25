@@ -77,7 +77,7 @@ export default function FoxTypePage() {
     setShareStatus("working");
     try {
       const blob = await captureNodeAsPng(cardRef.current);
-      const status = await shareImageOrCopyLink(blob, `foxjum-${result.element}.png`, `나는 ${result.label}! 🦊`);
+      const status = await shareImageOrCopyLink(blob, `foxjum-${result.element}.png`, `나는 ${result.label}! 🦊`, window.location.href);
       awardForAction("share");
       setShareStatus(status === "copied" ? "copied" : "idle");
       if (status === "copied") setTimeout(() => setShareStatus("idle"), 2000);

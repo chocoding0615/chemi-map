@@ -68,7 +68,7 @@ export default function DailyCharmPage() {
     setShareStatus("working");
     try {
       const blob = await captureNodeAsPng(cardRef.current);
-      const status = await shareImageOrCopyLink(blob, "foxjum-daily-charm.png", "오늘의 부적을 뽑았어요 🎴");
+      const status = await shareImageOrCopyLink(blob, "foxjum-daily-charm.png", "오늘의 부적을 뽑았어요 🎴", window.location.href);
       setShareStatus(status === "copied" ? "copied" : "idle");
       if (status === "copied") setTimeout(() => setShareStatus("idle"), 2000);
     } catch (err) {
