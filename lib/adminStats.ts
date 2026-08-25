@@ -15,6 +15,8 @@ export interface AdminUserRow {
   ticketBalance: number;
   isAdmin: boolean;
   createdAt: string;
+  /** 관리자 목록 화면에서만 숨김 처리된 유저 - 계정/데이터는 그대로 남아있다. */
+  hidden: boolean;
 }
 
 // 실제 결제 전이라 "결제 현황" 대신 지금 낼 수 있는 가장 정직한 지표(가입자 수,
@@ -135,6 +137,7 @@ export async function listAllUsers(limit = 200): Promise<AdminUserRow[]> {
         provider?: string;
         ticketBalance?: number;
         isAdmin?: boolean;
+        hiddenInAdminList?: boolean;
         createdAt?: { toDate: () => Date } | Date;
       };
       const createdAt = data.createdAt
@@ -148,6 +151,7 @@ export async function listAllUsers(limit = 200): Promise<AdminUserRow[]> {
         provider: data.provider ?? "",
         ticketBalance: data.ticketBalance ?? 0,
         isAdmin: data.isAdmin === true,
+        hidden: data.hiddenInAdminList === true,
         createdAt: createdAt.toISOString(),
       };
     })

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSession } from "@/lib/session";
-import { isAdmin } from "@/lib/admin";
+import { isAdmin, isEnvAdmin } from "@/lib/admin";
 import { getAdminOverview, getSpendingBreakdown, listAllUsers } from "@/lib/adminStats";
 import AdminTabs from "@/components/AdminTabs";
 import AdminAnalytics from "@/components/AdminAnalytics";
@@ -90,7 +90,12 @@ export default async function AdminPage() {
           </div>
         }
         analyticsTab={<AdminAnalytics byCategory={breakdown.byCategory} byAgeRange={breakdown.byAgeRange} />}
-        usersTab={<AdminUserList users={users} myUid={session.uid} />}
+        usersTab={
+          <AdminUserList
+            users={users.map((u) => ({ ...u, isEnvAdmin: isEnvAdmin(u.uid) }))}
+            myUid={session.uid}
+          />
+        }
       />
     </div>
   );
