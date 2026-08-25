@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { chargeFreeWallet } from "@/lib/freeCharge";
+import InsufficientBalanceCTA from "./common/InsufficientBalanceCTA";
 
 interface ChatEntry {
   role: "user" | "assistant";
@@ -24,8 +24,6 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
   const [insufficient, setInsufficient] = useState<{ balance: number; required: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sessionExpired, setSessionExpired] = useState(false);
-  const [charging, setCharging] = useState(false);
-  const [chargeError, setChargeError] = useState<string | null>(null);
 
   // 과거 대화 복원 — 조회에 실패해도(비로그인, 네트워크 오류 등) 조용히 넘어가고
   // freeRemaining은 prop 기본값(무료 질문 전체 개수)을 그대로 쓴다. 새 채팅은 그대로 가능해야 한다.
@@ -49,19 +47,6 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
     const interval = setInterval(() => setElapsedSeconds((s) => s + 1), 1000);
     return () => clearInterval(interval);
   }, [sending]);
-
-  async function handleFreeCharge() {
-    setCharging(true);
-    setChargeError(null);
-    const result = await chargeFreeWallet();
-    if (!result.ok) {
-      setChargeError(result.error);
-      setCharging(false);
-      return;
-    }
-    setInsufficient(null);
-    setCharging(false);
-  }
 
   async function handleSend() {
     const question = input.trim();
@@ -146,17 +131,7 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
 
       {insufficient && (
         <div className="mt-2">
-          <button
-            type="button"
-            onClick={handleFreeCharge}
-            disabled={charging}
-            className="w-full rounded-lg border border-dashed border-coral bg-white/50 py-2 text-center text-xs font-bold text-coral-dark transition active:scale-95 hover:bg-white disabled:opacity-60"
-          >
-            {charging
-              ? "충전 중..."
-              : `🌱 잔디가 부족해요 (보유 ${insufficient.balance} · 필요 ${insufficient.required}) · 눌러서 충전`}
-          </button>
-          {chargeError && <p className="mt-1 text-center text-xs font-semibold text-coral-dark">{chargeError}</p>}
+          <InsufficientBalanceCTA balance={insufficient.balance} required={insufficient.required} />
         </div>
       )}
       {error && <p className="mt-2 text-center text-xs font-semibold text-coral-dark">{error}</p>}

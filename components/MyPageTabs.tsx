@@ -4,11 +4,13 @@ import { useSearchParams } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import CollectionSection from "./CollectionSection";
 import ProfileManager from "./ProfileManager";
+import AdRewardSection from "./AdRewardSection";
 
-type TabId = "account" | "collection" | "profiles" | "history";
+type TabId = "account" | "collection" | "profiles" | "history" | "ads";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "account", label: "내 정보" },
+  { id: "ads", label: "광고보고 받기" },
   { id: "profiles", label: "기본정보" },
   { id: "history", label: "결제·사용 내역" },
 ];
@@ -40,6 +42,7 @@ export default function MyPageTabs({ accountTab, historyTab }: { accountTab: Rea
 
       <div className="mt-6 flex w-full flex-col items-center">
         {active === "account" && accountTab}
+        {active === "ads" && <AdRewardSection />}
         {active === "collection" && <CollectionSection />}
         {active === "profiles" && <ProfileManager />}
         {active === "history" && historyTab}

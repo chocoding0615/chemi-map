@@ -14,6 +14,8 @@ export interface AdminUserRow {
   provider: string;
   ticketBalance: number;
   isAdmin: boolean;
+  /** 접근권한과 무관한 순수 라벨 - 관리자가 잔디를 챙겨줄 대상 표시용. */
+  isTester: boolean;
   createdAt: string;
   /** 관리자 목록 화면에서만 숨김 처리된 유저 - 계정/데이터는 그대로 남아있다. */
   hidden: boolean;
@@ -137,6 +139,7 @@ export async function listAllUsers(limit = 200): Promise<AdminUserRow[]> {
         provider?: string;
         ticketBalance?: number;
         isAdmin?: boolean;
+        isTester?: boolean;
         hiddenInAdminList?: boolean;
         createdAt?: { toDate: () => Date } | Date;
       };
@@ -151,6 +154,7 @@ export async function listAllUsers(limit = 200): Promise<AdminUserRow[]> {
         provider: data.provider ?? "",
         ticketBalance: data.ticketBalance ?? 0,
         isAdmin: data.isAdmin === true,
+        isTester: data.isTester === true,
         hidden: data.hiddenInAdminList === true,
         createdAt: createdAt.toISOString(),
       };

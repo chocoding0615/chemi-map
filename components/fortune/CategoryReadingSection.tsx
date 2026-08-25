@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import SimpleMarkdown from "@/components/SimpleMarkdown";
-import { chargeFreeWallet } from "@/lib/freeCharge";
+import InsufficientBalanceCTA from "@/components/common/InsufficientBalanceCTA";
 
 // 운세 카테고리별 특화 AI 리딩 섹션. SajuLlmReportSection과 동일한 패턴:
 // [지갑 로딩 -> 게스트면 로그인 유도] -> 버튼 클릭 시 POST /api/fortune/{slug}/reading
@@ -29,8 +29,6 @@ interface CategoryReadingSectionProps {
 export default function CategoryReadingSection({ slug, nameKo, icon, priceKrw, requestBody }: CategoryReadingSectionProps) {
   const [wallet, setWallet] = useState<WalletState>({ status: "loading" });
   const [result, setResult] = useState<ResultState>({ phase: "idle" });
-  const [charging, setCharging] = useState(false);
-  const [chargeError, setChargeError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/user/wallet")
@@ -40,24 +38,6 @@ export default function CategoryReadingSection({ slug, nameKo, icon, priceKrw, r
       })
       .catch(() => setWallet({ status: "guest" }));
   }, []);
-
-  async function handleFreeCharge() {
-    setCharging(true);
-    setChargeError(null);
-    const chargeResult = await chargeFreeWallet();
-    if (!chargeResult.ok) {
-      setChargeError(chargeResult.error);
-      setCharging(false);
-      return;
-    }
-    const res = await fetch("/api/user/wallet");
-    const data = (await res.json()) as { loggedIn: boolean; ticketBalance?: number };
-    if (data.loggedIn) {
-      setWallet({ status: "ready", balance: data.ticketBalance ?? 0 });
-      setResult({ phase: "idle" });
-    }
-    setCharging(false);
-  }
 
   async function handleGenerate() {
     setResult({ phase: "generating" });
@@ -116,18 +96,7 @@ export default function CategoryReadingSection({ slug, nameKo, icon, priceKrw, r
 
       {result.phase === "insufficient" && (
         <div className="mt-4">
-          <button
-            type="button"
-            onClick={handleFreeCharge}
-            disabled={charging}
-            className="flex w-full flex-col items-center justify-center rounded-2xl border border-dashed border-coral bg-white/50 py-3 text-center text-sm font-bold text-coral-dark transition active:scale-95 hover:bg-white disabled:opacity-60"
-          >
-            <span>{charging ? "충전 중..." : "🌱 잔디가 부족해요 · 눌러서 충전하기"}</span>
-            <span className="mt-0.5 text-[11px] font-normal text-brown-soft/90">
-              보유 🌱{result.balance.toLocaleString()} · 필요 🌱{result.required.toLocaleString()}
-            </span>
-          </button>
-          {chargeError && <p className="mt-1.5 text-center text-xs font-semibold text-coral-dark">{chargeError}</p>}
+          <InsufficientBalanceCTA balance={result.balance} required={result.required} />
         </div>
       )}
 
