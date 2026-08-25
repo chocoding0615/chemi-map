@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { refundWallet } from "@/lib/wallet";
 import { callLLM, type ChatMessage } from "@/lib/llm";
@@ -7,7 +7,7 @@ import {
   getSajuLlmReport,
   getChatMessages,
   countUserQuestions,
-  appendChatMessage,
+  appendChatMessages,
   reserveChatQuestion,
   rollbackChatQuestion,
   SAJU_LLM_CHAT_FREE_QUESTIONS,
@@ -94,8 +94,10 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await appendChatMessage(session.uid, reportId, "user", message);
-    await appendChatMessage(session.uid, reportId, "assistant", reply);
+    await appendChatMessages(session.uid, reportId, [
+      { role: "user", text: message },
+      { role: "assistant", text: reply },
+    ]);
   } catch {
     await rollback();
     return NextResponse.json({ error: "답변 저장에 실패했어요. 다시 시도해주세요." }, { status: 500 });

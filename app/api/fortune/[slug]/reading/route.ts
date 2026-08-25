@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { refundWallet } from "@/lib/wallet";
 import { callLLM } from "@/lib/llm";
@@ -74,8 +74,12 @@ export async function POST(request: NextRequest, ctx: { params: Promise<{ slug: 
   }
 
   // 택일은 "무슨 날을 고르는지"가 결과를 바꾼다 - 프롬프트와 캐시키 둘 다에 반영한다.
+  // 다른 카테고리로 넘어온 purpose는 프롬프트를 흔드는 노이즈라(길일 지시문이 연애 리딩에
+  // 섞이는 사태) 아예 읽지 않고 버린다. 캐시키도 오염되지 않는다.
   const purpose =
-    typeof body?.purpose === "string" && body.purpose.trim() ? body.purpose.trim().slice(0, 20) : undefined;
+    slug === "taekil" && typeof body?.purpose === "string" && body.purpose.trim()
+      ? body.purpose.trim().slice(0, 20)
+      : undefined;
 
   const readingId = makeReadingId(slug, me, partner, purpose);
   const names = partner
@@ -118,7 +122,7 @@ export async function POST(request: NextRequest, ctx: { params: Promise<{ slug: 
     readingText = await callLLM(
       [
         { role: "system", content: getCategorySystemPrompt(slug) },
-        { role: "user", content: buildCategoryUserMessage(me, partner, pairInfo, purpose) },
+        { role: "user", content: buildCategoryUserMessage(me, partner, pairInfo, purpose, slug) },
       ],
       6000
     );

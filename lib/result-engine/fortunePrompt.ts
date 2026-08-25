@@ -1,4 +1,4 @@
-﻿import type { CategorySlug } from "@/lib/content/fortuneCategories";
+import type { CategorySlug } from "@/lib/content/fortuneCategories";
 import { buildSajuFactSheet } from "./sajuPrompt";
 import type { MbtiType } from "./temperament";
 
@@ -213,10 +213,13 @@ export function buildCategoryUserMessage(
   person: FortunePersonInput,
   partner?: FortunePersonInput,
   pairInfo?: PairInfo,
-  purpose?: string
+  purpose?: string,
+  category?: CategorySlug
 ): string {
-  // 택일처럼 "목적이 결과를 바꾸는" 카테고리용 - 있으면 프롬프트에 명시적으로 주입한다.
-  const purposeBlock = purpose?.trim()
+  // [택일 목적] 블록은 택일에서만 의미가 있다. 다른 카테고리 프롬프트에 섞이면
+  // "길일을 골라라"는 엉뚱한 지시가 리딩 전체를 비틀 수 있어서, 카테고리를
+  // 명시적으로 확인한 경우에만 주입한다(호출부 실수에 대한 2중 잠금).
+  const purposeBlock = category === "taekil" && purpose?.trim()
     ? "\n\n[택일 목적]\n- 이 사주에 맞는 길일을 아래 목적으로만 골라서 설명할 것: " + purpose.trim()
     : "";
   if (!partner) return toFactSheet(person) + purposeBlock;

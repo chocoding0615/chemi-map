@@ -185,8 +185,24 @@ export async function countUserQuestions(uid: string, reportId: string): Promise
   return snap.size;
 }
 
-export async function appendChatMessage(uid: string, reportId: string, role: "user" | "assistant", text: string): Promise<void> {
-  await messagesRef(uid, reportId).add({ role, text, createdAt: FieldValue.serverTimestamp() });
+// 유저 질문과 어시스턴트 답변은 한 쌍이다. 예전엔 .add() 두 번으로 따로 저장해서,
+// 중간에 실패하면 답 없는 고아 질문이 히스토리에 남고(사용자가 재요청하면 같은
+// 질문이 또 쌓임) 환불과 저장 상태가 어긋났다. writeBatch는 여러 문서를 하나의
+// 커밋으로 원자 기록하므로 "둘 다 있음 / 둘 다 없음"만 존재하게 된다.
+export async function appendChatMessages(
+  uid: string,
+  reportId: string,
+  pair: { role: "user" | "assistant"; text: string }[]
+): Promise<void> {
+  const batch = getDb().batch();
+  for (const m of pair) {
+    batch.set(messagesRef(uid, reportId).doc(), {
+      role: m.role,
+      text: m.text,
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  }
+  await batch.commit();
 }
 
 export type ReserveChatResult =
