@@ -27,7 +27,7 @@ export default function ProfileLoadModal({ onSelect, onClose }: ProfileLoadModal
       >
         <div className="flex items-center justify-between">
           <p className="text-sm font-bold text-brown">기본정보 불러오기</p>
-          <button type="button" onClick={onClose} className="text-lg text-brown-soft/40">
+          <button type="button" onClick={onClose} className="p-2 text-lg text-brown-soft/60">
             ✕
           </button>
         </div>

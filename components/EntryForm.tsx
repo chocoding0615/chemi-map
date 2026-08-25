@@ -99,10 +99,12 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-5">
       <p className="text-center text-sm leading-relaxed text-brown-soft">
-        생일과 MBTI만 넣으면, 내가 {ownerName}님에게 어떤 사람인지 나와요
+        생일만 넣으면, 내가 {ownerName}님에게 어떤 사람인지 나와요
       </p>
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-brown">이름</label>
+        <label className="mb-1.5 block text-sm font-semibold text-brown">
+          이름 <span className="text-red-500">*</span>
+        </label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -118,7 +120,9 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
         <MbtiSelect value={mbti} onChange={setMbti} />
       </div>
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
+        <label className="mb-1.5 block text-sm font-semibold text-brown">
+          생년월일 <span className="text-red-500">*</span>
+        </label>
         <BirthDatePicker value={birthdate} onChange={setBirthdate} isLunar={isLunar} onLunarChange={setIsLunar} />
       </div>
       <div>

@@ -146,7 +146,9 @@ function PersonFields({
         />
       </div>
       <div>
-        <label className="mb-1.5 block text-xs font-semibold text-brown-soft">생년월일</label>
+        <label className="mb-1.5 block text-xs font-semibold text-brown-soft">
+          생년월일 <span className="text-red-500">*</span>
+        </label>
         <BirthDatePicker
           value={value.birthdate}
           onChange={(birthdate) => onChange({ ...value, birthdate })}
@@ -155,12 +157,16 @@ function PersonFields({
         />
       </div>
       <div>
-        <label className="mb-1.5 block text-xs font-semibold text-brown-soft">성별</label>
+        <label className="mb-1.5 block text-xs font-semibold text-brown-soft">
+          성별 <span className="text-red-500">*</span>
+        </label>
         <GenderPicker value={value.gender} onChange={(g) => onChange({ ...value, gender: g })} />
       </div>
       {showMbti && (
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-brown-soft">MBTI</label>
+          <label className="mb-1.5 block text-xs font-semibold text-brown-soft">
+            MBTI <span className="text-red-500">*</span>
+          </label>
           <MbtiSelect value={value.mbti} onChange={(mbti) => onChange({ ...value, mbti })} />
         </div>
       )}
@@ -454,7 +460,9 @@ export default function FortuneForm({ category }: FortuneFormProps) {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
+            <label className="mb-1.5 block text-sm font-semibold text-brown">
+              생년월일 <span className="text-red-500">*</span>
+            </label>
             <BirthDatePicker
               value={personA.birthdate}
               onChange={(birthdate) => setPersonA({ ...personA, birthdate })}
@@ -463,7 +471,9 @@ export default function FortuneForm({ category }: FortuneFormProps) {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-brown">성별</label>
+            <label className="mb-1.5 block text-sm font-semibold text-brown">
+              성별 <span className="text-red-500">*</span>
+            </label>
             <GenderPicker value={personA.gender} onChange={(g) => setPersonA({ ...personA, gender: g })} />
           </div>
           <div>

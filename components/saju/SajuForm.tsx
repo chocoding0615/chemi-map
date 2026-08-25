@@ -32,7 +32,9 @@ export default function SajuForm({ form }: { form: UseSajuFormReturn }) {
         />
       </div>
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
+        <label className="mb-1.5 block text-sm font-semibold text-brown">
+          생년월일 <span className="text-red-500">*</span>
+        </label>
         <BirthDatePicker
           value={form.birthdate}
           onChange={form.setBirthdate}
@@ -43,7 +45,9 @@ export default function SajuForm({ form }: { form: UseSajuFormReturn }) {
         />
       </div>
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-brown">성별</label>
+        <label className="mb-1.5 block text-sm font-semibold text-brown">
+          성별 <span className="text-red-500">*</span>
+        </label>
         <div className="grid grid-cols-2 gap-2">
           {(["male", "female"] as const).map((g) => (
             <button

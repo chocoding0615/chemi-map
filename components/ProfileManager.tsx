@@ -148,7 +148,9 @@ export default function ProfileManager() {
         <div className="mt-3 space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-brown/5">
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-brown-soft">이름</label>
+              <label className="mb-1.5 block text-xs font-semibold text-brown-soft">
+                이름 <span className="text-red-500">*</span>
+              </label>
               <input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -158,7 +160,9 @@ export default function ProfileManager() {
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-brown-soft">관계</label>
+              <label className="mb-1.5 block text-xs font-semibold text-brown-soft">
+                관계 <span className="text-red-500">*</span>
+              </label>
               <input
                 value={form.relation}
                 onChange={(e) => setForm({ ...form, relation: e.target.value })}
@@ -169,7 +173,9 @@ export default function ProfileManager() {
             </div>
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-brown-soft">생년월일</label>
+            <label className="mb-1.5 block text-xs font-semibold text-brown-soft">
+              생년월일 <span className="text-red-500">*</span>
+            </label>
             <BirthDatePicker
               value={form.birthdate}
               onChange={(birthdate) => setForm({ ...form, birthdate })}
@@ -178,7 +184,9 @@ export default function ProfileManager() {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-brown-soft">성별</label>
+            <label className="mb-1.5 block text-xs font-semibold text-brown-soft">
+              성별 <span className="text-red-500">*</span>
+            </label>
             <div className="grid grid-cols-2 gap-2">
               {(["male", "female"] as const).map((g) => (
                 <button

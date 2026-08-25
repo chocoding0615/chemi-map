@@ -24,8 +24,8 @@ interface SajuResultViewProps {
 export default function SajuResultView({ result, resultRef, onReset }: SajuResultViewProps) {
   return (
     <div ref={resultRef} className="mt-8 w-full space-y-4 scroll-mt-6">
-      <TodayScoreCard />
-
+      {/* 핵심 결론(오행 아이콘+티저)이 스크롤 없이 첫 화면에 보이도록 사주 요약을 가장 먼저 둔다 —
+          TodayScoreCard는 부가 콘텐츠라 그 아래로 옮겼다(여우.md UI/UX Phase B). */}
       <div className="w-full rounded-2xl bg-gradient-to-b from-apricot to-cream p-6 text-center shadow-inner ring-1 ring-brown/10">
         <div className="flex justify-center">
           <ElementIcon element={result.dominant} size={64} />
@@ -36,6 +36,10 @@ export default function SajuResultView({ result, resultRef, onReset }: SajuResul
           <AccessBadge
             state={FORTUNE_FREE_PREVIEW ? { kind: "free" } : { kind: "price", priceKrw: SAJU_SUMMARY_PRICE_KRW }}
           />
+        </div>
+
+        <div className="mt-5">
+          <TodayScoreCard />
         </div>
 
         <MockPayGate

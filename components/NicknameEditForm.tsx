@@ -36,7 +36,7 @@ export default function NicknameEditForm({ nickname }: { nickname: string }) {
       <button
         type="button"
         onClick={() => setEditing(true)}
-        className="mt-2 flex items-center gap-1 text-sm font-bold text-coral-dark"
+        className="mt-2 flex items-center gap-1 text-sm font-bold text-coral-dark underline underline-offset-2"
       >
         {nickname}님
         <span className="text-xs text-brown-soft/40">✏️</span>

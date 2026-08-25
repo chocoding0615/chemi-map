@@ -53,7 +53,9 @@ export default function MapCreateForm() {
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-5">
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-brown">이름</label>
+        <label className="mb-1.5 block text-sm font-semibold text-brown">
+          이름 <span className="text-red-500">*</span>
+        </label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -63,7 +65,9 @@ export default function MapCreateForm() {
         />
       </div>
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-brown">성별</label>
+        <label className="mb-1.5 block text-sm font-semibold text-brown">
+          성별 <span className="text-red-500">*</span>
+        </label>
         <div className="grid grid-cols-2 gap-2">
           {(["male", "female"] as const).map((g) => (
             <button
@@ -88,7 +92,9 @@ export default function MapCreateForm() {
         <MbtiSelect value={mbti} onChange={setMbti} />
       </div>
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
+        <label className="mb-1.5 block text-sm font-semibold text-brown">
+          생년월일 <span className="text-red-500">*</span>
+        </label>
         <BirthDatePicker value={birthdate} onChange={setBirthdate} isLunar={isLunar} onLunarChange={setIsLunar} />
       </div>
       <div>

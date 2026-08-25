@@ -22,7 +22,7 @@ export default function DeleteLetterButton({ id }: { id: string }) {
         type="button"
         onClick={() => setConfirming(true)}
         disabled={deleting}
-        className="text-[11px] text-brown-soft/30 underline decoration-dotted disabled:opacity-60"
+        className="rounded px-2 py-2 text-[11px] text-brown-soft/60 underline decoration-dotted disabled:opacity-60"
       >
         삭제
       </button>
