@@ -18,6 +18,7 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
   const [messages, setMessages] = useState<ChatEntry[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [restoring, setRestoring] = useState(true);
   const [freeRemaining, setFreeRemaining] = useState(freeQuestionsTotal);
   const [insufficient, setInsufficient] = useState<{ balance: number; required: number } | null>(null);
@@ -40,6 +41,15 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
       .finally(() => setRestoring(false));
   }, [reportId, freeQuestionsTotal]);
 
+  // LLM 호출은 최대 1분 정도 걸릴 수 있어서(lib/llm.ts 타임아웃), 그냥 스켈레톤만
+  // 띄우면 멈춘 것처럼 보인다 — 기다린 시간을 초 단위로 보여줘서 안심시킨다.
+  // 카운터 시작은 handleSend에서 sending을 켜기 직전에 0으로 리셋해둔다.
+  useEffect(() => {
+    if (!sending) return;
+    const interval = setInterval(() => setElapsedSeconds((s) => s + 1), 1000);
+    return () => clearInterval(interval);
+  }, [sending]);
+
   async function handleFreeCharge() {
     setCharging(true);
     setChargeError(null);
@@ -56,6 +66,7 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
   async function handleSend() {
     const question = input.trim();
     if (!question || sending) return;
+    setElapsedSeconds(0);
     setSending(true);
     setError(null);
     setInsufficient(null);
@@ -123,7 +134,15 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
         </div>
       )}
 
-      {sending && <div className="mt-2 h-16 animate-pulse rounded-lg bg-brown/5" />}
+      {sending && (
+        <div className="mt-2 space-y-1.5">
+          <div className="h-16 animate-pulse rounded-lg bg-brown/5" />
+          <p className="text-center text-[11px] text-brown-soft/70">
+            복실이가 답변을 준비하고 있어요... {elapsedSeconds}초
+            {elapsedSeconds >= 15 && " (최대 1분 정도 걸릴 수 있어요)"}
+          </p>
+        </div>
+      )}
 
       {insufficient && (
         <div className="mt-2">
