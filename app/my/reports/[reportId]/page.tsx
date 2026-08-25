@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { getSession } from "@/lib/session";
-import { getSajuLlmReport } from "@/lib/sajuLlmReport";
+import { getSajuLlmReport, SAJU_LLM_CHAT_FREE_QUESTIONS } from "@/lib/sajuLlmReport";
 import SimpleMarkdown from "@/components/SimpleMarkdown";
+import SajuLlmChat from "@/components/SajuLlmChat";
 
 interface ReportPageProps {
   params: Promise<{ reportId: string }>;
@@ -32,6 +33,10 @@ export default async function SajuLlmReportPage({ params }: ReportPageProps) {
 
       <div className="mt-5 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-brown/10">
         <SimpleMarkdown text={report.reportText} />
+        <div className="mt-5 border-t border-brown/10 pt-4">
+          <p className="text-xs font-bold text-coral-dark">🔮 이 사주에 대해 더 물어보세요</p>
+          <SajuLlmChat reportId={reportId} freeQuestionsTotal={SAJU_LLM_CHAT_FREE_QUESTIONS} />
+        </div>
       </div>
     </div>
   );

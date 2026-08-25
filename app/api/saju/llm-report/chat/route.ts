@@ -12,6 +12,25 @@ import {
   SAJU_LLM_CHAT_PRICE_KRW,
 } from "@/lib/sajuLlmReport";
 
+export async function GET(request: NextRequest) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
+
+  const { searchParams } = new URL(request.url);
+  const reportId = searchParams.get("reportId") ?? "";
+  if (!reportId) return NextResponse.json({ error: "reportId가 필요합니다." }, { status: 400 });
+
+  const report = await getSajuLlmReport(session.uid, reportId);
+  if (!report) return NextResponse.json({ error: "리포트를 찾을 수 없어요." }, { status: 404 });
+
+  const [messages, questionsUsed] = await Promise.all([
+    getChatMessages(session.uid, reportId),
+    countUserQuestions(session.uid, reportId),
+  ]);
+
+  return NextResponse.json({ messages, questionsUsed });
+}
+
 export async function POST(request: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });

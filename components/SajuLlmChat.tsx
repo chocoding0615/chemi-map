@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { chargeFreeWallet } from "@/lib/freeCharge";
 
@@ -18,12 +18,27 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
   const [messages, setMessages] = useState<ChatEntry[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [restoring, setRestoring] = useState(true);
   const [freeRemaining, setFreeRemaining] = useState(freeQuestionsTotal);
   const [insufficient, setInsufficient] = useState<{ balance: number; required: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sessionExpired, setSessionExpired] = useState(false);
   const [charging, setCharging] = useState(false);
   const [chargeError, setChargeError] = useState<string | null>(null);
+
+  // 과거 대화 복원 — 조회에 실패해도(비로그인, 네트워크 오류 등) 조용히 넘어가고
+  // freeRemaining은 prop 기본값(무료 질문 전체 개수)을 그대로 쓴다. 새 채팅은 그대로 가능해야 한다.
+  useEffect(() => {
+    fetch(`/api/saju/llm-report/chat?reportId=${encodeURIComponent(reportId)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { messages: ChatEntry[]; questionsUsed: number } | null) => {
+        if (!data) return;
+        setMessages(data.messages);
+        setFreeRemaining(Math.max(0, freeQuestionsTotal - data.questionsUsed));
+      })
+      .catch(() => {})
+      .finally(() => setRestoring(false));
+  }, [reportId, freeQuestionsTotal]);
 
   async function handleFreeCharge() {
     setCharging(true);
@@ -86,7 +101,14 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
         궁금한 점을 더 물어보세요 · {freeRemaining > 0 ? `무료 질문 ${freeRemaining}개 남음` : "질문당 🌱2"}
       </p>
 
-      {messages.length > 0 && (
+      {restoring && (
+        <div className="mt-3 space-y-2">
+          <div className="h-10 animate-pulse rounded-lg bg-brown/5" />
+          <div className="h-10 w-2/3 animate-pulse rounded-lg bg-brown/5" />
+        </div>
+      )}
+
+      {!restoring && messages.length > 0 && (
         <div className="mt-3 space-y-2">
           {messages.map((m, i) => (
             <div
