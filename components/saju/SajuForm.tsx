@@ -3,7 +3,6 @@
 import BirthDatePicker from "@/components/BirthDatePicker";
 import BirthTimePicker from "@/components/BirthTimePicker";
 import MbtiSelect from "@/components/MbtiSelect";
-import AdvancedSettings from "@/components/AdvancedSettings";
 import type { UseSajuFormReturn } from "@/hooks/useSajuForm";
 
 export default function SajuForm({ form }: { form: UseSajuFormReturn }) {
@@ -78,7 +77,6 @@ export default function SajuForm({ form }: { form: UseSajuFormReturn }) {
         </label>
         <MbtiSelect value={form.mbti} onChange={form.setMbti} />
       </div>
-      <AdvancedSettings value={form.advancedSettings} onChange={form.setAdvancedSettings} />
       {form.error && <p className="text-sm font-medium text-red-500">{form.error}</p>}
       <button
         type="submit"

@@ -12,7 +12,6 @@ import {
   type BalanceInsight,
   type LuckyInfo,
 } from "@/lib/result-engine/sajuReading";
-import { DEFAULT_ADVANCED_SETTINGS, type AdvancedSettingsValue } from "@/components/AdvancedSettings";
 import type { ProfileDoc } from "@/lib/profileTypes";
 import type { MbtiType } from "@/lib/result-engine/temperament";
 import { awardForAction, markFortuneSeen } from "@/lib/foxRewards";
@@ -37,15 +36,13 @@ export interface SajuResult {
   advancedOptions: AdvancedBirthOptions;
 }
 
-function toAdvancedOptions(
-  isLunar: boolean,
-  isLeapMonth: boolean,
-  settings: AdvancedSettingsValue
-): AdvancedBirthOptions {
+// 경도보정 UI(고급 설정)는 제거했지만, 그동안 기본값이 "보정 켬 + 127.5도(한반도 평균)"였다 —
+// 폼을 안 만졌던 모든 사용자가 실제로 받아온 결과와 그대로 이어지도록 이 기본값을 고정으로 유지한다.
+function toAdvancedOptions(isLunar: boolean, isLeapMonth: boolean): AdvancedBirthOptions {
   return {
     isLunar: isLunar || undefined,
     isLeapMonth: isLunar ? isLeapMonth : undefined,
-    longitude: settings.longitudeCorrection ? (settings.longitude ? Number(settings.longitude) : 127.5) : undefined,
+    longitude: 127.5,
   };
 }
 
@@ -59,7 +56,6 @@ export function useSajuForm() {
   const [mbti, setMbti] = useState("");
   const [isLunar, setIsLunar] = useState(false);
   const [isLeapMonth, setIsLeapMonth] = useState(false);
-  const [advancedSettings, setAdvancedSettings] = useState<AdvancedSettingsValue>(DEFAULT_ADVANCED_SETTINGS);
   const [error, setError] = useState("");
   const [result, setResult] = useState<SajuResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -98,7 +94,7 @@ export function useSajuForm() {
     // 버튼이 바뀌는 게 사용자에게 실제로 보인다(그렇지 않으면 결과로
     // 즉시 바뀌어서 "눌렀는데 반응이 없나?" 하는 인상을 줄 수 있다).
     requestAnimationFrame(() => {
-      const advancedOptions = toAdvancedOptions(isLunar, isLeapMonth, advancedSettings);
+      const advancedOptions = toAdvancedOptions(isLunar, isLeapMonth);
       const profile = calculateElementProfile(birthdate, birthTime || undefined, advancedOptions);
       const seed = `${birthdate}-${gender}-${birthTime}-saju`;
       const personality = getPersonalityReading(profile.dominant, seed);
@@ -143,8 +139,6 @@ export function useSajuForm() {
     setIsLunar,
     isLeapMonth,
     setIsLeapMonth,
-    advancedSettings,
-    setAdvancedSettings,
     error,
     result,
     setResult,
