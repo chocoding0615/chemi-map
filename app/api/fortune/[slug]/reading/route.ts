@@ -22,6 +22,10 @@ import { MBTI_TYPES } from "@/lib/result-engine/temperament";
 // 운세 카테고리별 특화 AI 리딩. 사주 AI리포트(/api/saju/llm-report)와 동일한
 // [캐시 -> 원자적 선차감 -> LLM 호출 -> 저장, 실패시 환불] 구조를 따른다.
 
+// LLM 호출이 최대 60초까지 걸릴 수 있어서(lib/llm.ts DEFAULT_TIMEOUT_MS) Vercel의
+// 기본 함수 실행 제한(설정 없으면 Hobby 기준 10초)보다 먼저 잘리지 않게 명시한다.
+export const maxDuration = 60;
+
 function parsePerson(raw: unknown): FortunePersonInput | null {
   if (!raw || typeof raw !== "object") return null;
   const b = raw as Record<string, unknown>;

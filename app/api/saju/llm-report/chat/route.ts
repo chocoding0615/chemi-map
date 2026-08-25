@@ -15,6 +15,10 @@ import {
   SAJU_LLM_CHAT_PRICE_KRW,
 } from "@/lib/sajuLlmReport";
 
+// LLM 호출이 최대 60초까지 걸릴 수 있어서(lib/llm.ts DEFAULT_TIMEOUT_MS) Vercel의
+// 기본 함수 실행 제한(설정 없으면 Hobby 기준 10초)보다 먼저 잘리지 않게 명시한다.
+export const maxDuration = 60;
+
 export async function GET(request: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });

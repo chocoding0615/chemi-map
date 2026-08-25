@@ -14,6 +14,10 @@ import { MBTI_TYPES } from "@/lib/result-engine/temperament";
 
 const DAILY_REPORT_LIMIT = 5;
 
+// LLM 호출이 최대 60초까지 걸릴 수 있어서(lib/llm.ts DEFAULT_TIMEOUT_MS) Vercel의
+// 기본 함수 실행 제한(설정 없으면 Hobby 기준 10초)보다 먼저 잘리지 않게 명시한다.
+export const maxDuration = 60;
+
 function parseInput(body: unknown): SajuReportInput | null {
   if (!body || typeof body !== "object") return null;
   const b = body as Record<string, unknown>;
