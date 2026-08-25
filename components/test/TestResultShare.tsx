@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { captureNodeAsPng, downloadBlob, shareLink, isUserCancelledShare } from "@/lib/shareCard";
+import { captureNodeAsPng, saveImage, shareLink, isUserCancelledShare } from "@/lib/shareCard";
 import { notify } from "@/lib/notify";
 
 export type CardTheme = "ice" | "wave" | "fire" | "burst";
@@ -40,8 +40,8 @@ export default function TestResultShare({ data }: { data: TestResultCardData }) 
   async function onSave() {
     setBusy("save");
     try {
-      downloadBlob(await makeBlob(), `yeojujeom-${data.name}.png`);
-      notify({ kind: "normal", text: "이미지로 저장했어요! 📸" });
+      const status = await saveImage(await makeBlob(), `yeojujeom-${data.name}.png`);
+      if (status === "downloaded") notify({ kind: "normal", text: "이미지로 저장했어요! 📸" });
     } catch (err) {
       if (!isUserCancelledShare(err)) notify({ kind: "normal", text: "저장에 실패했어요 😢" });
     } finally {

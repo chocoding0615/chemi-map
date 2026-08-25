@@ -8,8 +8,8 @@ import { getCharmById, type Rarity } from "@/lib/charms";
 import { drawTodayCharm, getTodayDrawResult, type DrawTodayCharmResult } from "@/lib/dailyCharm";
 import {
   captureNodeAsPng,
-  downloadBlob,
-  shareImageOrCopyLink,
+  saveImage,
+  shareLink,
   isUserCancelledShare,
   copyPageUrlFallback,
 } from "@/lib/shareCard";
@@ -55,20 +55,19 @@ export default function DailyCharmPage() {
     setShareStatus("working");
     try {
       const blob = await captureNodeAsPng(cardRef.current);
-      downloadBlob(blob, "foxjum-daily-charm.png");
-    } catch {
-      notify({ kind: "normal", text: "이미지 저장에 실패했어요. 다시 시도해주세요." });
+      const status = await saveImage(blob, "foxjum-daily-charm.png");
+      if (status === "downloaded") notify({ kind: "normal", text: "이미지로 저장했어요! 📸" });
+    } catch (err) {
+      if (!isUserCancelledShare(err)) notify({ kind: "normal", text: "이미지 저장에 실패했어요. 다시 시도해주세요." });
     } finally {
       setShareStatus("idle");
     }
   }
 
   async function handleShare() {
-    if (!cardRef.current) return;
     setShareStatus("working");
     try {
-      const blob = await captureNodeAsPng(cardRef.current);
-      const status = await shareImageOrCopyLink(blob, "foxjum-daily-charm.png", "오늘의 부적을 뽑았어요 🎴", window.location.href);
+      const status = await shareLink("오늘의 부적을 뽑았어요 🎴", window.location.href);
       setShareStatus(status === "copied" ? "copied" : "idle");
       if (status === "copied") setTimeout(() => setShareStatus("idle"), 2000);
     } catch (err) {

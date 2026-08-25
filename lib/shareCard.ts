@@ -16,20 +16,25 @@ export function downloadBlob(blob: Blob, filename: string): void {
   URL.revokeObjectURL(url);
 }
 
-/** 파일 공유(Web Share)가 가능하면 이미지+링크를 함께 공유하고, 안 되면 텍스트+링크를 클립보드에 복사한다.
- * 링크가 없으면 이미지만 받은 친구는 정작 테스트를 하러 갈 방법이 없다 - 초대 링크(url)를
- * 항상 텍스트에 함께 실어 보낸다(navigator.share의 url 필드는 files와 같이 쓰면 무시하는
- * 브라우저가 많아, 텍스트에 직접 포함시키는 쪽이 더 안전하다). */
-export async function shareImageOrCopyLink(blob: Blob, filename: string, shareText: string, url: string): Promise<"shared" | "copied"> {
+/** 이미지를 기기에 저장한다. <a download>는 데스크톱에선 잘 되지만, 모바일(특히 iOS
+ * Safari나 카카오톡 인앱 브라우저)에서는 다운로드가 실제 사진첩으로 안 이어지는
+ * 경우가 많다. Web Share(파일 공유)가 되면 그쪽을 먼저 시도해서, 네이티브 공유
+ * 시트에서 사용자가 직접 "사진에 저장"을 고르게 한다 - 모바일에서 실제로 사진첩에
+ * 들어가는 유일한 방법이다. 지원 안 되거나 실패하면 기존 다운로드 방식으로 넘어간다. */
+export async function saveImage(blob: Blob, filename: string): Promise<"shared" | "downloaded"> {
   const file = new File([blob], filename, { type: "image/png" });
-  const textWithLink = `${shareText} ${url}`;
   const nav = navigator as Navigator & { canShare?: (data: { files: File[] }) => boolean };
   if (nav.share && nav.canShare?.({ files: [file] })) {
-    await nav.share({ files: [file], text: textWithLink, title: "여우점" });
-    return "shared";
+    try {
+      await nav.share({ files: [file] });
+      return "shared";
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") throw err;
+      // 공유 시트 자체가 실패한 경우(취소 아님)만 다운로드로 폴백한다.
+    }
   }
-  await navigator.clipboard.writeText(textWithLink);
-  return "copied";
+  downloadBlob(blob, filename);
+  return "downloaded";
 }
 
 /** 링크(초대 URL)만 공유한다. 이미지 파일을 같이 실어 보내면(navigator.share의 files)

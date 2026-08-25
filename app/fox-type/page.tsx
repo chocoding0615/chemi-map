@@ -11,8 +11,8 @@ import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/re
 import { getFoxType, type FoxTypeResult } from "@/lib/result-engine/foxType";
 import {
   captureNodeAsPng,
-  downloadBlob,
-  shareImageOrCopyLink,
+  saveImage,
+  shareLink,
   isUserCancelledShare,
   copyPageUrlFallback,
 } from "@/lib/shareCard";
@@ -63,21 +63,21 @@ export default function FoxTypePage() {
     setShareStatus("working");
     try {
       const blob = await captureNodeAsPng(cardRef.current);
-      downloadBlob(blob, `foxjum-${result.element}.png`);
+      const status = await saveImage(blob, `foxjum-${result.element}.png`);
+      if (status === "downloaded") notify({ kind: "normal", text: "이미지로 저장했어요! 📸" });
       awardForAction("share");
-    } catch {
-      notify({ kind: "normal", text: "이미지 저장에 실패했어요. 다시 시도해주세요." });
+    } catch (err) {
+      if (!isUserCancelledShare(err)) notify({ kind: "normal", text: "이미지 저장에 실패했어요. 다시 시도해주세요." });
     } finally {
       setShareStatus("idle");
     }
   }
 
   async function handleShare() {
-    if (!cardRef.current || !result) return;
+    if (!result) return;
     setShareStatus("working");
     try {
-      const blob = await captureNodeAsPng(cardRef.current);
-      const status = await shareImageOrCopyLink(blob, `foxjum-${result.element}.png`, `나는 ${result.label}! 🦊`, window.location.href);
+      const status = await shareLink(`나는 ${result.label}! 🦊`, window.location.href);
       awardForAction("share");
       setShareStatus(status === "copied" ? "copied" : "idle");
       if (status === "copied") setTimeout(() => setShareStatus("idle"), 2000);
