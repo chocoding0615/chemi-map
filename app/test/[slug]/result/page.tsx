@@ -78,7 +78,6 @@ export default async function TestResultPage({ params, searchParams }: Props) {
       <div className="mt-6">
         <TestResultShare
           data={{
-            slug: def.slug,
             testTitle: def.title,
             emoji: result.emoji,
             name: result.name,
@@ -90,6 +89,14 @@ export default async function TestResultPage({ params, searchParams }: Props) {
           }}
         />
       </div>
+
+      {/* 공유 링크로 들어온 친구가 결과부터 보고 바로 이어서 참여할 수 있게 하는 CTA */}
+      <Link
+        href={`/test/${slug}`}
+        className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-2xl border-2 border-coral/30 bg-white py-3.5 text-sm font-extrabold text-coral-dark transition active:scale-95 hover:bg-coral/5"
+      >
+        나도 작성하기 →
+      </Link>
 
       {/* 결과 상세 - 캡처 카드 밖의 본문 */}
       <div className="mt-10 flex flex-col gap-3 rounded-3xl border border-brown/5 bg-white p-6 shadow-lg shadow-brown/5">

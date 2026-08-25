@@ -14,7 +14,6 @@ const THEME_BG: Record<CardTheme, string> = {
 };
 
 export interface TestResultCardData {
-  slug: string;
   testTitle: string;
   emoji: string;
   name: string;
@@ -53,12 +52,12 @@ export default function TestResultShare({ data }: { data: TestResultCardData }) 
   async function onShare() {
     setBusy("share");
     try {
-      // 결과 페이지(내 점수) 링크가 아니라 테스트 시작 링크를 보내야 받은 사람이
-      // 눌러서 바로 참여할 수 있다. 이미지 파일을 같이 보내면 공유 대상 앱에 따라
-      // 링크 텍스트가 캡션으로 안 붙는 경우가 있어, 공유는 이미지 없이 링크만 보낸다
+      // 테스트 시작 페이지가 아니라 지금 보고 있는 "내 결과" 페이지 링크를 그대로 보낸다 -
+      // 받은 사람이 먼저 내 결과를 보고, 결과 페이지에 있는 "나도 작성하기" 버튼으로
+      // 이어서 참여할 수 있다. 이미지 파일을 같이 보내면 공유 대상 앱에 따라 링크
+      // 텍스트가 캡션으로 안 붙는 경우가 있어, 공유는 이미지 없이 링크만 보낸다
       // (이미지가 필요하면 "이미지 저장" 버튼으로 따로 받을 수 있다).
-      const inviteUrl = `${window.location.origin}/test/${data.slug}`;
-      const res = await shareLink(`${data.nickname || "나"}는 ${data.name}? 나도 해봐!`, inviteUrl);
+      const res = await shareLink(`${data.nickname || "나"}는 ${data.name}? 나도 해봐!`, window.location.href);
       notify({ kind: "normal", text: res === "shared" ? "공유했어요! 🎉" : "링크를 복사했어요! 🔗" });
     } catch (err) {
       if (!isUserCancelledShare(err)) notify({ kind: "normal", text: "공유에 실패했어요 😢" });
