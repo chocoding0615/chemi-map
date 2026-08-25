@@ -1,4 +1,6 @@
-import { forwardRef } from "react";
+"use client";
+
+import { forwardRef, useState } from "react";
 import { ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 import type { CelebrityEntry } from "@/lib/content/celebrities";
 
@@ -10,15 +12,20 @@ interface CelebrityMatchCardProps {
   siteUrl?: string;
 }
 
+const FALLBACK_RATIO = 3 / 4; // 위키 인물 사진 대부분이 3:4 근처라 로딩 전 기본값으로 사용
+
 // 9:16 세로 카드 — 스토리 공유용. FoxCard와 같은 톤(오행 배경색, 하단 안내 문구).
-// 사진은 object-contain으로 넣는다 - object-cover로 원형/정사각형에 억지로 채우면
-// 위키 썸네일 비율에 따라 얼굴이나 머리 위쪽이 잘리는 인물이 있어서, 잘림 없이
-// 사진 전체가 항상 보이는 쪽을 택했다(대신 여백이 생길 수 있음).
+// 사진 프레임을 고정 크기로 두고 object-contain만 쓰면, 프레임 비율과 실제 사진
+// 비율이 달라서 옆(또는 위아래)에 빈 여백이 생긴다. 그렇다고 object-cover로 채우면
+// 얼굴/머리가 잘리는 인물이 나온다. 그래서 프레임 자체를 사진의 실제 가로세로
+// 비율에 맞춰(aspect-ratio) 렌더링한다 - 사진을 늘리지도, 자르지도, 여백을
+// 남기지도 않는다.
 const CelebrityMatchCard = forwardRef<HTMLDivElement, CelebrityMatchCardProps>(function CelebrityMatchCard(
   { element, celebrity, imageUrl, siteUrl },
   ref
 ) {
   const bank = ELEMENT_BANK[element];
+  const [ratio, setRatio] = useState(FALLBACK_RATIO);
 
   return (
     <div
@@ -28,10 +35,22 @@ const CelebrityMatchCard = forwardRef<HTMLDivElement, CelebrityMatchCardProps>(f
     >
       <p className="text-[10px] font-bold tracking-widest text-brown-soft/40">나와 잘 맞는 유명인</p>
       <div className="flex w-full flex-1 flex-col items-center justify-center gap-4">
-        <div className="flex h-64 w-full items-center justify-center overflow-hidden rounded-2xl bg-white/70">
+        <div
+          className="w-full max-h-64 overflow-hidden rounded-2xl bg-white/70"
+          style={{ aspectRatio: imageUrl ? ratio : FALLBACK_RATIO }}
+        >
           {imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- 위키미디어 외부 이미지, next/image 최적화 대상 아님. crossOrigin은 캡처(html-to-image) 시 캔버스가 오염되지 않게 하기 위함.
-            <img src={imageUrl} alt={celebrity.name} crossOrigin="anonymous" className="h-full w-full object-contain" />
+            <img
+              src={imageUrl}
+              alt={celebrity.name}
+              crossOrigin="anonymous"
+              className="h-full w-full object-contain"
+              onLoad={(e) => {
+                const img = e.currentTarget;
+                if (img.naturalWidth && img.naturalHeight) setRatio(img.naturalWidth / img.naturalHeight);
+              }}
+            />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-5xl">🦊</div>
           )}
