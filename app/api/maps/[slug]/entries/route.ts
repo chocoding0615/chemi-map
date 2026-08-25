@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/firebaseAdmin";
 import { MBTI_TYPES, mbtiToTemperament } from "@/lib/result-engine/temperament";
 import { computeResult } from "@/lib/result-engine/compute";
@@ -27,26 +27,26 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const birthTime = typeof body?.birthTime === "string" && body.birthTime ? body.birthTime : undefined;
 
   if (!name || name.length > 20) {
-    return NextResponse.json({ error: "?대쫫??1~20?먮줈 ?낅젰?댁＜?몄슂." }, { status: 400 });
+    return NextResponse.json({ error: "이름을 1~20자로 입력해주세요." }, { status: 400 });
   }
   if (mbti && !MBTI_TYPES.includes(mbti as (typeof MBTI_TYPES)[number])) {
-    return NextResponse.json({ error: "MBTI 媛믪씠 ?щ컮瑜댁? ?딆뒿?덈떎." }, { status: 400 });
+    return NextResponse.json({ error: "MBTI 값이 올바르지 않습니다." }, { status: 400 });
   }
   if (!BIRTHDATE_RE.test(birthdate)) {
-    return NextResponse.json({ error: "?앸뀈?붿씪 ?뺤떇???щ컮瑜댁? ?딆뒿?덈떎." }, { status: 400 });
+    return NextResponse.json({ error: "생년월일 형식이 올바르지 않습니다." }, { status: 400 });
   }
   if (birthTime && !BIRTHTIME_RE.test(birthTime)) {
-    return NextResponse.json({ error: "異쒖깮 ?쒓컙 ?뺤떇???щ컮瑜댁? ?딆뒿?덈떎." }, { status: 400 });
+    return NextResponse.json({ error: "출생 시간 형식이 올바르지 않습니다." }, { status: 400 });
   }
   const year = Number(birthdate.slice(0, 4));
   if (year < 1930 || year > new Date().getFullYear()) {
-    return NextResponse.json({ error: "?앸뀈?붿씪???ㅼ떆 ?뺤씤?댁＜?몄슂." }, { status: 400 });
+    return NextResponse.json({ error: "생년월일을 다시 확인해주세요." }, { status: 400 });
   }
 
   const mapRef = getDb().collection("maps").doc(slug);
   const mapSnap = await mapRef.get();
   if (!mapSnap.exists) {
-    return NextResponse.json({ error: "議댁옱?섏? ?딅뒗 吏?꾩엯?덈떎." }, { status: 404 });
+    return NextResponse.json({ error: "존재하지 않는 지도입니다." }, { status: 404 });
   }
   const mapData = mapSnap.data()!;
 

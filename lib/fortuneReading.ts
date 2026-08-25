@@ -1,4 +1,4 @@
-﻿import { getDb } from "./firebaseAdmin";
+import { getDb } from "./firebaseAdmin";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import type { CategorySlug } from "@/lib/content/fortuneCategories";
 import type { FortunePersonInput } from "./result-engine/fortunePrompt";

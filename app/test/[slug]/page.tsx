@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import TestRunner from "@/components/test/TestRunner";
 import { getTestDef } from "@/lib/content/tests";

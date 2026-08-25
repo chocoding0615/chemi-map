@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { getDb } from "@/lib/firebaseAdmin";
 import { hasUnlockedAnyLetter, LETTER_UNLOCK_PRICE_KRW } from "@/lib/letters";

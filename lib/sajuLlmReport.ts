@@ -185,6 +185,18 @@ export async function countUserQuestions(uid: string, reportId: string): Promise
   return snap.size;
 }
 
+// GET(복원)과 POST(과금)이 서로 다른 값을 "질문 사용 횟수"로 보면 새로고침할 때
+// freeRemaining이 실제 잔여 무료 질문 수와 어긋날 수 있다 - questionCount 필드가
+// 과금 판정의 유일한 근거(reserveChatQuestion)이므로 조회도 같은 값을 우선 쓴다.
+// 필드가 아직 없는 레거시 리포트(한 번도 선점 트랜잭션을 안 거친 경우)만 메시지
+// 카운트로 대체한다.
+export async function getQuestionsUsed(uid: string, reportId: string): Promise<number> {
+  const snap = await getDb().collection("users").doc(uid).collection("sajuLlmReports").doc(reportId).get();
+  const questionCount = snap.data()?.questionCount;
+  if (typeof questionCount === "number") return questionCount;
+  return countUserQuestions(uid, reportId);
+}
+
 // 유저 질문과 어시스턴트 답변은 한 쌍이다. 예전엔 .add() 두 번으로 따로 저장해서,
 // 중간에 실패하면 답 없는 고아 질문이 히스토리에 남고(사용자가 재요청하면 같은
 // 질문이 또 쌓임) 환불과 저장 상태가 어긋났다. writeBatch는 여러 문서를 하나의

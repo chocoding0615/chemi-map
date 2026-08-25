@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import FoxMascot from "@/components/FoxMascot";
 import { TESTS } from "@/lib/content/tests";
 

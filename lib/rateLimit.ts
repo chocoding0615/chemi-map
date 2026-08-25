@@ -1,4 +1,4 @@
-﻿import { createHash } from "node:crypto";
+import { createHash } from "node:crypto";
 import { getDb } from "./firebaseAdmin";
 import { FieldValue } from "firebase-admin/firestore";
 

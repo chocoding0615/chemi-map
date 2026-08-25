@@ -7,6 +7,7 @@ import {
   getSajuLlmReport,
   getChatMessages,
   countUserQuestions,
+  getQuestionsUsed,
   appendChatMessages,
   reserveChatQuestion,
   rollbackChatQuestion,
@@ -25,9 +26,11 @@ export async function GET(request: NextRequest) {
   const report = await getSajuLlmReport(session.uid, reportId);
   if (!report) return NextResponse.json({ error: "리포트를 찾을 수 없어요." }, { status: 404 });
 
+  // POST의 과금 판정과 같은 기준(questionCount 필드)을 써야 새로고침해도
+  // freeRemaining이 어긋나지 않는다 - 자세한 이유는 getQuestionsUsed 주석 참고.
   const [messages, questionsUsed] = await Promise.all([
     getChatMessages(session.uid, reportId),
-    countUserQuestions(session.uid, reportId),
+    getQuestionsUsed(session.uid, reportId),
   ]);
 
   return NextResponse.json({ messages, questionsUsed });
