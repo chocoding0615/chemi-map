@@ -256,8 +256,16 @@ async function MyActivityList({ uid }: { uid: string }) {
                   {new Date(item.unlockedAt).toLocaleDateString("ko-KR")}
                 </p>
               </div>
-              <span className="shrink-0 rounded-full bg-cream px-2.5 py-1 text-xs font-bold text-brown-soft">
-                {item.priceKrw > 0 ? `🌱${item.priceKrw.toLocaleString()}` : "무료"}
+              <span
+                className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-bold ${
+                  item.priceKrw < 0 ? "bg-mint/20 text-mint-dark" : "bg-cream text-brown-soft"
+                }`}
+              >
+                {item.priceKrw < 0
+                  ? `환불 +🌱${Math.abs(item.priceKrw).toLocaleString()}`
+                  : item.priceKrw > 0
+                    ? `🌱${item.priceKrw.toLocaleString()}`
+                    : "무료"}
               </span>
             </div>
           ))}

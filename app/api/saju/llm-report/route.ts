@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
-import { chargeWallet } from "@/lib/wallet";
+import { refundWallet } from "@/lib/wallet";
 import { callLLM } from "@/lib/llm";
 import { buildSajuFactSheet, SAJU_REPORT_SYSTEM_PROMPT, type SajuReportInput } from "@/lib/result-engine/sajuPrompt";
 import {
-  getSajuLlmReport,
   saveSajuLlmReport,
   makeReportId,
-  countTodayReports,
+  reserveReportSlot,
+  abandonReservation,
   SAJU_LLM_REPORT_PRICE_KRW,
 } from "@/lib/sajuLlmReport";
+import { MBTI_TYPES } from "@/lib/result-engine/temperament";
 
 const DAILY_REPORT_LIMIT = 5;
-import { MBTI_TYPES } from "@/lib/result-engine/temperament";
 
 function parseInput(body: unknown): SajuReportInput | null {
   if (!body || typeof body !== "object") return null;
@@ -37,27 +37,38 @@ export async function POST(request: NextRequest) {
   if (!input) return NextResponse.json({ error: "생년월일과 성별이 필요합니다." }, { status: 400 });
 
   const reportId = makeReportId(input);
+  const activity = {
+    category: "상세사주 AI리포트",
+    title: `${input.name?.trim() || "나"}님의 상세 사주 리포트`,
+  };
 
-  const existing = await getSajuLlmReport(session.uid, reportId);
-  if (existing) {
-    return NextResponse.json({ ok: true, reportText: existing.reportText, reportId, cached: true, balance: session.ticketBalance });
+  // 캐시 확인 → 잔액 확인 → 일일 한도 확인 → 선차감을 트랜잭션 하나로 원자적으로 처리한다.
+  // 이후 LLM 호출은 결제가 이미 확정된("reserved") 경우에만 일어난다.
+  const reserved = await reserveReportSlot(session.uid, reportId, SAJU_LLM_REPORT_PRICE_KRW, DAILY_REPORT_LIMIT, activity);
+
+  if (reserved.status === "cached") {
+    return NextResponse.json({
+      ok: true,
+      reportText: reserved.reportText,
+      reportId,
+      cached: true,
+      balance: session.ticketBalance,
+    });
   }
-
-  if (session.ticketBalance < SAJU_LLM_REPORT_PRICE_KRW) {
-    return NextResponse.json(
-      { ok: false, balance: session.ticketBalance, required: SAJU_LLM_REPORT_PRICE_KRW },
-      { status: 402 }
-    );
+  if (reserved.status === "inProgress") {
+    return NextResponse.json({ error: "리포트를 만들고 있어요. 잠시 후 다시 시도해주세요." }, { status: 409 });
   }
-
-  const todayCount = await countTodayReports(session.uid);
-  if (todayCount >= DAILY_REPORT_LIMIT) {
+  if (reserved.status === "insufficient") {
+    return NextResponse.json({ ok: false, balance: reserved.balance, required: reserved.required }, { status: 402 });
+  }
+  if (reserved.status === "limit") {
     return NextResponse.json(
       { error: "오늘 생성 가능한 AI 리포트 횟수를 다 쓰셨어요. 내일 다시 시도해주세요." },
       { status: 429 }
     );
   }
 
+  // status === "reserved" — 잔디는 이미 차감됐다. 아래 두 실패 경로 모두 반드시 환불한다.
   let reportText: string;
   try {
     const factSheet = buildSajuFactSheet(input);
@@ -69,19 +80,19 @@ export async function POST(request: NextRequest) {
       8000
     );
   } catch (err) {
+    await refundWallet(session.uid, SAJU_LLM_REPORT_PRICE_KRW, activity);
+    await abandonReservation(session.uid, reportId);
     const message = err instanceof Error ? err.message : "리포트 생성에 실패했어요.";
     return NextResponse.json({ error: message }, { status: 502 });
   }
 
-  const chargeResult = await chargeWallet(session.uid, SAJU_LLM_REPORT_PRICE_KRW, {
-    category: "상세사주 AI리포트",
-    title: `${input.name?.trim() || "나"}님의 상세 사주 리포트`,
-  });
-  if (!chargeResult.ok) {
-    return NextResponse.json({ ok: false, balance: chargeResult.balance, required: chargeResult.required }, { status: 402 });
+  try {
+    await saveSajuLlmReport(session.uid, reportId, input, reportText);
+  } catch {
+    await refundWallet(session.uid, SAJU_LLM_REPORT_PRICE_KRW, activity);
+    await abandonReservation(session.uid, reportId);
+    return NextResponse.json({ error: "리포트 저장에 실패했어요. 다시 시도해주세요." }, { status: 500 });
   }
 
-  await saveSajuLlmReport(session.uid, reportId, input, reportText);
-
-  return NextResponse.json({ ok: true, reportText, reportId, cached: false, balance: chargeResult.balance });
+  return NextResponse.json({ ok: true, reportText, reportId, cached: false, balance: reserved.balance });
 }

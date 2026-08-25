@@ -38,3 +38,28 @@ export async function chargeWallet(
 
   return result;
 }
+
+// 선차감 후 처리가 실패했을 때(LLM 호출 실패, 저장 실패 등) 잔액을 되돌리는 유일한 지점.
+// activity에 isRefund: true를 남겨 일반 결제 내역과 구분한다.
+export async function refundWallet(
+  uid: string,
+  amountKrw: number,
+  activity: { category: string; title: string }
+): Promise<void> {
+  if (amountKrw <= 0) return;
+  const db = getDb();
+  const userRef = db.collection("users").doc(uid);
+
+  await db.runTransaction(async (tx) => {
+    const userSnap = await tx.get(userRef);
+    const balance = (userSnap.data()?.ticketBalance as number | undefined) ?? 0;
+    tx.update(userRef, { ticketBalance: balance + amountKrw });
+    tx.set(userRef.collection("activity").doc(), {
+      category: activity.category,
+      title: activity.title,
+      priceKrw: -amountKrw,
+      isRefund: true,
+      unlockedAt: FieldValue.serverTimestamp(),
+    });
+  });
+}
