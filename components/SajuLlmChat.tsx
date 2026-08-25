@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { chargeFreeWallet } from "@/lib/freeCharge";
 
 interface ChatEntry {
@@ -20,6 +21,7 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
   const [freeRemaining, setFreeRemaining] = useState(freeQuestionsTotal);
   const [insufficient, setInsufficient] = useState<{ balance: number; required: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
   const [charging, setCharging] = useState(false);
   const [chargeError, setChargeError] = useState<string | null>(null);
 
@@ -42,6 +44,7 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
     setSending(true);
     setError(null);
     setInsufficient(null);
+    setSessionExpired(false);
     setMessages((prev) => [...prev, { role: "user", text: question }]);
     setInput("");
 
@@ -54,6 +57,12 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
       if (res.status === 402) {
         const data = (await res.json()) as { balance: number; required: number };
         setInsufficient({ balance: data.balance, required: data.required });
+        setMessages((prev) => prev.slice(0, -1));
+        setInput(question);
+        return;
+      }
+      if (res.status === 401) {
+        setSessionExpired(true);
         setMessages((prev) => prev.slice(0, -1));
         setInput(question);
         return;
@@ -110,6 +119,14 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
         </div>
       )}
       {error && <p className="mt-2 text-center text-xs font-semibold text-coral-dark">{error}</p>}
+      {sessionExpired && (
+        <div className="mt-2 text-center">
+          <p className="text-xs font-semibold text-coral-dark">로그인이 끊겼어요.</p>
+          <Link href="/my" className="text-xs font-bold text-coral-dark underline underline-offset-2">
+            다시 로그인하기
+          </Link>
+        </div>
+      )}
 
       <div className="mt-3 flex gap-2">
         <input

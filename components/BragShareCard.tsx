@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { isUserCancelledShare } from "@/lib/shareCard";
+import { notify } from "@/lib/notify";
 
 const BRAG_TEXTS = [
   "🦊💌 나 방금 비밀편지 받았어! 근데 누가 보냈는지 아직도 모르겠어... 궁금하면 너도 나한테 편지 보내볼래?",
@@ -29,8 +31,11 @@ export default function BragShareCard({ handle, unlockedCount }: BragShareCardPr
         await navigator.clipboard.writeText(`${text}\n${url}`);
         setStatus("copied");
       }
-    } catch {
-      // 공유 취소나 clipboard 실패는 조용히 무시 — 사용자가 그냥 마음을 바꾼 경우가 대부분
+    } catch (err) {
+      // Web Share 시트를 직접 닫은 경우(AbortError)는 실패가 아니라 마음을 바꾼 것뿐이라 조용히 넘어간다.
+      if (!isUserCancelledShare(err)) {
+        notify({ kind: "normal", text: "공유에 실패했어요. 다시 시도해주세요." });
+      }
     }
     setTimeout(() => setStatus("idle"), 2500);
   }

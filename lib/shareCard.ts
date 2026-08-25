@@ -27,3 +27,19 @@ export async function shareImageOrCopyLink(blob: Blob, filename: string, shareTe
   await navigator.clipboard.writeText(`${shareText} ${window.location.origin}`);
   return "copied";
 }
+
+/** navigator.share()에서 사용자가 공유 시트를 직접 닫아서 난 AbortError인지 판별한다 —
+ * 이 경우는 "실패"가 아니라 마음을 바꾼 것뿐이라 에러 토스트를 띄우면 안 된다. */
+export function isUserCancelledShare(err: unknown): boolean {
+  return err instanceof DOMException && err.name === "AbortError";
+}
+
+/** 이미지 캡처/공유가 진짜로 실패했을 때 최후의 수단으로 페이지 링크만이라도 복사해준다. */
+export async function copyPageUrlFallback(): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    return true;
+  } catch {
+    return false;
+  }
+}

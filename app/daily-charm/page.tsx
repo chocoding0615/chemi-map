@@ -6,7 +6,14 @@ import FoxMascot from "@/components/FoxMascot";
 import CharmFlipCard from "@/components/CharmFlipCard";
 import { getCharmById, type Rarity } from "@/lib/charms";
 import { drawTodayCharm, getTodayDrawResult, type DrawTodayCharmResult } from "@/lib/dailyCharm";
-import { captureNodeAsPng, downloadBlob, shareImageOrCopyLink } from "@/lib/shareCard";
+import {
+  captureNodeAsPng,
+  downloadBlob,
+  shareImageOrCopyLink,
+  isUserCancelledShare,
+  copyPageUrlFallback,
+} from "@/lib/shareCard";
+import { notify } from "@/lib/notify";
 
 const RARITY_LABEL: Record<Rarity, string> = { common: "커먼", rare: "레어", epic: "에픽" };
 const RARITY_DOT: Record<Rarity, string> = {
@@ -50,7 +57,7 @@ export default function DailyCharmPage() {
       const blob = await captureNodeAsPng(cardRef.current);
       downloadBlob(blob, "foxjum-daily-charm.png");
     } catch {
-      // 캡처 실패 — 조용히 무시
+      notify({ kind: "normal", text: "이미지 저장에 실패했어요. 다시 시도해주세요." });
     } finally {
       setShareStatus("idle");
     }
@@ -64,8 +71,14 @@ export default function DailyCharmPage() {
       const status = await shareImageOrCopyLink(blob, "foxjum-daily-charm.png", "오늘의 부적을 뽑았어요 🎴");
       setShareStatus(status === "copied" ? "copied" : "idle");
       if (status === "copied") setTimeout(() => setShareStatus("idle"), 2000);
-    } catch {
+    } catch (err) {
       setShareStatus("idle");
+      if (isUserCancelledShare(err)) return;
+      const copied = await copyPageUrlFallback();
+      notify({
+        kind: "normal",
+        text: copied ? "공유는 실패했지만 링크는 복사했어요!" : "공유에 실패했어요. 다시 시도해주세요.",
+      });
     }
   }
 

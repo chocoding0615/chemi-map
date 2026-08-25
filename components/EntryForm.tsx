@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import MbtiSelect from "./MbtiSelect";
@@ -8,6 +8,7 @@ import ResultCard from "./ResultCard";
 import BirthDatePicker from "./BirthDatePicker";
 import BirthTimePicker from "./BirthTimePicker";
 import type { ElementKey } from "@/lib/result-engine/elements";
+import { registerBackHandler } from "@/lib/backHandler";
 
 interface EntryFormProps {
   slug: string;
@@ -39,6 +40,11 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
+
+  useEffect(() => {
+    if (!result) return;
+    return registerBackHandler(() => setResult(null));
+  }, [result]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -92,6 +98,13 @@ export default function EntryForm({ slug, ownerName }: EntryFormProps) {
         >
           나도 여우점 만들어보기
         </Link>
+        <button
+          type="button"
+          onClick={() => setResult(null)}
+          className="block w-full text-center text-xs font-semibold text-brown-soft/90 underline underline-offset-2"
+        >
+          다시 입력하기
+        </button>
       </div>
     );
   }

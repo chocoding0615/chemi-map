@@ -1,6 +1,7 @@
 "use client";
 
 import type { RefObject } from "react";
+import Link from "next/link";
 import ElementIcon from "@/components/ElementIcon";
 import ElementDistributionChart from "@/components/ElementDistributionChart";
 import MockPayGate from "@/components/MockPayGate";
@@ -106,6 +107,14 @@ export default function SajuResultView({ result, resultRef, onReset }: SajuResul
             mbti: result.mbti || undefined,
           }}
         />
+
+        <Link
+          href="/today"
+          className="mt-4 flex w-full items-center justify-between rounded-2xl bg-white p-4 shadow-sm ring-1 ring-brown/5 transition active:scale-[0.98] hover:bg-apricot/40"
+        >
+          <span className="text-sm font-bold text-brown">오늘 운세도 볼까요?</span>
+          <span className="text-lg text-brown-soft/30">→</span>
+        </Link>
 
         <button
           type="button"

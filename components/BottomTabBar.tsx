@@ -16,7 +16,7 @@ export default function BottomTabBar() {
     >
       <div className="mx-auto flex h-16 max-w-[480px] md:max-w-2xl items-stretch justify-between px-1">
         {TABS.map((tab) => {
-          const active = isTabActive(pathname, tab.href);
+          const active = isTabActive(pathname, tab);
           return (
             <Link
               key={tab.href}

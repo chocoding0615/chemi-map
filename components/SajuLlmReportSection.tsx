@@ -14,6 +14,7 @@ type ResultState =
   | { phase: "generating" }
   | { phase: "ready"; reportText: string; reportId: string }
   | { phase: "insufficient"; balance: number; required: number }
+  | { phase: "unauthorized" }
   | { phase: "error"; message: string };
 
 export default function SajuLlmReportSection({ input }: { input: SajuReportInput }) {
@@ -60,6 +61,10 @@ export default function SajuLlmReportSection({ input }: { input: SajuReportInput
       if (res.status === 402) {
         const data = (await res.json()) as { balance: number; required: number };
         setResult({ phase: "insufficient", balance: data.balance, required: data.required });
+        return;
+      }
+      if (res.status === 401) {
+        setResult({ phase: "unauthorized" });
         return;
       }
       if (!res.ok) {
@@ -120,9 +125,13 @@ export default function SajuLlmReportSection({ input }: { input: SajuReportInput
 
       {result.phase === "error" && <p className="mt-3 text-xs font-semibold text-coral-dark">{result.message}</p>}
 
+      {result.phase === "unauthorized" && (
+        <p className="mt-3 text-xs font-semibold text-coral-dark">로그인이 끊겼어요. 다시 로그인해주세요.</p>
+      )}
+
       {wallet.status === "loading" && <div className="mt-4 h-11 w-full animate-pulse rounded-2xl bg-brown/5" />}
 
-      {wallet.status === "guest" && (
+      {(wallet.status === "guest" || result.phase === "unauthorized") && (
         <Link
           href="/my"
           className="mt-4 flex w-full items-center justify-center rounded-2xl border border-dashed border-coral bg-white/50 py-3 text-sm font-bold text-coral-dark transition active:scale-95 hover:bg-white"
@@ -131,7 +140,7 @@ export default function SajuLlmReportSection({ input }: { input: SajuReportInput
         </Link>
       )}
 
-      {wallet.status === "ready" && result.phase !== "generating" && (
+      {wallet.status === "ready" && result.phase !== "generating" && result.phase !== "unauthorized" && (
         <button
           type="button"
           onClick={handleGenerate}

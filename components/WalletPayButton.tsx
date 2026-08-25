@@ -26,6 +26,7 @@ export default function WalletPayButton({
   const [purchasing, setPurchasing] = useState(false);
   const [insufficient, setInsufficient] = useState<{ balance: number; required: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
   const [charging, setCharging] = useState(false);
   const [chargeError, setChargeError] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
@@ -72,6 +73,10 @@ export default function WalletPayButton({
         setInsufficient({ balance: data.balance, required: data.required });
         return;
       }
+      if (res.status === 401) {
+        setSessionExpired(true);
+        return;
+      }
       if (!res.ok) throw new Error();
       onSuccess();
     } catch {
@@ -85,14 +90,21 @@ export default function WalletPayButton({
     return <div className="mt-5 h-11 w-full animate-pulse rounded-2xl bg-brown/5" />;
   }
 
-  if (wallet.status === "guest") {
+  if (wallet.status === "guest" || sessionExpired) {
     return (
-      <Link
-        href="/my"
-        className="mt-5 flex w-full items-center justify-center rounded-2xl border border-dashed border-coral bg-white/50 py-3 text-sm font-bold text-coral-dark transition active:scale-95 hover:bg-white"
-      >
-        🔒 로그인하고 열어보기
-      </Link>
+      <div className="mt-5 w-full">
+        {sessionExpired && (
+          <p className="mb-1.5 text-center text-xs font-semibold text-coral-dark">
+            로그인이 끊겼어요. 다시 로그인해주세요.
+          </p>
+        )}
+        <Link
+          href="/my"
+          className="flex w-full items-center justify-center rounded-2xl border border-dashed border-coral bg-white/50 py-3 text-sm font-bold text-coral-dark transition active:scale-95 hover:bg-white"
+        >
+          🔒 로그인하고 열어보기
+        </Link>
+      </div>
     );
   }
 

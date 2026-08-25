@@ -9,9 +9,16 @@ import MbtiSelect from "@/components/MbtiSelect";
 import BirthDatePicker from "@/components/BirthDatePicker";
 import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
 import { getFoxType, type FoxTypeResult } from "@/lib/result-engine/foxType";
-import { captureNodeAsPng, downloadBlob, shareImageOrCopyLink } from "@/lib/shareCard";
+import {
+  captureNodeAsPng,
+  downloadBlob,
+  shareImageOrCopyLink,
+  isUserCancelledShare,
+  copyPageUrlFallback,
+} from "@/lib/shareCard";
 import { awardForAction } from "@/lib/foxRewards";
 import { registerBackHandler } from "@/lib/backHandler";
+import { notify } from "@/lib/notify";
 
 interface PageResult extends FoxTypeResult {
   distribution: Record<ElementKey, number>;
@@ -59,7 +66,7 @@ export default function FoxTypePage() {
       downloadBlob(blob, `foxjum-${result.element}.png`);
       awardForAction("share");
     } catch {
-      // 캡처 실패 — 조용히 무시(브라우저 호환성 이슈일 가능성)
+      notify({ kind: "normal", text: "이미지 저장에 실패했어요. 다시 시도해주세요." });
     } finally {
       setShareStatus("idle");
     }
@@ -74,8 +81,14 @@ export default function FoxTypePage() {
       awardForAction("share");
       setShareStatus(status === "copied" ? "copied" : "idle");
       if (status === "copied") setTimeout(() => setShareStatus("idle"), 2000);
-    } catch {
+    } catch (err) {
       setShareStatus("idle");
+      if (isUserCancelledShare(err)) return;
+      const copied = await copyPageUrlFallback();
+      notify({
+        kind: "normal",
+        text: copied ? "공유는 실패했지만 링크는 복사했어요!" : "공유에 실패했어요. 다시 시도해주세요.",
+      });
     }
   }
 
