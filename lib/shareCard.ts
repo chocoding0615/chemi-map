@@ -32,6 +32,23 @@ export async function shareImageOrCopyLink(blob: Blob, filename: string, shareTe
   return "copied";
 }
 
+/** 링크(초대 URL)만 공유한다. 이미지 파일을 같이 실어 보내면(navigator.share의 files)
+ * 카카오톡 등 일부 공유 대상 앱이 text/url을 캡션으로 안 붙이고 이미지만 받기도 해서,
+ * "받은 사람이 눌러서 들어올 수 있는 링크"가 목적일 땐 이미지 없이 텍스트+링크만 보낸다. */
+export async function shareLink(shareText: string, url: string): Promise<"shared" | "copied"> {
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: "여우점", text: shareText, url });
+      return "shared";
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") throw err;
+      // 공유 시트 자체가 실패한 경우(사용자 취소 아님) 클립보드 복사로 넘어간다.
+    }
+  }
+  await navigator.clipboard.writeText(`${shareText} ${url}`);
+  return "copied";
+}
+
 /** navigator.share()에서 사용자가 공유 시트를 직접 닫아서 난 AbortError인지 판별한다 —
  * 이 경우는 "실패"가 아니라 마음을 바꾼 것뿐이라 에러 토스트를 띄우면 안 된다. */
 export function isUserCancelledShare(err: unknown): boolean {

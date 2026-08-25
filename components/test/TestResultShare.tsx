@@ -1,12 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import {
-  captureNodeAsPng,
-  downloadBlob,
-  shareImageOrCopyLink,
-  isUserCancelledShare,
-} from "@/lib/shareCard";
+import { captureNodeAsPng, downloadBlob, shareLink, isUserCancelledShare } from "@/lib/shareCard";
 import { notify } from "@/lib/notify";
 
 export type CardTheme = "ice" | "wave" | "fire" | "burst";
@@ -58,11 +53,12 @@ export default function TestResultShare({ data }: { data: TestResultCardData }) 
   async function onShare() {
     setBusy("share");
     try {
-      const blob = await makeBlob();
       // 결과 페이지(내 점수) 링크가 아니라 테스트 시작 링크를 보내야 받은 사람이
-      // 바로 자기 결과를 볼 수 있다 - 이미지만 보내면 받은 사람은 참여할 방법이 없었다.
+      // 눌러서 바로 참여할 수 있다. 이미지 파일을 같이 보내면 공유 대상 앱에 따라
+      // 링크 텍스트가 캡션으로 안 붙는 경우가 있어, 공유는 이미지 없이 링크만 보낸다
+      // (이미지가 필요하면 "이미지 저장" 버튼으로 따로 받을 수 있다).
       const inviteUrl = `${window.location.origin}/test/${data.slug}`;
-      const res = await shareImageOrCopyLink(blob, `yeojujeom-${data.name}.png`, `${data.nickname || "나"}는 ${data.name}? 나도 해봐!`, inviteUrl);
+      const res = await shareLink(`${data.nickname || "나"}는 ${data.name}? 나도 해봐!`, inviteUrl);
       notify({ kind: "normal", text: res === "shared" ? "공유했어요! 🎉" : "링크를 복사했어요! 🔗" });
     } catch (err) {
       if (!isUserCancelledShare(err)) notify({ kind: "normal", text: "공유에 실패했어요 😢" });

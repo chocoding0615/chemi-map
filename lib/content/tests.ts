@@ -160,7 +160,7 @@ const GWAMOIP_RESULTS: TestResultType[] = [
     description: [
       "세상이 불바다가 됐어요. 드라마 결말 유출, 폭발한 단톡방, 사고 친 지인. 모두 소리치는데 당신은 조용히 팝콘을 집어요.",
       "“그래서 다음 화 언제 나옴?” 이게 당신의 리액션 전부예요. 남들이 파도에 휩쓸릴 때 당신은 옥상에서 내려다봐요. 그 시야 덕에 아무도 못 본 걸 보죠.",
-      "다만 문득 생각할 때가 있어요. 나도 한번 진짜로 미쳐보면 어떨까. 결론은 매번 같아요. 내일 하자, 오늘은 여기까지.",
+      "다만 문득 생각할 때가 있어요. '나도 한번 진짜로 미쳐볼까?' 결론은 매번 같아요. '내일 하자, 오늘은 여기까지.'",
     ],
     foxComment: "누굴까... 세상에서 제일 평온한 여우는 누구게! 바로 너란 말이야~",
     keywords: ["멘탈부동의신", "여유의아이콘"],
@@ -174,11 +174,11 @@ const GWAMOIP_RESULTS: TestResultType[] = [
     minScore: 20,
     maxScore: 29,
     description: [
-      "당신에겐 비밀 스위치가 있어요. 평소엔 누구보다 느긋하다가, 마음에 드는 걸 발견한 순간 딸깍 — 눈을 떠보니 새벽 3시, 47화예요.",
+      "당신에겐 비밀 스위치가 있어요. 평소엔 누구보다 느긋하다가, 마음에 드는 걸 발견한 순간 딸깍 — 정신을 차려보면 어느새 새벽 3시, 벌써 47화까지 보고 있어요.",
       "주변 사람은 당신이 몰입하는 줄도 몰라요. 말이 없으니까요. 하지만 당신 안에서는 이미 대서양 파도가 치고 있어요.",
-      "스위치를 끌 줄 아는 건 재능이에요. 대신 한 달에 한 번은 고의로 안 끄고 밤새워보세요. 그날의 피곤함이 인생에서 제일 달콤하답니다.",
+      "스위치를 끌 줄 아는 건 재능이에요. 대신 한 달에 한 번은 일부러 스위치를 안 끄고 밤을 새워보세요. 그날의 피곤함이 인생에서 제일 달콤하답니다.",
     ],
-    foxComment: "오~ 균형의 달인이네! 나도 도토리 저장고는 적당히 채우는 편이야.",
+    foxComment: "오~ 균형의 달인이네! 나도 신나게 뛰어놀다가도 때 되면 굴로 쏙 들어가는 편이야.",
     keywords: ["어른의몰입력", "스위치마스터"],
     theme: "wave",
   },
@@ -194,7 +194,7 @@ const GWAMOIP_RESULTS: TestResultType[] = [
       "친구가 아직 못 봤다고 할 때 당신은 조금 슬퍼요. 스포일러 때문이 아니라, 그 사람이 늦었다는 사실에요.",
       "덕분에 당신 주변엔 항상 최신화가 돌아요. 당신은 걸어 다니는 리뷰 위성이에요. 가끔은 멈춰 서서 명장면을 다시 보는 것도 잊지 마세요.",
     ],
-    foxComment: "나도 도토리 발견하면 하루 종일 캐! 우리 좀 잘 맞겠는데?",
+    foxComment: "나도 사냥감 냄새 한번 맡으면 하루 종일 쫓아! 우리 좀 잘 맞겠는데?",
     keywords: ["입문속도전", "트렌드알림기계"],
     theme: "fire",
   },
@@ -340,7 +340,7 @@ const LOVE_RESULTS: TestResultType[] = [
       "당신의 사랑은 합체가 아니라 나란히 걷기예요. 손은 잡되, 다른 한 손은 호주머니에 두고 싶은 타입. 그 여백이 당신의 산소죠.",
       "다만 기억할 것 — 상대의 산소는 함께 숨쉬는 시간일 수도 있어요. 가끔은 여백 없이 꽉 안아주세요. 상대는 놀라겠지만, 나쁘지 않을 거예요.",
     ],
-    foxComment: "혼자 도토리 먹는 것도 은근히 좋지! 나도 이해해~",
+    foxComment: "혼자 낮잠 자는 것도 은근히 좋지! 나도 이해해~",
     keywords: ["나의시간은소중해", "거리두기장인"],
     theme: "ice",
   },
@@ -356,7 +356,7 @@ const LOVE_RESULTS: TestResultType[] = [
       "당신의 사랑은 불꽃놀이가 아니라 난롯불이에요. 첫날밤엔 심심해 보여도, 겨울밤에 제일 먼저 찾게 되는 건 결국 이 불씨죠.",
       "표현이 서툰 게 죄는 아니에요. 다만 마음은 쌓아두면 적립금이지 사랑이 아니에요. 일주일에 한 번, 좋다는 말을 깨서 소비해보세요. 재고는 안 줄어드니까요.",
     ],
-    foxComment: "도토리 저장고처럼 사랑도 차곡차곡 쌓는 타입이네!",
+    foxComment: "굴을 조금씩 넓혀가듯 사랑도 차곡차곡 쌓는 타입이네!",
     keywords: ["어른의연애", "은은한다정"],
     theme: "wave",
   },
@@ -388,7 +388,7 @@ const LOVE_RESULTS: TestResultType[] = [
       "굿모닝 메시지, 점심 리마인드, 저녁 유머, 자기 전 장문 — 당신의 애정은 예약 작업처럼 돌고, 상대가 잠든 새벽에도 당신 마음은 출근해 있어요.",
       "광공은 사랑의 재생에너지예요. 단 하나의 경고 — 태양에 너무 가까이 가면 상대가 녹아요. 가끔은 지구 궤도에서 따스하게 비춰줘도 충분해요.",
     ],
-    foxComment: "우와... 나도 내 아껴둔 도토리 전부 주고 싶은 사람이 생기면 저렇게 된다고!",
+    foxComment: "우와... 나도 애써 잡은 사냥감을 통째로 주고 싶은 사람이 생기면 저렇게 된다고!",
     keywords: ["광공맞음", "헌신의화신"],
     theme: "burst",
   },
@@ -534,7 +534,7 @@ const PHONE_RESULTS: TestResultType[] = [
       "무한 스크롤 늪도 알아요. 피곤한 날엔 당신도 빠져요. 다음 날 거울 보며 또 그랬네라고 중얼거리는 것까지 포함해서요.",
       "디지털과 현실 사이 줄타기 10년차 베테랑이에요. 이대로도 좋지만 한 달에 하룻밤은 충전기에서 떼어놓고 자보세요.",
     ],
-    foxComment: "적당히 먹는 도토리가 제일 오래가는 법이지!",
+    foxComment: "적당히 자는 낮잠이 제일 개운한 법이지!",
     keywords: ["균형의달인", "건강한관계"],
     theme: "wave",
   },
@@ -615,11 +615,17 @@ export function clampTestScore(def: TestDef, score: number): number {
   return Math.min(Math.max(score, first.minScore), last.maxScore);
 }
 
-// 합산 점수(예: 12~48)를 그대로 보여주면 "만점이 뭔데?" 싶어 낮아 보인다 -
-// 공유 카드엔 문항 최저~최고 구간을 0~100으로 환산한 점수를 보여준다.
+// 합산 점수(예: 12~48)를 0~100으로 그대로 환산하면 최저 구간이 20~30점대로 나와 "낮은
+// 점수"처럼 보인다. 바이럴 테스트는 누구나 공유하고 싶은 점수가 나와야 하니, 문항
+// 최저~최고 구간을 [DISPLAY_SCORE_MIN, DISPLAY_SCORE_MAX] 구간으로 환산해 아무리
+// 낮아도 최소 점수 밑으로는 안 내려가게 한다.
+const DISPLAY_SCORE_MIN = 65;
+const DISPLAY_SCORE_MAX = 99;
+
 export function scoreToDisplayScore(def: TestDef, score: number): number {
   const min = def.results[0].minScore;
   const max = def.results[def.results.length - 1].maxScore;
-  if (max <= min) return 100;
-  return Math.round(((score - min) / (max - min)) * 100);
+  if (max <= min) return DISPLAY_SCORE_MAX;
+  const ratio = (score - min) / (max - min);
+  return Math.round(DISPLAY_SCORE_MIN + ratio * (DISPLAY_SCORE_MAX - DISPLAY_SCORE_MIN));
 }
