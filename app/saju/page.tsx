@@ -14,6 +14,7 @@ import MbtiBehaviorSection from "@/components/MbtiBehaviorSection";
 import SajuLlmReportSection from "@/components/SajuLlmReportSection";
 import ProfileLoadModal from "@/components/ProfileLoadModal";
 import AdvancedSettings, { DEFAULT_ADVANCED_SETTINGS, type AdvancedSettingsValue } from "@/components/AdvancedSettings";
+import { SAJU_SUMMARY_PRICE_KRW } from "@/lib/pricing";
 import type { ProfileDoc } from "@/lib/profileTypes";
 import type { MbtiType } from "@/lib/result-engine/temperament";
 import {
@@ -251,7 +252,7 @@ export default function SajuPage() {
             <p className="mt-3 text-sm leading-relaxed text-brown-soft">{result.teaser}</p>
 
             <MockPayGate
-              priceKrw={7}
+              priceKrw={SAJU_SUMMARY_PRICE_KRW}
               category="내 사주 풀이"
               title={`${ELEMENT_BANK[result.dominant].label}(${ELEMENT_BANK[result.dominant].hanja}) 기운 상세 풀이`}
             >
