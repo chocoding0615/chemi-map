@@ -16,6 +16,7 @@ export const TABS: TabDef[] = [
   },
   { label: "내 사주", href: "/saju", icon: "📜" },
   { label: "비밀편지함", href: "/letter/inbox", icon: "🔒" },
+  { label: "심테", href: "/test", icon: "🎯" },
   {
     label: "마이페이지",
     href: "/my",
