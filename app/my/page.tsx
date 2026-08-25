@@ -5,6 +5,7 @@ import LogoutButton from "@/components/LogoutButton";
 import WalletTierPicker from "@/components/WalletTierPicker";
 import NicknameEditForm from "@/components/NicknameEditForm";
 import MyPageTabs from "@/components/MyPageTabs";
+import EmptyState from "@/components/common/EmptyState";
 import { getSession, type Provider } from "@/lib/session";
 import { getDb } from "@/lib/firebaseAdmin";
 import { isAdmin } from "@/lib/admin";
@@ -191,30 +192,40 @@ async function LetterInboxBanner({ uid }: { uid: string }) {
 
 async function MyReportList({ uid }: { uid: string }) {
   const reports = await listSajuLlmReports(uid, 10);
-  if (reports.length === 0) return null;
 
   return (
     <div className="mt-8 w-full">
       <h2 className="text-sm font-semibold text-brown-soft/90">이전 운세보기 (AI 상세 사주)</h2>
-      <div className="mt-3 space-y-2">
-        {reports.map((report) => (
-          <Link
-            key={report.id}
-            href={`/my/reports/${report.id}`}
-            className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm ring-1 ring-brown/5 transition active:scale-[0.98] hover:bg-cream/40"
-          >
-            <div className="min-w-0">
-              <p className="truncate text-sm font-bold text-brown">
-                {report.name ? `${report.name}님의 사주` : "나의 사주"}
-              </p>
-              <p className="mt-0.5 text-[11px] text-brown-soft/40">
-                {report.birthdate} · {new Date(report.createdAt).toLocaleDateString("ko-KR")}
-              </p>
-            </div>
-            <span className="shrink-0 text-lg text-brown-soft/30">→</span>
-          </Link>
-        ))}
-      </div>
+      {reports.length === 0 ? (
+        <div className="mt-3">
+          <EmptyState
+            icon="🔮"
+            message="아직 만든 AI 리포트가 없어요."
+            actionHref="/saju"
+            actionLabel="내 사주 풀이하러 가기"
+          />
+        </div>
+      ) : (
+        <div className="mt-3 space-y-2">
+          {reports.map((report) => (
+            <Link
+              key={report.id}
+              href={`/my/reports/${report.id}`}
+              className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm ring-1 ring-brown/5 transition active:scale-[0.98] hover:bg-cream/40"
+            >
+              <div className="min-w-0">
+                <p className="truncate text-sm font-bold text-brown">
+                  {report.name ? `${report.name}님의 사주` : "나의 사주"}
+                </p>
+                <p className="mt-0.5 text-[11px] text-brown-soft/40">
+                  {report.birthdate} · {new Date(report.createdAt).toLocaleDateString("ko-KR")}
+                </p>
+              </div>
+              <span className="shrink-0 text-lg text-brown-soft/30">→</span>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -239,9 +250,9 @@ async function MyActivityList({ uid }: { uid: string }) {
     <div className="mt-8 w-full">
       <h2 className="text-sm font-semibold text-brown-soft/90">구매한 풀이</h2>
       {activity.length === 0 ? (
-        <p className="mt-3 rounded-2xl bg-white p-5 text-center text-sm text-brown-soft/90 ring-1 ring-brown/5">
-          아직 열어본 풀이가 없어요.
-        </p>
+        <div className="mt-3">
+          <EmptyState icon="🌱" message="아직 열어본 풀이가 없어요." actionHref="/" actionLabel="운세 보러 가기" />
+        </div>
       ) : (
         <div className="mt-3 space-y-2">
           {activity.map((item) => (

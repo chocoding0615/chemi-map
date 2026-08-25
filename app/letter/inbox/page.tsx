@@ -4,6 +4,7 @@ import CopyLinkButton from "@/components/CopyLinkButton";
 import SecretLetterCard from "@/components/SecretLetterCard";
 import DeleteLetterButton from "@/components/DeleteLetterButton";
 import BragShareCard from "@/components/BragShareCard";
+import EmptyState from "@/components/common/EmptyState";
 import { getSession } from "@/lib/session";
 import { getOrCreateLetterHandle } from "@/lib/letterHandle";
 import { hasUnlockedAnyLetter, MAX_LETTERS_PER_INBOX, LETTER_UNLOCK_PRICE_KRW } from "@/lib/letters";
@@ -113,9 +114,9 @@ async function LetterInboxBody({ uid }: { uid: string }) {
           </p>
         )}
         {letters.length === 0 ? (
-          <p className="mt-3 rounded-2xl bg-white p-5 text-center text-sm text-brown-soft/90 ring-1 ring-brown/5">
-            아직 도착한 편지가 없어요. 링크를 공유해보세요!
-          </p>
+          <div className="mt-3">
+            <EmptyState icon="💌" message="아직 도착한 편지가 없어요. 위 링크를 친구에게 공유해보세요!" />
+          </div>
         ) : (
           <div className="mt-3 space-y-2">
             {letters.map((letter) =>
