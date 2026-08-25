@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
-import { chargeWallet } from "@/lib/wallet";
+import { refundWallet } from "@/lib/wallet";
 import { callLLM, type ChatMessage } from "@/lib/llm";
 import { SAJU_CHAT_SYSTEM_PROMPT } from "@/lib/result-engine/sajuPrompt";
 import {
@@ -8,6 +8,8 @@ import {
   getChatMessages,
   countUserQuestions,
   appendChatMessage,
+  reserveChatQuestion,
+  rollbackChatQuestion,
   SAJU_LLM_CHAT_FREE_QUESTIONS,
   SAJU_LLM_CHAT_PRICE_KRW,
 } from "@/lib/sajuLlmReport";
@@ -43,15 +45,35 @@ export async function POST(request: NextRequest) {
   const report = await getSajuLlmReport(session.uid, reportId);
   if (!report) return NextResponse.json({ error: "리포트를 찾을 수 없어요." }, { status: 404 });
 
-  const questionsUsed = await countUserQuestions(session.uid, reportId);
-  const isFree = questionsUsed < SAJU_LLM_CHAT_FREE_QUESTIONS;
+  // 레거시(questionCount 필드 없는) 리포트용 추정치 - 실제 판정은 트랜잭션 안에서 한다.
+  const estimatedCount = await countUserQuestions(session.uid, reportId);
 
-  if (!isFree) {
-    if (session.ticketBalance < SAJU_LLM_CHAT_PRICE_KRW) {
-      return NextResponse.json(
-        { ok: false, balance: session.ticketBalance, required: SAJU_LLM_CHAT_PRICE_KRW },
-        { status: 402 }
-      );
+  // [질문 수 확인 -> 무료/유료 판정 -> 유료면 잔액 확인 후 선차감]을 트랜잭션 하나로 원자적으로
+  // 처리한다. 이후 LLM 호출은 결제가 이미 확정된("reserved") 상태에서만 일어난다.
+  const reserved = await reserveChatQuestion(
+    session.uid,
+    reportId,
+    estimatedCount,
+    SAJU_LLM_CHAT_PRICE_KRW,
+    SAJU_LLM_CHAT_FREE_QUESTIONS
+  );
+
+  if (reserved.status === "noReport") {
+    return NextResponse.json({ error: "리포트를 찾을 수 없어요." }, { status: 404 });
+  }
+  if (reserved.status === "insufficient") {
+    return NextResponse.json({ ok: false, balance: reserved.balance, required: reserved.required }, { status: 402 });
+  }
+
+  // status === "ok" - 유료였으면 잔디는 이미 차감됐다. 아래 실패 경로 모두 되돌린다.
+  // 클로저(rollback) 안에서는 타입 좁히기가 풀리므로 필요한 값들을 미리 꺼내둔다.
+  const uid = session.uid;
+  const { isFree } = reserved;
+  const activity = { category: "상세사주 후속질문", title: message.slice(0, 40) };
+  async function rollback() {
+    await rollbackChatQuestion(uid, reportId);
+    if (!isFree) {
+      await refundWallet(uid, SAJU_LLM_CHAT_PRICE_KRW, activity);
     }
   }
 
@@ -66,30 +88,24 @@ export async function POST(request: NextRequest) {
   try {
     reply = await callLLM(messages, 1200);
   } catch (err) {
+    await rollback();
     const errorMessage = err instanceof Error ? err.message : "답변 생성에 실패했어요.";
     return NextResponse.json({ error: errorMessage }, { status: 502 });
   }
 
-  let balance = session.ticketBalance;
-  if (!isFree) {
-    const chargeResult = await chargeWallet(session.uid, SAJU_LLM_CHAT_PRICE_KRW, {
-      category: "상세사주 후속질문",
-      title: message.slice(0, 40),
-    });
-    if (!chargeResult.ok) {
-      return NextResponse.json({ ok: false, balance: chargeResult.balance, required: chargeResult.required }, { status: 402 });
-    }
-    balance = chargeResult.balance;
+  try {
+    await appendChatMessage(session.uid, reportId, "user", message);
+    await appendChatMessage(session.uid, reportId, "assistant", reply);
+  } catch {
+    await rollback();
+    return NextResponse.json({ error: "답변 저장에 실패했어요. 다시 시도해주세요." }, { status: 500 });
   }
-
-  await appendChatMessage(session.uid, reportId, "user", message);
-  await appendChatMessage(session.uid, reportId, "assistant", reply);
 
   return NextResponse.json({
     ok: true,
     reply,
-    balance,
-    questionsUsed: questionsUsed + 1,
-    freeRemaining: Math.max(0, SAJU_LLM_CHAT_FREE_QUESTIONS - (questionsUsed + 1)),
+    balance: reserved.balance,
+    questionsUsed: reserved.usedCount + 1,
+    freeRemaining: Math.max(0, SAJU_LLM_CHAT_FREE_QUESTIONS - (reserved.usedCount + 1)),
   });
 }

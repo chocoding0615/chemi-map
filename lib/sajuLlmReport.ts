@@ -188,3 +188,65 @@ export async function countUserQuestions(uid: string, reportId: string): Promise
 export async function appendChatMessage(uid: string, reportId: string, role: "user" | "assistant", text: string): Promise<void> {
   await messagesRef(uid, reportId).add({ role, text, createdAt: FieldValue.serverTimestamp() });
 }
+
+export type ReserveChatResult =
+  | { status: "ok"; isFree: boolean; balance: number; usedCount: number }
+  | { status: "insufficient"; balance: number; required: number }
+  | { status: "noReport" };
+
+// 채팅 질문 1회분을 선점한다. 예전엔 [카운트 조회 -> 무료 판정 -> LLM 호출 -> 후불 차감]
+// 순서라 (1) LLM 비용이 들고 나서 차감 실패 가능, (2) 동시 요청 둘 다 무료 통과 레이스,
+// 두 문제가 있었다. 지금은 [질문 수 확인 -> 무료/유료 판정 -> 유료면 잔액 확인 후 선차감 ->
+// 카운터 증가]를 트랜잭션 하나로 묶어 둘 다 원천 차단한다. 사주 리포트의 reserveReportSlot과
+// 같은 패턴이다.
+export async function reserveChatQuestion(
+  uid: string,
+  reportId: string,
+  estimatedCount: number,
+  priceKrw: number,
+  freeLimit: number
+): Promise<ReserveChatResult> {
+  const db = getDb();
+  const userRef = db.collection("users").doc(uid);
+  const reportRef = userRef.collection("sajuLlmReports").doc(reportId);
+
+  return db.runTransaction(async (tx) => {
+    // 트랜잭션 안에서는 모든 읽기가 쓰기보다 먼저 와야 한다.
+    const [reportSnap, userSnap] = await Promise.all([tx.get(reportRef), tx.get(userRef)]);
+    if (!reportSnap.exists) return { status: "noReport" } as const;
+
+    const data = reportSnap.data() as { status?: string; questionCount?: unknown };
+    // 아직 생성 중인 선점 문서는 질문 대상 리포트가 없다는 것과 같다.
+    if (data.status === "generating") return { status: "noReport" } as const;
+
+    // questionCount 필드가 없는 레거시 리포트는 밖에서 센 값으로 초기화한다.
+    // 첫 선점 이후로는 이 필드가 유일한 신원(source of truth)이라 레이스가 없다.
+    const usedCount =
+      typeof data.questionCount === "number" ? data.questionCount : Math.max(0, estimatedCount);
+
+    let balance = (userSnap.data()?.ticketBalance as number | undefined) ?? 0;
+    const isFree = usedCount < freeLimit;
+    if (!isFree && priceKrw > 0) {
+      if (balance < priceKrw) {
+        return { status: "insufficient", balance, required: priceKrw } as const;
+      }
+      balance -= priceKrw;
+      tx.update(userRef, { ticketBalance: balance });
+    }
+    tx.set(reportRef, { questionCount: usedCount + 1 }, { merge: true });
+
+    return { status: "ok", isFree, balance, usedCount } as const;
+  });
+}
+
+// 선점 후 LLM 호출/저장이 실패했을 때 카운터를 되돌린다 - 남아있으면 사용자가 못 받은
+// 질문 한 번을 영구히 잃는다. 유료였으면 라우트에서 refundWallet도 함께 불러야 한다.
+// increment(-1)라 그 사이 다른 선점이 있어도 전체 합계는 정확히 맞아떨어진다.
+export async function rollbackChatQuestion(uid: string, reportId: string): Promise<void> {
+  await getDb()
+    .collection("users")
+    .doc(uid)
+    .collection("sajuLlmReports")
+    .doc(reportId)
+    .update({ questionCount: FieldValue.increment(-1) });
+}
