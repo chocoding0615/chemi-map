@@ -6,7 +6,8 @@ import FoxMascot from "@/components/FoxMascot";
 import BirthDatePicker from "@/components/BirthDatePicker";
 import CelebrityMatchCard from "@/components/CelebrityMatchCard";
 import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
-import { getCelebrityMatches, type CelebrityMatches } from "@/lib/result-engine/celebrityMatch";
+import { getCelebrityMatches } from "@/lib/result-engine/celebrityMatch";
+import type { CelebrityEntry } from "@/lib/content/celebrities";
 import {
   captureNodeAsPng,
   downloadBlob,
@@ -23,19 +24,21 @@ interface ImageInfo {
   sourcePageUrl: string;
 }
 
-interface PageResult extends CelebrityMatches {
+interface PageResult {
   element: ElementKey;
+  celebrity: CelebrityEntry;
 }
 
 export default function CelebMatchPage() {
   const [birthdate, setBirthdate] = useState("");
   const [isLunar, setIsLunar] = useState(false);
+  const [gender, setGender] = useState<"male" | "female" | "">("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<PageResult | null>(null);
-  const [images, setImages] = useState<Record<string, ImageInfo>>({});
-  // 이 키(id 쌍)에 대한 이미지가 이미 왔는지로 로딩 여부를 판단한다 - 별도 boolean을
+  const [image, setImage] = useState<ImageInfo | null>(null);
+  // 이 id에 대한 이미지가 이미 왔는지로 로딩 여부를 판단한다 - 별도 boolean을
   // 이펙트 시작부에서 동기적으로 set하지 않아도 되어 cascading render를 피한다.
-  const [imagesFetchedFor, setImagesFetchedFor] = useState<string | null>(null);
+  const [imageFetchedFor, setImageFetchedFor] = useState<string | null>(null);
   const [shareStatus, setShareStatus] = useState<"idle" | "working" | "copied">("idle");
   const [siteUrl, setSiteUrl] = useState("");
   const cardRef = useRef<HTMLDivElement>(null);
@@ -53,35 +56,37 @@ export default function CelebMatchPage() {
 
   useEffect(() => {
     if (!result) return;
-    const key = `${result.male.id},${result.female.id}`;
+    const id = result.celebrity.id;
     let cancelled = false;
-    fetch(`/api/celebrity-image?ids=${key}`)
+    fetch(`/api/celebrity-image?ids=${id}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data: { images: Record<string, ImageInfo> } | null) => {
         if (cancelled) return;
-        if (data) setImages(data.images);
-        setImagesFetchedFor(key);
+        if (data) setImage(data.images[id] ?? null);
+        setImageFetchedFor(id);
       })
       .catch(() => {
-        if (!cancelled) setImagesFetchedFor(key);
+        if (!cancelled) setImageFetchedFor(id);
       });
     return () => {
       cancelled = true;
     };
   }, [result]);
 
-  const imagesLoading = result ? imagesFetchedFor !== `${result.male.id},${result.female.id}` : false;
+  const imageLoading = result ? imageFetchedFor !== result.celebrity.id : false;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!birthdate) {
-      setError("생년월일을 입력해주세요.");
+    if (!birthdate || !gender) {
+      setError("생년월일과 성별을 입력해주세요.");
       return;
     }
     setError("");
     const { dominant } = calculateElementProfile(birthdate, undefined, { isLunar: isLunar || undefined });
     const matches = getCelebrityMatches(dominant, `${birthdate}-${isLunar}-celeb`);
-    setResult({ element: dominant, ...matches });
+    // 반대 성별 유명인만 보여준다.
+    const celebrity = gender === "male" ? matches.female : matches.male;
+    setResult({ element: dominant, celebrity });
     awardForAction("celebmatch");
   }
 
@@ -90,7 +95,7 @@ export default function CelebMatchPage() {
     setShareStatus("working");
     try {
       const blob = await captureNodeAsPng(cardRef.current);
-      downloadBlob(blob, `yeojujeom-celeb-${result.element}.png`);
+      downloadBlob(blob, `yeojujeom-celeb-${result.celebrity.id}.png`);
       awardForAction("share");
     } catch {
       notify({ kind: "normal", text: "이미지 저장에 실패했어요. 다시 시도해주세요." });
@@ -104,8 +109,8 @@ export default function CelebMatchPage() {
     setShareStatus("working");
     try {
       const blob = await captureNodeAsPng(cardRef.current);
-      const text = `나랑 잘 맞는 유명인은 ${result.male.name} · ${result.female.name}래! 🦊`;
-      const status = await shareImageOrCopyLink(blob, `yeojujeom-celeb-${result.element}.png`, text, window.location.href);
+      const text = `나랑 잘 맞는 유명인은 ${result.celebrity.name}래! 🦊`;
+      const status = await shareImageOrCopyLink(blob, `yeojujeom-celeb-${result.celebrity.id}.png`, text, window.location.href);
       awardForAction("share");
       setShareStatus(status === "copied" ? "copied" : "idle");
       if (status === "copied") setTimeout(() => setShareStatus("idle"), 2000);
@@ -125,7 +130,7 @@ export default function CelebMatchPage() {
       <FoxMascot size={56} prop="star" />
       <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-brown">나랑 잘 맞는 유명인은?</h1>
       <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft">
-        생일만 넣어도 바로 알 수 있어요 · 무료
+        생일과 성별만 넣어도 바로 알 수 있어요 · 무료
       </p>
 
       {!result ? (
@@ -136,6 +141,28 @@ export default function CelebMatchPage() {
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-brown">생년월일</label>
             <BirthDatePicker value={birthdate} onChange={setBirthdate} isLunar={isLunar} onLunarChange={setIsLunar} />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-brown">
+              성별 <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {(["male", "female"] as const).map((g) => (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => setGender(g)}
+                  aria-pressed={gender === g}
+                  className={`rounded-xl py-2.5 text-sm font-semibold transition active:scale-95 ${
+                    gender === g
+                      ? "bg-gradient-to-b from-coral to-coral-dark text-white shadow-md shadow-coral-dark/25 ring-2 ring-coral-dark"
+                      : "bg-cream text-brown-soft ring-1 ring-brown/10 hover:bg-apricot"
+                  }`}
+                >
+                  {g === "male" ? "남자" : "여자"}
+                </button>
+              ))}
+            </div>
           </div>
           {error && <p className="text-sm font-medium text-red-500">{error}</p>}
           <button
@@ -152,48 +179,35 @@ export default function CelebMatchPage() {
         >
           <p className="text-sm leading-relaxed text-brown-soft">
             당신은 {ELEMENT_BANK[result.element].label}({ELEMENT_BANK[result.element].hanja}) 기운과 잘 맞는 편이에요.
-            <br />그 기운을 닮은 유명인은 바로 이 두 분이에요.
+            <br />그 기운을 닮은 유명인은 바로 이 분이에요.
           </p>
 
           <div className="mt-5">
             <CelebrityMatchCard
               ref={cardRef}
               element={result.element}
-              male={result.male}
-              female={result.female}
-              maleImageUrl={imagesLoading ? null : (images[result.male.id]?.imageUrl ?? null)}
-              femaleImageUrl={imagesLoading ? null : (images[result.female.id]?.imageUrl ?? null)}
+              celebrity={result.celebrity}
+              imageUrl={imageLoading ? null : (image?.imageUrl ?? null)}
               siteUrl={siteUrl}
             />
           </div>
 
-          <div className="mt-4 space-y-1.5 text-left">
-            {[result.male, result.female].map((entry) => {
-              const image = images[entry.id];
-              return (
-                <div key={entry.id} className="rounded-xl bg-white/60 p-2.5">
-                  <p className="text-xs font-bold text-brown">{entry.name}</p>
-                  <p className="mt-0.5 text-[11px] leading-relaxed text-brown-soft">{entry.blurb}</p>
-                  {image && (
-                    <a
-                      href={image.sourcePageUrl}
-                      target="_blank"
-                      rel="noopener noreferrer nofollow"
-                      className="mt-1 inline-block text-[10px] font-semibold text-brown/30 underline underline-offset-2"
-                    >
-                      사진: 위키백과
-                    </a>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+          {image && (
+            <a
+              href={image.sourcePageUrl}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              className="mt-2 inline-block text-[10px] font-semibold text-brown/30 underline underline-offset-2"
+            >
+              사진: 위키백과
+            </a>
+          )}
 
           <div className="mt-5 grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={handleSaveImage}
-              disabled={shareStatus === "working" || imagesLoading}
+              disabled={shareStatus === "working" || imageLoading}
               className="rounded-xl bg-white py-3 text-sm font-bold text-coral-dark shadow-sm ring-1 ring-brown/10 transition active:scale-95 hover:bg-cream disabled:opacity-60"
             >
               이미지 저장
@@ -201,7 +215,7 @@ export default function CelebMatchPage() {
             <button
               type="button"
               onClick={handleShare}
-              disabled={shareStatus === "working" || imagesLoading}
+              disabled={shareStatus === "working" || imageLoading}
               className="rounded-xl bg-gradient-to-b from-coral to-coral-dark py-3 text-sm font-bold text-white shadow-md shadow-coral-dark/25 transition active:scale-95 disabled:opacity-60"
             >
               {shareStatus === "copied" ? "링크 복사됨!" : "공유하기"}
