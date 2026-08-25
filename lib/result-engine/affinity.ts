@@ -91,6 +91,21 @@ export const AFFINITY_BANK: Record<AffinityCategory, AffinityEntry> = {
   },
 };
 
+// LLM 프롬프트용 — AFFINITY_BANK의 label("나를 살리는 여우" 등)은 감성적인 이름일
+// 뿐 상생/상극 여부를 명시하지 않아서, 궁합 리딩 프롬프트가 "상생 관계도 근거에
+// 포함해"라고 시켜도 실제로는 근거가 안 실려 있었다. 이 함수가 그 근거를 명시적으로 만든다.
+const ELEMENT_RELATION_DESC: Record<AffinityCategory, string> = {
+  guin: "상생(相生) — 상대의 기운이 나를 생(生)함",
+  danjjak: "비화(比和) — 같은 오행이라 기운이 동일함",
+  naesaram: "상생(相生) — 내 기운이 상대를 생(生)함",
+  oreunpal: "상극(相剋) — 내 기운이 상대를 극(剋)함",
+  horangi: "상극(相剋) — 상대의 기운이 나를 극(剋)함",
+};
+
+export function describeElementRelation(category: AffinityCategory): string {
+  return ELEMENT_RELATION_DESC[category];
+}
+
 // scoreBase ± 결정론적 변동폭(0~6)으로 같은 카테고리 안에서도 자연스러운 편차를 준다.
 export function calculateAffinityScore(category: AffinityCategory, seed: string): number {
   const variance = pickVariant(seed, 13) - 6; // -6..+6

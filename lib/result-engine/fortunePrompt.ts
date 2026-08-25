@@ -1,6 +1,8 @@
 import type { CategorySlug } from "@/lib/content/fortuneCategories";
 import { buildSajuFactSheet } from "./sajuPrompt";
 import type { MbtiType } from "./temperament";
+import { calculateElementProfile } from "./elements";
+import { getAffinityCategory, describeElementRelation } from "./affinity";
 
 // 운세 카테고리별 특화 AI 리딩용 프롬프트. 기존 SAJU_REPORT_SYSTEM_PROMPT의 톤 규칙을
 // 계승하되, "사주 전체 풀이"가 아니라 카테고리 하나에만 집중하도록
@@ -111,7 +113,8 @@ const CATEGORY_FOCUS: Record<CategorySlug, CategoryFocus> = {
   gunghap: {
     topic: "궁합",
     structure: `두 사람의 사주를 나란히 놓고 읽어주는 궁합 전문가야.
-[궁합 정보]의 점수와 상생 관계도 근거에 포함해.
+[궁합 정보]의 점수와 오행 관계(상생/상극/비화)를 근거로 삼을 것 - 이 관계가
+왜 그렇게 나왔는지 스스로 재계산하려 하지 말고, 주어진 값을 그대로 사용해.
 
 [출력 구조 - 제목 그대로 사용]
 ## 두 사주가 만날 때 생기는 일
@@ -224,6 +227,14 @@ export function buildCategoryUserMessage(
     : "";
   if (!partner) return toFactSheet(person) + purposeBlock;
 
+  // 오행 관계(상생/상극)는 서버가 두 사람의 생년월일로 직접 계산한다 - pairInfo(궁합
+  // 유형 라벨 등)는 클라이언트가 화면 표시용으로 보낸 값이라 "찰떡 단짝 여우" 같은
+  // 감성적인 이름뿐이고 상생/상극 여부 자체는 안 담겨 있어서, 그걸 그대로 프롬프트에
+  // "근거"로 써보라고 시켜도 LLM이 근거 없이 추측하는 수밖에 없었다.
+  const personDominant = calculateElementProfile(person.birthdate, person.birthTime || undefined).dominant;
+  const partnerDominant = calculateElementProfile(partner.birthdate, partner.birthTime || undefined).dominant;
+  const elementRelation = describeElementRelation(getAffinityCategory(personDominant, partnerDominant));
+
   return (
     "[사람 A - 나]\n" +
     toFactSheet(person) +
@@ -232,6 +243,7 @@ export function buildCategoryUserMessage(
     "\n\n[궁합 정보]\n" +
     "- 궁합 점수: " + (pairInfo?.score ?? "?") + "점\n" +
     "- 궁합 유형: " + (pairInfo ? pairInfo.emoji + " " + pairInfo.label : "미계산") + "\n" +
+    "- 오행 관계: " + elementRelation + "\n" +
     "- MBTI 궁합: " + (pairInfo?.mbtiLabel || "미입력") +
     purposeBlock
   );
