@@ -9,7 +9,6 @@ type TabId = "account" | "collection" | "profiles" | "history";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "account", label: "내 정보" },
-  { id: "collection", label: "부적 주머니" },
   { id: "profiles", label: "기본정보" },
   { id: "history", label: "결제·사용 내역" },
 ];
