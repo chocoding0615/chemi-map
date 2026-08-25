@@ -39,6 +39,21 @@ export async function chargeWallet(
   return result;
 }
 
+// 이미 구매한 상품인지 확인 — MockPayGate가 마운트 시 이걸로 재결제를 막는다.
+// 환불된 건(isRefund)은 구매로 안 쳐서, 환불 후 재진입하면 다시 결제할 수 있게 한다.
+export async function hasPurchased(uid: string, category: string, title: string): Promise<boolean> {
+  const db = getDb();
+  const snap = await db
+    .collection("users")
+    .doc(uid)
+    .collection("activity")
+    .where("category", "==", category)
+    .where("title", "==", title)
+    .limit(5)
+    .get();
+  return snap.docs.some((doc) => !doc.data().isRefund);
+}
+
 // 선차감 후 처리가 실패했을 때(LLM 호출 실패, 저장 실패 등) 잔액을 되돌리는 유일한 지점.
 // activity에 isRefund: true를 남겨 일반 결제 내역과 구분한다.
 export async function refundWallet(

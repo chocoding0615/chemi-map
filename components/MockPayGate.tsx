@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FORTUNE_FREE_PREVIEW } from "@/lib/config";
 import type { PurchaseProductId } from "@/lib/pricing";
 import WalletPayButton from "./WalletPayButton";
@@ -20,6 +20,21 @@ interface MockPayGateProps {
 // (/api/wallet/purchase가 클라이언트가 보낸 priceKrw를 신뢰하지 않도록).
 export default function MockPayGate({ productId, priceKrw, category, title, children }: MockPayGateProps) {
   const [unlocked, setUnlocked] = useState(FORTUNE_FREE_PREVIEW);
+
+  // 무료 캠페인 중엔 unlocked가 이미 true라 필요 없는 요청이라 스킵한다.
+  // 캠페인이 끝나면(FREE_PREVIEW=false) 이미 결제한 상품을 새로고침할 때마다
+  // 또 결제하지 않도록, 마운트 시 구매 이력을 확인해서 있으면 바로 풀어준다.
+  useEffect(() => {
+    if (FORTUNE_FREE_PREVIEW) return;
+    const params = new URLSearchParams({ productId, category, title });
+    fetch(`/api/wallet/purchased?${params}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { purchased: boolean } | null) => {
+        if (data?.purchased) setUnlocked(true);
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (unlocked) {
     return (
