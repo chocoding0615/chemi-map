@@ -12,7 +12,7 @@ export const TABS: TabDef[] = [
     label: "홈",
     href: "/",
     icon: "🏠",
-    matchPrefixes: ["/today", "/fortune", "/connections", "/fox-type", "/diary", "/daily-charm"],
+    matchPrefixes: ["/today", "/fortune", "/connections", "/fox-type", "/diary", "/daily-charm", "/celeb-match"],
   },
   { label: "내 사주", href: "/saju", icon: "📜" },
   { label: "비밀편지함", href: "/letter/inbox", icon: "🔒" },

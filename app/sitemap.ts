@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/today",
     "/fortune/monthly",
     "/fox-type",
+    "/celeb-match",
     "/collection",
     "/connections",
     "/daily-charm",

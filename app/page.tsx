@@ -79,6 +79,20 @@ export default function Home() {
         <span className="text-lg text-brown-soft/30">→</span>
       </Link>
 
+      <Link
+        href="/celeb-match"
+        className="mt-3 flex w-full items-center justify-between rounded-2xl bg-gradient-to-b from-apricot/50 to-cream p-4 shadow-sm ring-1 ring-brown/5 transition active:scale-[0.98] hover:from-apricot/70"
+      >
+        <span className="flex items-center gap-3">
+          <span className="text-2xl">🌟</span>
+          <span>
+            <span className="block text-sm font-bold text-brown">유명인 케미 매칭</span>
+            <span className="block text-[11px] text-coral-dark">나랑 잘 맞는 유명인은 누구?</span>
+          </span>
+        </span>
+        <span className="text-lg text-brown-soft/30">→</span>
+      </Link>
+
       {/* 바이럴 심테 놀이터 — 유입 깔때기 */}
       <Link
         href="/test"

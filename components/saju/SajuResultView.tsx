@@ -8,7 +8,6 @@ import MockPayGate from "@/components/MockPayGate";
 import TodayScoreCard from "@/components/TodayScoreCard";
 import SajuDetailReport from "@/components/SajuDetailReport";
 import MbtiBehaviorSection from "@/components/MbtiBehaviorSection";
-import CelebrityMatchSection from "@/components/saju/CelebrityMatchSection";
 import SajuLlmReportSection from "@/components/SajuLlmReportSection";
 import LuckyGrid from "@/components/saju/LuckyGrid";
 import AccessBadge from "@/components/common/AccessBadge";
@@ -87,8 +86,6 @@ export default function SajuResultView({ result, resultRef, onReset }: SajuResul
             </div>
 
             <LuckyGrid lucky={result.lucky} />
-
-            <CelebrityMatchSection dominant={result.dominant} seed={`${result.birthdate}-${result.gender}-celeb`} />
           </div>
 
           <SajuDetailReport
