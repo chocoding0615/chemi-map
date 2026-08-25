@@ -36,7 +36,15 @@ export default async function AdminPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-12">
-      <h1 className="text-2xl font-extrabold tracking-tight text-brown">관리자</h1>
+      <div className="flex w-full items-center justify-between">
+        <h1 className="text-2xl font-extrabold tracking-tight text-brown">관리자</h1>
+        <Link
+          href="/"
+          className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-brown-soft shadow-sm ring-1 ring-brown/10 transition active:scale-95 hover:bg-cream"
+        >
+          👤 유저 화면으로
+        </Link>
+      </div>
 
       <AdminTabs
         overviewTab={
