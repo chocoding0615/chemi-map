@@ -9,7 +9,9 @@ import SajuDetailReport from "@/components/SajuDetailReport";
 import MbtiBehaviorSection from "@/components/MbtiBehaviorSection";
 import SajuLlmReportSection from "@/components/SajuLlmReportSection";
 import LuckyGrid from "@/components/saju/LuckyGrid";
+import AccessBadge from "@/components/common/AccessBadge";
 import { SAJU_SUMMARY_PRICE_KRW } from "@/lib/pricing";
+import { FORTUNE_FREE_PREVIEW } from "@/lib/config";
 import { ELEMENT_BANK } from "@/lib/result-engine/elements";
 import type { SajuResult } from "@/hooks/useSajuForm";
 
@@ -30,6 +32,11 @@ export default function SajuResultView({ result, resultRef, onReset }: SajuResul
         </div>
         {result.name && <p className="mt-2 text-sm font-bold text-coral-dark">{result.name}님의 사주예요</p>}
         <p className="mt-3 text-sm leading-relaxed text-brown-soft">{result.teaser}</p>
+        <div className="mt-2 flex justify-center">
+          <AccessBadge
+            state={FORTUNE_FREE_PREVIEW ? { kind: "free" } : { kind: "price", priceKrw: SAJU_SUMMARY_PRICE_KRW }}
+          />
+        </div>
 
         <MockPayGate
           priceKrw={SAJU_SUMMARY_PRICE_KRW}

@@ -1,11 +1,16 @@
 import Link from "next/link";
 import FoxMascot from "@/components/FoxMascot";
+import AccessBadge from "@/components/common/AccessBadge";
+import SectionHeader from "@/components/common/SectionHeader";
+import DisabledFortuneCard from "@/components/DisabledFortuneCard";
 import { FORTUNE_GROUPS } from "@/lib/content/fortuneGroups";
 import { DIARY_ENTRIES } from "@/lib/content/diary";
 import { FORTUNE_FREE_PREVIEW } from "@/lib/config";
+import { SAJU_SUMMARY_PRICE_KRW } from "@/lib/pricing";
 
 export default function Home() {
   const diaryPreview = DIARY_ENTRIES.slice(0, 3);
+  const sajuAccess = FORTUNE_FREE_PREVIEW ? ({ kind: "free" } as const) : ({ kind: "price", priceKrw: SAJU_SUMMARY_PRICE_KRW } as const);
 
   return (
     <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-14">
@@ -25,30 +30,38 @@ export default function Home() {
       {/* L1: 대표 액션 — 화면에서 가장 크고 진한 카드 */}
       <Link
         href="/saju"
-        className="mt-8 flex w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-b from-coral to-coral-dark py-8 text-center text-white shadow-xl shadow-coral-dark/25 transition active:scale-95"
+        className="mt-10 flex w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-b from-coral to-coral-dark py-8 text-center text-white shadow-xl shadow-coral-dark/25 transition active:scale-95"
       >
         <span className="text-4xl">🔮</span>
         <p className="mt-2 text-lg font-extrabold">내 사주 풀이</p>
-        <p className="mt-1 text-xs text-white/80">{FORTUNE_FREE_PREVIEW ? "지금은 무료" : "요약 무료"}</p>
+        <span className="mt-2 inline-flex items-center rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-bold text-white">
+          {sajuAccess.kind === "free" ? "무료" : `잔디 ${sajuAccess.priceKrw.toLocaleString()}개`}
+        </span>
       </Link>
 
       {/* L2: 핵심 보조 — L1보다 작게, 외곽선형 2열 */}
-      <div className="mt-4 grid w-full grid-cols-2 gap-3">
+      <div className="mt-3 grid w-full grid-cols-2 gap-3">
         <Link
           href="/connections"
           className="rounded-2xl bg-white p-4 text-center shadow-sm ring-1 ring-brown/10 transition active:scale-95 hover:bg-apricot/40"
         >
           <span className="text-2xl">🏘️</span>
-          <p className="mt-1 text-sm font-bold text-brown">여우 마을</p>
-          <p className="mt-0.5 text-[11px] text-brown-soft/90">무료 · 공유해보기</p>
+          <p className="mt-2 text-sm font-bold text-brown">여우 마을</p>
+          <div className="mt-2 flex items-center justify-center gap-1.5">
+            <AccessBadge state={{ kind: "free" }} />
+            <span className="text-[11px] text-brown-soft/60">공유해보기</span>
+          </div>
         </Link>
         <Link
           href="/fox-type"
           className="rounded-2xl bg-white p-4 text-center shadow-sm ring-1 ring-brown/10 transition active:scale-95 hover:bg-apricot/40"
         >
           <span className="text-2xl">🦊</span>
-          <p className="mt-1 text-sm font-bold text-brown">여우상 보기</p>
-          <p className="mt-0.5 text-[11px] text-brown-soft/90">무료 · 공유용</p>
+          <p className="mt-2 text-sm font-bold text-brown">여우상 보기</p>
+          <div className="mt-2 flex items-center justify-center gap-1.5">
+            <AccessBadge state={{ kind: "free" }} />
+            <span className="text-[11px] text-brown-soft/60">공유용</span>
+          </div>
         </Link>
       </div>
 
@@ -67,21 +80,14 @@ export default function Home() {
       </Link>
 
       {/* 운세 더 보기 — 그룹별 섹션 */}
-      <div className="mt-10 w-full space-y-8">
+      <div className="mt-10 w-full space-y-10">
         {FORTUNE_GROUPS.map((group) => (
           <div key={group.title}>
-            <h2 className="text-sm font-semibold text-brown-soft/90">{group.title}</h2>
+            <SectionHeader title={group.title} />
             <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {group.items.map((item) =>
-                item.disabled ? (
-                  <div
-                    key={item.label}
-                    className="flex flex-col items-center justify-center rounded-2xl bg-brown/5 p-4 text-center opacity-60"
-                  >
-                    <span className="text-2xl">{item.icon}</span>
-                    <p className="mt-1 text-sm font-bold text-brown-soft/90">{item.label}</p>
-                    <p className="mt-0.5 text-[11px] text-brown-soft/40">{item.desc}</p>
-                  </div>
+                item.access.kind === "soon" ? (
+                  <DisabledFortuneCard key={item.label} icon={item.icon} label={item.label} />
                 ) : (
                   <Link
                     key={item.label}
@@ -93,8 +99,11 @@ export default function Home() {
                     }`}
                   >
                     <span className="text-2xl">{item.icon}</span>
-                    <p className="mt-1 text-sm font-bold text-brown">{item.label}</p>
-                    <p className="mt-0.5 text-[11px] text-brown-soft/40">{item.desc}</p>
+                    <p className="mt-2 text-sm font-bold text-brown">{item.label}</p>
+                    <div className="mt-2 flex items-center justify-center gap-1.5">
+                      <AccessBadge state={item.access} />
+                      {item.caption && <span className="text-[11px] text-brown-soft/60">{item.caption}</span>}
+                    </div>
                   </Link>
                 )
               )}
@@ -105,12 +114,7 @@ export default function Home() {
 
       {/* 비밀일기 프리뷰 */}
       <div className="mt-10 w-full">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-brown-soft/90">복실이의 비밀일기</h2>
-          <Link href="/diary" className="text-xs font-semibold text-coral-dark underline underline-offset-2">
-            더보기
-          </Link>
-        </div>
+        <SectionHeader title="복실이의 비밀일기" moreHref="/diary" />
         <div className="mt-3 space-y-2">
           {diaryPreview.map((entry) => (
             <Link

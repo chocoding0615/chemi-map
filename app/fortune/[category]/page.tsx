@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import FoxMascot from "@/components/FoxMascot";
 import FortuneForm from "@/components/fortune/FortuneForm";
+import AccessBadge from "@/components/common/AccessBadge";
 import { FORTUNE_CATEGORIES, FORTUNE_CATEGORY_ORDER, type CategorySlug } from "@/lib/content/fortuneCategories";
 import { FORTUNE_FREE_PREVIEW } from "@/lib/config";
 
@@ -35,9 +36,12 @@ export default async function FortuneCategoryPage({ params }: FortuneCategoryPag
       <span className="mt-3 text-3xl">{entry.icon}</span>
       <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-brown">{entry.nameKo}</h1>
       <p className="mt-2 text-center text-sm leading-relaxed text-brown-soft">{entry.description}</p>
-      <span className="mt-3 inline-flex items-center rounded-full bg-lavender/40 px-3 py-1 text-xs font-bold text-lavender-dark">
-        {FORTUNE_FREE_PREVIEW ? "🎁 지금은 무료로 볼 수 있어요" : `🌱${entry.priceKrw.toLocaleString()} · 요약 무료`}
-      </span>
+      <div className="mt-3">
+        <AccessBadge
+          state={FORTUNE_FREE_PREVIEW ? { kind: "free" } : { kind: "price", priceKrw: entry.priceKrw }}
+          size="md"
+        />
+      </div>
 
       <FortuneForm category={entry} />
     </div>

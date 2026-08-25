@@ -1,12 +1,14 @@
 import { FORTUNE_CATEGORIES, type CategorySlug } from "./fortuneCategories";
 import { FORTUNE_FREE_PREVIEW } from "@/lib/config";
+import type { AccessState } from "@/components/common/AccessBadge";
 
 export interface FortuneGroupItem {
   icon: string;
   label: string;
-  desc: string;
+  /** AccessBadge 옆에 덧붙는 부가 설명("매일 갱신" 등). 없으면 배지만 보여준다. */
+  caption?: string;
+  access: AccessState;
   href: string;
-  disabled?: boolean;
   /** L3 카드들 사이에서 살짝만 강조할 항목(오늘의 기운 등). 여우.md v2 규칙: "카드 그리드
    * 내부는 모두 동일 스타일. 오늘의 기운만 살짝 강조 허용(L2 하한)." */
   emphasize?: boolean;
@@ -22,7 +24,7 @@ function fromCategory(slug: CategorySlug): FortuneGroupItem {
   return {
     icon: category.icon,
     label: category.nameKo,
-    desc: FORTUNE_FREE_PREVIEW ? "지금은 무료" : `🌱${category.priceKrw.toLocaleString()}`,
+    access: FORTUNE_FREE_PREVIEW ? { kind: "free" } : { kind: "price", priceKrw: category.priceKrw },
     href: `/fortune/${slug}`,
   };
 }
@@ -38,8 +40,8 @@ export const FORTUNE_GROUPS: FortuneGroup[] = [
   {
     title: "시간의 흐름",
     items: [
-      { icon: "☀️", label: "오늘의 기운", desc: "무료 · 매일 갱신", href: "/today", emphasize: true },
-      { icon: "🌙", label: "이달의 기운", desc: "무료 · 매달 갱신", href: "/fortune/monthly" },
+      { icon: "☀️", label: "오늘의 기운", caption: "매일 갱신", access: { kind: "free" }, href: "/today", emphasize: true },
+      { icon: "🌙", label: "이달의 기운", caption: "매달 갱신", access: { kind: "free" }, href: "/fortune/monthly" },
       fromCategory("yearly"),
       fromCategory("daeun"),
     ],
@@ -50,7 +52,7 @@ export const FORTUNE_GROUPS: FortuneGroup[] = [
       fromCategory("career"),
       fromCategory("wealth"),
       fromCategory("taekil"),
-      { icon: "💬", label: "고민 상담", desc: "준비 중", href: "#", disabled: true },
+      { icon: "💬", label: "고민 상담", access: { kind: "soon" }, href: "#" },
     ],
   },
 ];
