@@ -23,6 +23,9 @@ export interface OAuthProfile {
   providerId: string;
   nickname: string;
   profileImageUrl: string | null;
+  /** "20~29"/"20-29" 형태 원본 문자열. 동의 안 했으면 null - 그 로그인 시도에서만
+   * null일 뿐 이전에 저장해둔 값을 지우면 안 되니 upsert 쪽에서 별도로 처리한다. */
+  ageRange?: string | null;
 }
 
 export function makeUid(provider: Provider, providerId: string): string {
@@ -36,11 +39,16 @@ export async function upsertUserAndCreateSession(provider: Provider, profile: OA
   const now = new Date();
   const existing = await userRef.get();
 
+  // 이번 로그인에서 동의를 안 받았다고 이전에 받아둔 연령대를 지우면 안 되니,
+  // 값이 왔을 때만 필드를 갱신한다(merge 대상에서 아예 빼는 방식).
+  const ageRangeUpdate = profile.ageRange ? { ageRange: profile.ageRange } : {};
+
   if (existing.exists) {
     await userRef.update({
       nickname: profile.nickname,
       profileImageUrl: profile.profileImageUrl,
       lastLoginAt: now,
+      ...ageRangeUpdate,
     });
   } else {
     await userRef.set({
@@ -51,6 +59,7 @@ export async function upsertUserAndCreateSession(provider: Provider, profile: OA
       ticketBalance: 0,
       createdAt: now,
       lastLoginAt: now,
+      ...ageRangeUpdate,
     });
   }
 

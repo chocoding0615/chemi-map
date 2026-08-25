@@ -30,7 +30,10 @@ export async function fetchNaverProfile(code: string, redirectUri: string, state
   });
   if (!profileRes.ok) throw new Error(`naver profile fetch failed: ${profileRes.status}`);
   const profileJson = (await profileRes.json()) as {
-    response?: { id: string; nickname?: string; profile_image?: string };
+    // age는 "20-29" 형태 - 네이버 개발자센터의 "제공 정보 선택"에서 연령대 항목을
+    // 켜고 사용자가 동의해야 온다. 카카오와 달리 여기(URL)엔 요청할 파라미터가
+    // 없고, 콘솔 설정만으로 동의 화면에 자동으로 포함된다.
+    response?: { id: string; nickname?: string; profile_image?: string; age?: string };
   };
   if (!profileJson.response) throw new Error("naver profile fetch failed: empty response");
 
@@ -38,5 +41,6 @@ export async function fetchNaverProfile(code: string, redirectUri: string, state
     providerId: profileJson.response.id,
     nickname: profileJson.response.nickname ?? "여우 손님",
     profileImageUrl: profileJson.response.profile_image ?? null,
+    ageRange: profileJson.response.age ?? null,
   };
 }

@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { getSession } from "@/lib/session";
 import { isAdmin } from "@/lib/admin";
-import { getAdminOverview, listAllUsers } from "@/lib/adminStats";
+import { getAdminOverview, getSpendingBreakdown, listAllUsers } from "@/lib/adminStats";
 import AdminTabs from "@/components/AdminTabs";
+import AdminAnalytics from "@/components/AdminAnalytics";
 import AdminUserList from "@/components/AdminUserList";
 
 export default async function AdminPage() {
@@ -27,7 +28,11 @@ export default async function AdminPage() {
     );
   }
 
-  const [overview, users] = await Promise.all([getAdminOverview(), listAllUsers()]);
+  const [overview, breakdown, users] = await Promise.all([
+    getAdminOverview(),
+    getSpendingBreakdown(),
+    listAllUsers(),
+  ]);
 
   return (
     <div className="mx-auto flex w-full max-w-[480px] md:max-w-2xl flex-1 flex-col items-center px-6 py-12">
@@ -76,6 +81,7 @@ export default async function AdminPage() {
             </div>
           </div>
         }
+        analyticsTab={<AdminAnalytics byCategory={breakdown.byCategory} byAgeRange={breakdown.byAgeRange} />}
         usersTab={<AdminUserList users={users} myUid={session.uid} />}
       />
     </div>
