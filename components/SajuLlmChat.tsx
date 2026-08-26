@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import InsufficientBalanceCTA from "./common/InsufficientBalanceCTA";
+import SimpleMarkdown from "./SimpleMarkdown";
 
 interface ChatEntry {
   role: "user" | "assistant";
@@ -113,7 +114,7 @@ export default function SajuLlmChat({ reportId, freeQuestionsTotal }: SajuLlmCha
                 m.role === "user" ? "bg-coral/10 text-brown" : "bg-cream/60 text-brown-soft"
               }`}
             >
-              {m.text}
+              {m.role === "assistant" ? <SimpleMarkdown text={m.text} /> : m.text}
             </div>
           ))}
         </div>
