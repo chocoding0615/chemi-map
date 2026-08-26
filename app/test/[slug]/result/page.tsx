@@ -126,7 +126,7 @@ export default async function TestResultPage({ params, searchParams }: Props) {
         href="/saju"
         className="mt-8 flex w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-b from-coral to-coral-dark py-5 text-center text-white shadow-xl shadow-coral-dark/25 transition active:scale-95"
       >
-        <p className="text-base font-extrabold">과몰입 성향까지 알았으면,</p>
+        <p className="text-base font-extrabold">이런 성향까지 알았으면,</p>
         <p className="text-lg font-extrabold">복실이와 내 사주도 봐봐! ✨</p>
         <span className="mt-2 inline-flex items-center rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-bold text-white">
           AI 사주풀이 · 첫 리딩 무료 체험
