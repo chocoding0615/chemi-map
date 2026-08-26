@@ -94,6 +94,9 @@ export async function POST(request: NextRequest) {
   let reply: string;
   try {
     reply = await callLLM(messages, 1200);
+    // 프롬프트로 "볼드 쓰지 마"를 반복해도 LLM이 종종 어겨서, 여기서 확실하게
+    // 걷어낸다 - 채팅은 리포트가 아니라 대화라 볼드가 아예 필요 없다.
+    reply = reply.replace(/\*\*/g, "");
   } catch (err) {
     await rollback();
     const errorMessage = err instanceof Error ? err.message : "답변 생성에 실패했어요.";
