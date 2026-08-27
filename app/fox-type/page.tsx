@@ -7,7 +7,7 @@ import FoxCharacterImage from "@/components/FoxCharacterImage";
 import FoxCard from "@/components/FoxCard";
 import MbtiSelect from "@/components/MbtiSelect";
 import BirthDatePicker from "@/components/BirthDatePicker";
-import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
+import { calculateElementProfile, ELEMENT_BANK, ELEMENT_ORDER, type ElementKey } from "@/lib/result-engine/elements";
 import { getFoxType, type FoxTypeResult } from "@/lib/result-engine/foxType";
 import {
   captureNodeAsPng,
@@ -22,6 +22,16 @@ import { notify } from "@/lib/notify";
 
 interface PageResult extends FoxTypeResult {
   distribution: Record<ElementKey, number>;
+}
+
+// distribution(오행 5개 카운트)을 URL에 넣고 뺄 때 쓰는 직렬화 — ELEMENT_ORDER 순서 고정.
+function serializeDistribution(d: Record<ElementKey, number>): string {
+  return ELEMENT_ORDER.map((k) => d[k]).join(",");
+}
+function parseDistribution(s: string): Record<ElementKey, number> | null {
+  const parts = s.split(",").map(Number);
+  if (parts.length !== ELEMENT_ORDER.length || parts.some((n) => !Number.isFinite(n))) return null;
+  return Object.fromEntries(ELEMENT_ORDER.map((k, i) => [k, parts[i]])) as Record<ElementKey, number>;
 }
 
 export default function FoxTypePage() {
@@ -39,6 +49,32 @@ export default function FoxTypePage() {
     /* eslint-disable-next-line react-hooks/set-state-in-effect */
     setSiteUrl(window.location.origin.replace(/^https?:\/\//, ""));
   }, []);
+
+  // 공유 링크(?d=오행분포&mbti=...)로 들어온 경우, 생년월일 입력 없이 그 결과를 바로 보여준다 -
+  // 안 그러면 링크를 받은 사람이 매번 빈 입력 폼(초기 화면)만 보게 된다.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const d = params.get("d");
+    const mbtiParam = params.get("mbti") ?? "";
+    const distribution = d ? parseDistribution(d) : null;
+    if (distribution) {
+      const foxType = getFoxType({ distribution, mbti: mbtiParam || undefined });
+      /* eslint-disable-next-line react-hooks/set-state-in-effect */
+      setMbti(mbtiParam);
+      setResult({ ...foxType, distribution });
+    }
+  }, []);
+
+  // result가 생기면(직접 계산했든, 위 복원 효과로 채워졌든) 항상 URL에 반영해서
+  // "공유하기"가 window.location.href를 보낼 때 결과가 그대로 실려 있게 한다.
+  useEffect(() => {
+    if (!result) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("d", serializeDistribution(result.distribution));
+    if (mbti) url.searchParams.set("mbti", mbti.trim().toUpperCase());
+    else url.searchParams.delete("mbti");
+    window.history.replaceState(null, "", url);
+  }, [result, mbti]);
 
   useEffect(() => {
     if (!result) return;
@@ -207,7 +243,10 @@ export default function FoxTypePage() {
 
           <button
             type="button"
-            onClick={() => setResult(null)}
+            onClick={() => {
+              setResult(null);
+              window.history.replaceState(null, "", window.location.pathname);
+            }}
             className="mt-4 text-xs font-semibold text-brown-soft/90 underline underline-offset-2"
           >
             다시 확인하기

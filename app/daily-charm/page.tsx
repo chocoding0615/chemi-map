@@ -5,7 +5,7 @@ import Link from "next/link";
 import FoxMascot from "@/components/FoxMascot";
 import CharmFlipCard from "@/components/CharmFlipCard";
 import { getCharmById, type Rarity } from "@/lib/charms";
-import { drawTodayCharm, getTodayDrawResult, type DrawTodayCharmResult } from "@/lib/dailyCharm";
+import { drawTodayCharm, getTodayDrawResult, DAILY_MESSAGES, type DrawTodayCharmResult } from "@/lib/dailyCharm";
 import {
   captureNodeAsPng,
   saveImage,
@@ -36,9 +36,33 @@ export default function DailyCharmPage() {
       /* eslint-disable-next-line react-hooks/set-state-in-effect */
       setResult({ ...existing, isNewCharm: false });
       setRevealed(true);
+      setHydrated(true);
+      return;
+    }
+    // 오늘 내가 뽑은 기록이 없으면, 공유 링크(?charm=id&m=메시지번호)로 들어온 건 아닌지
+    // 확인한다 - 안 그러면 친구가 링크를 눌러도 빈 "뽑기" 화면(초기 화면)만 보게 된다.
+    const params = new URLSearchParams(window.location.search);
+    const charmId = params.get("charm");
+    const mIdx = Number.parseInt(params.get("m") ?? "", 10);
+    const message = Number.isInteger(mIdx) ? DAILY_MESSAGES[mIdx] : undefined;
+    if (charmId && getCharmById(charmId) && message) {
+      setResult({ charmId, message, isNewCharm: false });
+      setRevealed(true);
     }
     setHydrated(true);
   }, []);
+
+  // result가 생기면(직접 뽑았든, 위 복원 효과로 채워졌든) 항상 URL에 반영해서
+  // "공유하기"가 window.location.href를 보낼 때 결과가 그대로 실려 있게 한다.
+  useEffect(() => {
+    if (!result) return;
+    const mIdx = DAILY_MESSAGES.indexOf(result.message);
+    if (mIdx < 0) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("charm", result.charmId);
+    url.searchParams.set("m", String(mIdx));
+    window.history.replaceState(null, "", url);
+  }, [result]);
 
   function handleDraw() {
     setDrawing(true);

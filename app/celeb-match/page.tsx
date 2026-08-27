@@ -5,9 +5,9 @@ import Link from "next/link";
 import FoxMascot from "@/components/FoxMascot";
 import BirthDatePicker from "@/components/BirthDatePicker";
 import CelebrityMatchCard from "@/components/CelebrityMatchCard";
-import { calculateElementProfile, ELEMENT_BANK, type ElementKey } from "@/lib/result-engine/elements";
+import { calculateElementProfile, ELEMENT_BANK, ELEMENT_ORDER, type ElementKey } from "@/lib/result-engine/elements";
 import { getCelebrityMatches } from "@/lib/result-engine/celebrityMatch";
-import type { CelebrityEntry } from "@/lib/content/celebrities";
+import { CELEBRITY_BANK, type CelebrityEntry } from "@/lib/content/celebrities";
 import {
   captureNodeAsPng,
   saveImage,
@@ -29,6 +29,13 @@ interface PageResult {
   celebrity: CelebrityEntry;
 }
 
+// 공유 링크로 들어온 사람이 결과를 그대로 재현해볼 수 있게, id로 유명인을 바로 찾는다.
+const ALL_CELEBRITIES: Record<string, CelebrityEntry> = Object.fromEntries(
+  Object.values(CELEBRITY_BANK)
+    .flat()
+    .map((c) => [c.id, c])
+);
+
 export default function CelebMatchPage() {
   const [birthdate, setBirthdate] = useState("");
   const [isLunar, setIsLunar] = useState(false);
@@ -48,6 +55,29 @@ export default function CelebMatchPage() {
     /* eslint-disable-next-line react-hooks/set-state-in-effect */
     setSiteUrl(window.location.origin.replace(/^https?:\/\//, ""));
   }, []);
+
+  // 공유 링크(?e=오행&c=유명인id)로 들어온 경우, 생년월일 입력 없이 그 결과를 바로 보여준다 -
+  // 안 그러면 링크를 받은 사람이 매번 빈 입력 폼(초기 화면)만 보게 된다.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const e = params.get("e");
+    const c = params.get("c");
+    const celebrity = c ? ALL_CELEBRITIES[c] : undefined;
+    if (e && ELEMENT_ORDER.includes(e as ElementKey) && celebrity) {
+      /* eslint-disable-next-line react-hooks/set-state-in-effect */
+      setResult({ element: e as ElementKey, celebrity });
+    }
+  }, []);
+
+  // result가 생기면(직접 계산했든, 위 복원 효과로 채워졌든) 항상 URL에 반영해서
+  // "공유하기"가 window.location.href를 보낼 때 결과가 그대로 실려 있게 한다.
+  useEffect(() => {
+    if (!result) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("e", result.element);
+    url.searchParams.set("c", result.celebrity.id);
+    window.history.replaceState(null, "", url);
+  }, [result]);
 
   useEffect(() => {
     if (!result) return;
@@ -231,7 +261,10 @@ export default function CelebMatchPage() {
 
           <button
             type="button"
-            onClick={() => setResult(null)}
+            onClick={() => {
+              setResult(null);
+              window.history.replaceState(null, "", window.location.pathname);
+            }}
             className="mt-4 text-xs font-semibold text-brown-soft/90 underline underline-offset-2"
           >
             다시 확인하기
